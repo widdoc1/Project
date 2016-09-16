@@ -3,7 +3,7 @@
 # Replace this with the location of Cernlib on your system (if desired)
 CERNLIB     = 
 # Replace this with the location of LHAPDF on your system (if desired)
-LHAPDFLIB   = 
+LHAPDFLIB=/home/luke/libs/LHAPDF-5.9.1/lib 
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
 USEOMP = YES
@@ -43,7 +43,7 @@ LINKONELOOP     = NO
 #   NATIVE -- internal routines
 #   PDFLIB -- PDFLIB v8.04
 #   LHAPDF -- Les Houches library
-PDFROUTINES = NATIVE
+PDFROUTINES = LHAPDF
 
 # Set this to NO/YES/FROOT
 #   NO  -- no n-tuple output or unweighting is possible
@@ -56,7 +56,7 @@ FC = gfortran
 F90 = gfortran
 
 # Flags for compilation
-FFLAGS 	=  -fno-f2c $(OMPFLAG) -O2 -I$(INCPATH) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
+FFLAGS 	=  -fno-f2c $(OMPFLAG) -O2 -I$(INCPATH) -I$(TENSORREDDIR)/Include -I$(OBJNAME) -g
 F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(OBJNAME) -J$(OBJNAME)
 
 # If using FROOT package for ROOT ntuples, first specify C++ compiler:
@@ -787,6 +787,7 @@ basic_Vfrix.o \
 boost.o \
 boostx.o \
 branch.o \
+calcLtilde.o \
 cdotpr.o \
 checkndotp.o \
 checkversion.o \
@@ -982,7 +983,9 @@ gen_lops.o \
 gen_realps.o \
 lowint.o \
 realint.o \
-virtint.o
+virtint.o \
+resum_lo.o \
+resum_nlo.o
 
 QQHFILES = \
 qq_Hqq_g.o \
