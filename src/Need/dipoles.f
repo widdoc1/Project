@@ -109,13 +109,15 @@ c---       pieces to get in the correct form of the master formula
           
         case ("rmex")
           if (vorz .eq. 1) then
-            ii_qq= -pisq/12d0/(1 - 2 * as * beta00 * Ltilde)
+            ii_qq= -pisq/12d0
             if (scheme .eq. 'tH-V') then
               return
             elseif (scheme .eq. 'dred') then
 c---       pieces to get in the correct form of the master formula
               ii_qq=ii_qq-half+pisq/12d0 + (-3d0 + L/2d0)*L/2d0 
      c              - (-3d0 + ls_Q)*ls_Q/2d0
+c---       pieces for the expansion of the resummation
+     c              + (-2d0*Ltilde**2+(-two*2d0*ls_Q-two*3d0)*Ltilde)
               return
             else
               write(6,*) 'Value of scheme not implemented properly ',
@@ -129,12 +131,12 @@ c---       pieces to get in the correct form of the master formula
           lx=dlog(x)
       
           if (vorz .eq. 2) then
-            ii_qq= omx/(1 - 2 * as * beta00 * Ltilde) 
+            ii_qq= omx
             return
           endif
       
           ii_qq=(1+x**2)/omx * 2d0* log(resumscale/scale)
-     c         /(1 - 2 * as * beta00 * Ltilde) 
+     c         -two*(1+x**2)/omx * Ltilde
       
           return
                 
@@ -204,29 +206,35 @@ c  - [x^2+(1-x)^2]*epinv
           ii_qg=0d0
           if ((vorz .eq. 1) .or. (vorz .eq. 3)) return
       
-        omx=one-x
-        lomx=dlog(omx)
-        lx=dlog(x)
+          omx=one-x
+          lomx=dlog(omx)
+          lx=dlog(x)
       
-        if (vorz .eq. 2) then
-          ii_qg=(x*omx/tr + ( x**2 + omx**2 ) * log(resumscale**2/musq))
-     c           /(1 - 2 * as * beta00 * Ltilde) 
-        endif
-        return
+          if (vorz .eq. 2) then
+            ii_qg=(x*omx/tr + ( x**2 + omx**2 ) * 
+     c           log(resumscale**2/musq))/(1 - 2 * as * beta00 * Ltilde) 
+          endif
+          return
         
         case ("rmex") 
+          if (vorz .eq. 1) then
+c---       pieces for the expansion of the resummation
+            ii_qg=-2d0*Ltilde**2+(-two*2d0*ls_Q-two*3d0)*Ltilde
+            return
+          endif
+          
+          omx=one-x
+          lomx=dlog(omx)
+          lx=dlog(x)
+      
+          if (vorz .eq. 2) then
+            ii_qg=(x*omx/tr + ( x**2 + omx**2 ) * 
+     c         log(resumscale**2/musq)) -2*(x**2 + omx**2) * Ltilde
+            return
+          endif
+          
           ii_qg=0d0
-          if ((vorz .eq. 1) .or. (vorz .eq. 3)) return
-      
-        omx=one-x
-        lomx=dlog(omx)
-        lx=dlog(x)
-      
-        if (vorz .eq. 2) then
-          ii_qg=(x*omx/tr + ( x**2 + omx**2 ) * log(resumscale**2/musq))
-     c           /(1 - 2 * as * beta00 * Ltilde) 
-        endif
-        return
+          return
 
         case default
           ii_qg=0d0
