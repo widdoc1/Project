@@ -985,7 +985,8 @@ lowint.o \
 realint.o \
 virtint.o \
 resum_lo.o \
-resum_nlo.o
+resum_nlo.o \
+resum_expanded.o 
 
 QQHFILES = \
 qq_Hqq_g.o \

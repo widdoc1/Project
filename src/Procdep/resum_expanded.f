@@ -64,7 +64,7 @@ c---- SSbegin
       include 'reweight.f'
       logical purevirt
       common/useropt/purevirt
-      data purevirt/.false./
+c      data purevirt/.false./
 c---- SSend 
 
       integer ih1,ih2,j,k,m,n,cs,ics,csmax,nvec,is,iq,ia,ib,ic,ii

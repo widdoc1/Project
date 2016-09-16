@@ -266,6 +266,18 @@ c--- resummation at NLO
      .              nprn,sig,sd,chi)
         ndim=ndim-1
       endif
+      
+c--- resummation expanded
+      if (mypart .eq. 'rmex')  then
+        part='rmex'        
+        reset=.true.
+        scalereset=.true.
+        ndim=ndim+1
+        call boundregion(ndim,region)
+        call vegasnr(region,ndim,resum_expanded,myinit,myncall,myitmx,
+     .              nprn,sig,sd,chi)
+        ndim=ndim-1
+      endif
             
 c--- If we're doing the tota integration, then set up the grid info
       if ((mypart .eq. 'tota') .or. (mypart .eq. 'todk')) then
