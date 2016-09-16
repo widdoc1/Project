@@ -63,8 +63,8 @@ c--- APPLgrid - end
 c---- SSbegin
       include 'reweight.f'
       logical purevirt
-      common/useropt/purevirt
-c      data purevirt/.false./
+      common/useropt2/purevirt
+      data purevirt/.false./
 c---- SSend 
 
       integer ih1,ih2,j,k,m,n,cs,ics,csmax,nvec,is,iq,ia,ib,ic,ii
@@ -97,7 +97,7 @@ c      data p/56*0d0/
       save nshot
       external gg_ZZ
 !$omp threadprivate(/rvcolourchoice/)
-!$omp threadprivate(nshot,/useropt/)
+!$omp threadprivate(nshot,/useropt2/)
 
       QandGflag=.false.
       if (first) then

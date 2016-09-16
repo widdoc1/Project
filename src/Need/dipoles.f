@@ -49,11 +49,6 @@ c---
       
       call calcLtilde(resumscale,Ltilde)
       ls_Q = L + log(musq/resumscale**2)
-c      write(*,*) "resumscale= ",resumscale
-c      write(*,*) "Ltilde= ",Ltilde
-c      write(*,*) "Ltilde= ",Ltilde
-c      write(*,*) "Beta0= ",beta00
-c      write(*,*) "as= ",as
       
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-gluon antenna, either
