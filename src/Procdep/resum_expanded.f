@@ -19,7 +19,6 @@
       include 'qcdcouple.f'
       include 'scale.f'
       include 'facscale.f'
-      include 'resumscale.f'
       include 'dynamicscale.f'
       include 'efficiency.f'
       include 'lc.f'
@@ -65,11 +64,8 @@ c---- SSbegin
       include 'reweight.f'
       logical purevirt
       common/useropt/purevirt
-c      data purevirt/.false./
+      data purevirt/.false./
 c---- SSend 
-
-c---- resum 
-      double precision Ltilde
 
       integer ih1,ih2,j,k,m,n,cs,ics,csmax,nvec,is,iq,ia,ib,ic,ii
       double precision p(mxpart,4),pjet(mxpart,4),r(mxdim),W,xmsq,
@@ -137,8 +133,6 @@ c--- bother calculating the matrix elements for it, instead bail out
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
      
-      call calcLtilde(resumscale,Ltilde)
-     
       z=r(ndim)**2
 c      if (nshot .eq. 1) z=0.95d0
       xjac=two*dsqrt(z)
@@ -163,7 +157,6 @@ c--- point to restart from when checking epsilon poles
 c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
       epcorr=epinv+2d0*dlog(scale/facscale)
-     &                  /(1 - 2 * as * beta00 * Ltilde)
       
 c--- for the case of virtual correction in the top quark decay,
 c--- ('tdecay','ttdkay','Wtdkay') there are no extra initial-state
@@ -822,8 +815,8 @@ c          fx2(0)=1d0
 c          fx2(1)=1d0
 c        else   
 c--- usual case            
-          call fdist(ih1,xx(1),facscale*exp(-Ltilde),fx1)
-          call fdist(ih2,xx(2),facscale*exp(-Ltilde),fx2)
+          call fdist(ih1,xx(1),facscale,fx1)
+          call fdist(ih2,xx(2),facscale,fx2)
 c      endif
       endif
       
@@ -847,7 +840,7 @@ c          fx1z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih1,x1onz,facscale*exp(-Ltilde),fx1z)
+            call fdist(ih1,x1onz,facscale,fx1z)
 c--- APPLgrid - set factor
 c            f_X1overZ = 1d0
 c--- APPLgrid - end
@@ -869,7 +862,7 @@ c          fx2z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih2,x2onz,facscale*exp(-Ltilde),fx2z)
+            call fdist(ih2,x2onz,facscale,fx2z)
 c--- APPLgrid - set factor
 c            f_X2overZ = 1d0
 c--- APPLgrid - end
