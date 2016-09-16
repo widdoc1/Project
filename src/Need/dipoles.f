@@ -83,7 +83,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
               return
             elseif (scheme .eq. 'dred') then
 c---       pieces to get in the correct form of the master formula
-              ii_qq=ii_qq-half+pisq/12d0 + (-3d0 + L/2d0)*L/2d0 
+              ii_qq=ii_qq-half+pisq/12d0 + (-3d0 + L)*L/2d0 
      c              - (-3d0 + ls_Q)*ls_Q/2d0
               return
             else
