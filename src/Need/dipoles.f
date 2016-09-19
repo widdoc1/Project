@@ -214,7 +214,8 @@ c  - [x^2+(1-x)^2]*epinv
         case ("rmex") 
           if (vorz .eq. 1) then
 c---       pieces for the expansion of the resummation
-            ii_qg=-2d0*two*Ltilde**2+(-2d0*two*ls_Q+2d0*three)*Ltilde
+            ii_qg= (-2d0*two*Ltilde**2+(-2d0*two*ls_Q+2d0*three)*Ltilde)
+     &               /tr*cf
             return
           endif
           
