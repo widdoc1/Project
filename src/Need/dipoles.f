@@ -112,7 +112,7 @@ c---       pieces to get in the correct form of the master formula
               ii_qq=ii_qq-half+pisq/12d0 + (-3d0 + L/2d0)*L/2d0 
      c              - (-3d0 + ls_Q)*ls_Q/2d0
 c---       pieces for the expansion of the resummation
-     c              + (-2d0*Ltilde**2+(-two*2d0*ls_Q-two*3d0)*Ltilde)
+     c              + (-two*Ltilde**2+(-two*ls_Q+three)*Ltilde)
               return
             else
               write(6,*) 'Value of scheme not implemented properly ',
@@ -214,7 +214,7 @@ c  - [x^2+(1-x)^2]*epinv
         case ("rmex") 
           if (vorz .eq. 1) then
 c---       pieces for the expansion of the resummation
-            ii_qg=-2d0*Ltilde**2+(-two*2d0*ls_Q-two*3d0)*Ltilde
+            ii_qg=-2d0*two*Ltilde**2+(-2d0*two*ls_Q+two*3d0)*Ltilde
             return
           endif
           
