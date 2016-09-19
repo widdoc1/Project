@@ -20,7 +20,7 @@ c--- binning the weights in the real contribution
       double precision DEL,XMIN,XMAX
       character*(*) TIT
       integer maxd,maxhisto
-      parameter(maxd=80,maxhisto=100) ! maximum number of dipoles and histograms
+      parameter(maxd=40,maxhisto=100) ! maximum number of dipoles and histograms
       include 'incsmarthisto.f'
       
       binmin(N)=XMIN
@@ -38,13 +38,8 @@ c--- binning the weights in the real contribution
       parameter(maxd=40,maxhisto=100) ! maximum number of dipoles and histograms
       include 'incsmarthisto.f'
       
-c      I=INT((X-binmin(N))/bindel(N)+1)
-       I=1
-c      write(*,*) "X= ",X
-c      write(*,*) "binmin(N)= ",binmin(N)
-c      write(*,*) "bindel(N)= ",bindel(N)
-c      write(*,*) I
-      
+      I=INT((X-binmin(N))/bindel(N)+1)
+            
       icont(N)=icont(N)+1     ! increase counter by one
       ibin(icont(N),N)=I      ! record bin number for weight
       xbinwgt(icont(N),N)=Y/bindel(N)   ! record actual weight

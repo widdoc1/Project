@@ -33,7 +33,8 @@ c--- DSW histograms - call hbook booking routine
 c--- Traditional MCFM histograms
 c--- also book the errors now (in maxhisto+n); fill temp histos for real
           if ((part .eq. 'lord') .or. (part .eq. 'virt')
-     &   .or. (part .eq. 'frag')) then
+     &   .or. (part .eq. 'rmlo') .or. (part .eq. 'resm')
+     &   .or. (part .eq. 'rmex') .or. (part .eq. 'frag')) then
             call mfill(n,var,wt)
             call mfill(maxhisto+n,var,wt2)
           else
