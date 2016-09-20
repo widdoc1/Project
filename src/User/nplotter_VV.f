@@ -19,19 +19,32 @@ c---                1  --> counterterm for real radiation
       include 'jetlabel.f'
       include 'masses.f'
       include 'outputflags.f'
-      include 'nqcdjets.f'
-      double precision p(mxpart,4),wt,wt2
+      include 'nqcdjets.f'      
+      include 'VVcut.f'
+      include 'ptveto.f'
+      
+      double precision sqrts 
+      common/energy/sqrts
+      
+      double precision p(mxpart,4),wt,wt2, wt_tmp, wt2_tmp
       double precision etarap,pt
       double precision y4,y5,pt3,pt4,pt5,pt6
       double precision pt34,pttwo
-      double precision pt45,pt56,m45,mt45,mtrans,Etll,MET
-      double precision etvec(4),etmiss,r2,delphi,m34,m56,m3456
+      double precision pt45,pt56,m45,mt45,mtrans
+      double precision et_vec(4),etmiss,r2,delphi,m34,m56,m3456
       double precision mthl,mthu
       integer switch,n,nplotmax,nd 
       character*4 tag
       integer i
+
       logical, save::first=.true.
       common/nplotmax/nplotmax
+
+      logical passcuts, passveto
+      double precision etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
+      double precision dphi,ptrel,pt36(2) 
+      integer ptbin,ptbinmin
+      
 ccccc!$omp threadprivate(first,/nplotmax/,y4,pt3,pt4,y5)
 
 !=====info for "peak" transverse mass plot
@@ -114,26 +127,240 @@ c--- Add event in histograms
         m56=dsqrt(m56)
 
       mt45=0d0 
-      mt45=(dsqrt(dsqrt(pttwo(4,5,p)**2+m45**2)+etmiss(p,etvec))**2)
+      mt45=(dsqrt(dsqrt(pttwo(4,5,p)**2+m45**2)+etmiss(p,et_vec))**2)
+ !    endif
 
-      etvec(:)=p(3,:)+p(6,:)
-c--- transverse mass
-      Etll=dsqrt(max(0d0,(p(4,4)+p(5,4))**2-(p(4,3)+p(5,3))**2))
-      MET=dsqrt(max(0d0,etvec(1)**2+etvec(2)**2))
-      mtrans=MET+Etll
-     
-c      Etll=dsqrt(
-c     . +(p(4,4)+p(5,4))**2
-c     . -(p(4,3)+p(5,3))**2)
-c      MET=dsqrt(
-c     . +etvec(1)**2+etvec(2)**2
-c     . +(p(4,4)+p(5,4))**2
-c     . -(p(4,1)+p(5,1))**2
-c     . -(p(4,2)+p(5,2))**2
-c     . -(p(4,3)+p(5,3))**2)
-c      mtrans=dsqrt((MET+Etll)**2
-c     . -(p(4,1)+p(5,1)+etvec(1))**2
-c     . -(p(4,2)+p(5,2)+etvec(2))**2)
+C     PFM & GZ place cuts for WW
+      passcuts = .true. 
+      passveto = .true.
+
+C define ptmiss 
+      ptmiss = pttwo(3,6,p) 
+
+C define ptrel 
+      pt36(1) = p(3,1)+p(6,1)
+      pt36(2) = p(3,2)+p(6,2)
+      dphi = acos((p(4,1)*pt36(1)+p(4,2)*pt36(2))/pt4/ptmiss)
+      dphi = min(dphi,
+     C     acos((p(5,1)*pt36(1)+p(5,2)*pt36(2))/pt5/ptmiss))
+
+      if (jets > 0.and.ptj > ptveto) then 
+         dphi = min(dphi,
+     C        acos((p(7,1)*pt36(1)+p(7,2)*pt36(2))/pt(7,p)/ptmiss))
+      endif
+      if (dphi > pi/2d0) then 
+         ptrel = ptmiss 
+      else
+         ptrel = ptmiss * sin(dphi) 
+      endif
+
+C define ptj, etaj, rjl1, rjl2
+      if (jets > 0) then 
+         ptj = sqrt(p(7,1)**2+p(7,2)**2)
+         etaj = etarap(7,p)
+         rjl1 = r(p,4,7)
+         rjl2 = r(p,5,7)
+      endif
+
+C rapidities of leptons      
+      eta4 = etarap(4,p)
+      eta5 = etarap(5,p)
+
+C pt of leptons     
+      ptll = pttwo(4,5,p) 
+
+C     8 TEV CUTS       
+C     mumu  cuts of ATLAS CONF 014-33
+      if (abs(sqrts-8000.d0) < 1d0) then 
+         
+         if (VVcut .eq. 1) then 
+            if (abs(eta4).gt.2.4) passcuts=.false.
+            if (abs(eta5).gt.2.4) passcuts=.false.
+            if (m45 .lt. 15) passcuts = .false. 
+            if (abs(m45-91.188d0) < 15) passcuts = .false. 
+            if (ptmiss < 45 ) passcuts = .false. 
+
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+            
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5) 
+     C 	       	 passveto = .false. 
+            endif
+            if (ptrel < 45d0) passcuts = .false.
+
+
+         elseif (VVcut .eq. 2) then 
+C     ee  cuts of ATLAS CONF 014-33
+            if (abs(eta4).gt.2.47) passcuts=.false.
+            if (abs(eta5).gt.2.47) passcuts=.false.
+            if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) 
+     C           passcuts=.false. 
+            if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) 
+     C           passcuts=.false. 
+            if (m45 .lt. 15) passcuts = .false. 
+            if (abs(m45-91.188d0) < 15) passcuts = .false. 
+            if (ptmiss < 45 ) passcuts = .false. 
+
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5 .and. 
+     C              rjl1 > 0.3d0 .and. rjl2 > 0.3d0 ) passveto = .false. 
+            endif
+            if (ptrel < 45d0) passcuts = .false.
+
+
+
+         elseif (VVcut .eq. 3) then 
+C     emu  cuts of ATLAS CONF 014-33
+            if (abs(eta5).gt.2.4) passcuts=.false.
+            if (abs(eta4).gt.2.47) passcuts=.false.
+            if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) 
+     C           passcuts=.false. 
+            if (m45 .lt. 10) passcuts = .false. 
+            if (ptmiss < 20 ) passcuts = .false. 
+
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5 .and. 
+     C              rjl1 > 0.3d0) passveto = .false. 
+            endif
+            if (ptrel < 15d0) passcuts = .false.
+
+            
+
+         elseif (VVcut .eq. 4) then 
+C     mue  cuts of ATLAS CONF 014-33
+            if (abs(eta4).gt.2.4) passcuts=.false.
+            if (abs(eta5).gt.2.47) passcuts=.false.
+            if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) 
+     C           passcuts=.false. 
+            if (m45 .lt. 10) passcuts = .false. 
+            if (ptmiss < 20 ) passcuts = .false. 
+
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5 .and. 
+     C              rjl2 > 0.3d0) passveto = .false. 
+            endif
+            if (ptrel < 15d0) passcuts = .false.
+
+C   only jet veto cuts
+         elseif (VVcut .eq. 5) then 
+            if (jets > 0) then 
+               if (ptj > ptveto) passcuts = .false. 
+            endif
+
+         else
+            stop 'VVcuts not set' 
+         endif
+      elseif (abs(sqrts-7000.d0) < 1d0) then 
+         if (VVcut .eq. 1) then 
+C==========================================
+C     7 Tev cuts 1210.2979 
+C     mumu 
+            if (abs(eta4).gt.2.4) passcuts=.false.
+            if (abs(eta5).gt.2.4) passcuts=.false.
+            if (m45 .lt. 15) passcuts = .false. 
+            if (abs(m45-91.188d0) < 15) passcuts = .false.
+            if (ptll < 30 ) passcuts = .false. 
+            
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5) 
+     C             passveto = .false. 
+            endif
+            if (ptrel < 45d0) passcuts = .false.
+
+         elseif (VVcut .eq.2) then 
+C     ee 
+            if (abs(eta4).gt.2.47) passcuts=.false.
+            if (abs(eta5).gt.2.47) passcuts=.false.
+            if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) 
+     C           passcuts=.false. 
+            if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) 
+     C           passcuts=.false. 
+            if (m45 .lt. 15) passcuts = .false. 
+            if (abs(m45-91.188d0) < 15) passcuts = .false. 
+            if (ptll < 30 ) passcuts = .false. 
+            
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5 .and. 
+     C              rjl1 .gt. 0.3 .and. rjl2 .gt. 0.3 ) 
+     C              passveto = .false. 
+            endif
+            if (ptrel < 45d0) passcuts = .false.
+
+
+         elseif (VVcut .eq. 3) then 
+C     emu 
+            if (abs(eta5).gt.2.4) passcuts=.false.
+            if (abs(eta4).gt.2.47) passcuts=.false.
+            if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) 
+     C           passcuts=.false. 
+            if (m45 .lt. 10) passcuts = .false.
+            if (ptll < 30) passcuts = .false.  
+
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5 .and. 
+     C              rjl1 > 0.3d0) passveto = .false. 
+            endif
+            if (ptrel < 25d0) passcuts = .false.
+
+
+         elseif (VVcut .eq. 4) then 
+C     mue 
+            if (abs(eta4).gt.2.4) passcuts=.false.
+            if (abs(eta5).gt.2.47) passcuts=.false.
+            if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) 
+     C           passcuts=.false. 
+            if (m45 .lt. 10) passcuts = .false.
+            if (ptll < 30) passcuts = .false.  
+
+            if(max(pt(4,p),pt(5,p)).lt.25) passcuts=.false.
+            if(min(pt(4,p),pt(5,p)).lt.20) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5 .and. 
+     C              rjl2 > 0.3d0) passveto = .false. 
+            endif
+            if (ptrel < 25d0) passcuts = .false.
+
+C   only jet veto cuts
+         elseif (VVcut .eq. 5) then 
+            if (jets > 0) then 
+               if (ptj > ptveto) passcuts = .false. 
+            endif
+
+         else
+            stop 'VVcut not set' 
+         endif
+      else
+         stop 'Energy not OK for this study' 
+      endif
+
+
+C      if (.not. passcuts) return 
+
+!     set removebr=.true. to print the branching ratio
+!      write(*,*) 'branching', BrnRat
+!      stop
+
+
 
 ************************************************************************
 *                                                                      *
@@ -167,98 +394,166 @@ c---     xmin:  lowest value to bin
 c---     xmax:  highest value to bin
 c---       dx:  bin width
 c---   llplot:  equal to "lin"/"log" for linear/log scale
- 
-      call bookplot(n,tag,'pt_nu_1',pt3,wt,wt2,0d0,100d0,2.5d0,'lin')
+
+
+C     divide out branching ratios
+C      wt = wt/(0.108**2*1000)
+C      wt2 = wt2/(0.108**2*1000)**2
+
+C     inclusive cross section
+      call bookplot(n,tag,'sigincl',0.5d0,wt,wt2,0d0,1d0,1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'pt_e_1',pt4,wt,wt2,0d0,100d0,2.5d0,'lin')
+
+C     cross section with cuts on leptons
+      if (passcuts) then
+         wt_tmp=wt
+         wt2_tmp=wt2
+      else
+         wt_tmp=0d0 
+         wt2_tmp=0d0
+      endif 
+      call bookplot(n,tag,'sigcutlep',0.5d0,wt_tmp,wt2_tmp,
+     C     0d0,1d0,1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'y_e_1',y4,wt,wt2,-4d0,4d0,0.2d0,'lin')
+
+
+C     cross section with cuts on jets only
+      if (passveto) then
+         wt_tmp=wt
+         wt2_tmp=wt2
+      else
+         wt_tmp=0d0 
+         wt2_tmp=0d0
+      endif 
+      call bookplot(n,tag,'sigcutjet',0.5d0,wt_tmp,wt2_tmp,
+     C     0d0,1d0,1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'pt_W_1',pt34,wt,wt2,0d0,100d0,2.5d0,'lin')
+      
+
+C     cross section with cuts on both jets and leptons
+      if (passveto.and.passcuts) then
+         wt_tmp=wt
+         wt2_tmp=wt2
+      else
+         wt_tmp=0d0 
+         wt2_tmp=0d0
+      endif 
+      call bookplot(n,tag,'sigcuts',0.5d0,wt_tmp,wt2_tmp,
+     C     0d0,1d0,1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'pt_e_2',pt5,wt,wt2,0d0,100d0,2.5d0,'lin')
+
+C     rapidity lepton 1
+      call bookplot(n,tag,'eta4',eta4,
+     C     wt,wt2,-4d0,4d0,0.1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'y_e_2',y5,wt,wt2,-4d0,4d0,0.2d0,'lin')
+
+C     rapidity lepton 2
+      call bookplot(n,tag,'eta5',eta5,
+     C     wt,wt2,-4d0,4d0,0.1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'pt_nu_2',pt6,wt,wt2,0d0,100d0,2.5d0,'lin')
+
+
+C     histogram inclusive ptjet
+      call bookplot(n,tag,'lnptj',log(ptj/(2d0*wmass)),
+     C     wt,wt2,-6d0,4d0,0.1d0,'lin')
       n=n+1
-      call bookplot(n,tag,'pt_W_2',pt56,wt,wt2,0d0,100d0,2.5d0,'lin')
+
+
+C     histogram ptjet with lepton cuts
+      if (passcuts) then
+         call bookplot(n,tag,'lnptjlept',log(ptj/(2d0*wmass)),
+     C        wt,wt2,-6d0,4d0,0.1d0,'lin')
+      end if
       n=n+1
-      call bookplot(n,tag,'pt_ll',pt45,wt,wt2,0d0,100d0,2.5d0,'lin')
+
+c--- Plot dsigma/dmWW for all values of mWW
+
+c    Need to remove weights that are cut or vetoed
+c    so do this as above
+
+      if (passveto.and.passcuts) then
+         wt_tmp=wt
+         wt2_tmp=wt2
+      else
+         wt_tmp=0d0 
+         wt2_tmp=0d0
+      endif 
+
+c--- Coarse grid
+      call bookplot(n,tag,'0 < m(3456) < 8000',
+     & m3456,wt_tmp,wt2_tmp,0d0,8000d0,80d0,'log')
       n=n+1
-      call bookplot(n,tag,'mll',m45,wt,wt2,0d0,100d0,2d0,'lin')
+
+c--- Finer grid
+      call bookplot(n,tag,'0 < m(3456) < 1000',
+     & m3456,wt_tmp,wt2_tmp,0d0,1000d0,10d0,'log')
       n=n+1
-      call bookplot(n,tag,'mll',m34,wt,wt2,0d0,250d0,5d0,'lin')
+
+      call bookplot(n,tag,'1000 < m(3456) < 2000',
+     & m3456,wt_tmp,wt2_tmp,1000d0,2000d0,10d0,'log')
       n=n+1
-      call bookplot(n,tag,'mll_2',m56,wt,wt2,0d0,250d0,5d0,'lin')
+
+      call bookplot(n,tag,'2000 < m(3456) < 3000',
+     & m3456,wt_tmp,wt2_tmp,2000d0,3000d0,10d0,'log')
       n=n+1
-c      call bookplot(n,tag,'m4l',m3456,wt,wt2,hmass-0.5d0,hmass+0.5d0,
+
+      call bookplot(n,tag,'3000 < m(3456) < 4000',
+     & m3456,wt_tmp,wt2_tmp,3000d0,4000d0,10d0,'log')
+      n=n+1
+
+      call bookplot(n,tag,'4000 < m(3456) < 5000',
+     & m3456,wt_tmp,wt2_tmp,4000d0,5000d0,10d0,'log')
+      n=n+1
+
+      call bookplot(n,tag,'5000 < m(3456) < 6000',
+     & m3456,wt_tmp,wt2_tmp,5000d0,6000d0,10d0,'log')
+      n=n+1
+
+      call bookplot(n,tag,'6000 < m(3456) < 7000',
+     & m3456,wt_tmp,wt2_tmp,6000d0,7000d0,10d0,'log')
+      n=n+1
+
+      call bookplot(n,tag,'7000 < m(3456) < 8000',
+     & m3456,wt_tmp,wt2_tmp,7000d0,8000d0,10d0,'log')
+      n=n+1
+
+
+
+c      call bookplot(n,tag,'pt_nu_1',pt3,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'pt_e_1',pt4,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'y_e_1',y4,wt,wt2,-4d0,4d0,0.2d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'pt_W_1',pt34,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'pt_e_2',pt5,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'y_e_2',y5,wt,wt2,-4d0,4d0,0.2d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'pt_nu_2',pt6,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'pt_W_2',pt56,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'pt_ll',pt45,wt,wt2,0d0,100d0,2.5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'m_ll',m45,wt,wt2,0d0,100d0,2d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'m_ll',m34,wt,wt2,0d0,250d0,5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'m_ll_2',m56,wt,wt2,0d0,250d0,5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'m_4l',m3456,wt,wt2,hmass-0.5d0,hmass+0.5d0,
 c     & 0.05d0,'lin')
 c      n=n+1
-c      call bookplot(n,tag,'m4l',m3456,wt,wt2,0d0,2000d0,20d0
-c     &,'log')
+c       call bookplot(n,tag,'m_4l',m3456,wt,wt2,0d0,2000d0,20d0
+c     &,'lin')
 c      n=n+1
-      call bookplot(n,tag,'mt',mt45,wt,wt2,0d0,1000d0,20d0,'lin')
-      n=n+1
-      call bookplot(n,tag,'delphi',delphi,wt,wt2,0d0,3.14d0,0.1d0,'lin')
-      n=n+1
+c      call bookplot(n,tag,'mt',mt45,wt,wt2,0d0,200d0,5d0,'lin')
+c      n=n+1
+c      call bookplot(n,tag,'delphi',delphi,wt,wt2,0d0,3.14d0,0.1d0,'lin')
+c      n=n+1
   
-      call bookplot(n,tag,'transverse mass',
-     & mtrans,wt,wt2,10d0,510d0,10d0,'log')
-      n=n+1
-
-c--- Plots of mtrans in specific regions
-      call bookplot(n,tag,'10 < m(trans) < 2010',
-     & mtrans,wt,wt2,10d0,2010d0,20d0,'log')
-      n=n+1
-      
-      call bookplot(n,tag,'130 < m(trans) < 2010',
-     & mtrans,wt,wt2,130d0,2010d0,20d0,'log')
-      n=n+1
-      
-      call bookplot(n,tag,'300 < m(trans) < 2020',
-     & mtrans,wt,wt2,300d0,2020d0,20d0,'log')
-      n=n+1
-      
-      call bookplot(n,tag,'10 < m(trans) < 130',
-     & mtrans,wt,wt2,10d0,130d0,5d0,'lin')
-      n=n+1
-
-c--- Plots of mtrans in specific regions
-      call bookplot(n,tag,'.75 m_H < m(trans) < m_H',
-     & mtrans,wt,wt2,mthl,mthu,1d0,'log')
-      n=n+1
-      
-      
-c--- Plots of m(3456) in specific regions
-      call bookplot(n,tag,'10 < m(3456) < 2010',
-     & m3456,wt,wt2,10d0,2010d0,20d0,'log')
-      n=n+1
-      
-      call bookplot(n,tag,'130 < m(3456) < 2010',
-     & m3456,wt,wt2,130d0,2010d0,20d0,'log')
-      n=n+1
-      
-      call bookplot(n,tag,'300 < m(3456) < 2020',
-     & m3456,wt,wt2,300d0,2020d0,20d0,'log')
-      n=n+1
-      
-      call bookplot(n,tag,'10 < m(3456) < 130',
-     & m3456,wt,wt2,10d0,130d0,5d0,'lin')
-      n=n+1
-      
-      call bookplot(n,tag,'pt(W)',
-     & pt34,wt,wt2,0d0,2d0,0.02d0,'lin')
-      n=n+1
-      
-      call bookplot(n,tag,'+INTEGRAL+ pt(W)',
-     & pt34,wt,wt2,0d0,10d0,0.1d0,'lin')
-      n=n+1
-      
-      call bookplot(n,tag,'50 < m(3456) < 250',
-     & m3456,wt,wt2,50d0,250d0,2d0,'log')
-      n=n+1
-      
 ************************************************************************
 *                                                                      *
 *     FINAL BOOKKEEPING                                                *
