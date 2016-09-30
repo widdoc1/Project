@@ -466,7 +466,7 @@ C     histogram ptjet with lepton cuts
       end if
       n=n+1
 
-c--- Plot dsigma/dmWW for all values of mWW
+c--- Plot dsigma/dmWW for all values of mWW where events are likely
 
 c    Need to remove weights that are cut or vetoed
 c    so do this as above
@@ -485,39 +485,13 @@ c--- Coarse grid
       n=n+1
 
 c--- Finer grid
-      call bookplot(n,tag,'0 < m(3456) < 1000',
-     & m3456,wt_tmp,wt2_tmp,0d0,1000d0,10d0,'log')
+      call bookplot(n,tag,'200 < m(3456) < 1100',
+     & m3456,wt_tmp,wt2_tmp,200d0,1100d0,20d0,'log')
       n=n+1
 
-      call bookplot(n,tag,'1000 < m(3456) < 2000',
-     & m3456,wt_tmp,wt2_tmp,1000d0,2000d0,10d0,'log')
+      call bookplot(n,tag,'1100 < m(3456) < 2000',
+     & m3456,wt_tmp,wt2_tmp,1100d0,2000d0,20d0,'log')
       n=n+1
-
-      call bookplot(n,tag,'2000 < m(3456) < 3000',
-     & m3456,wt_tmp,wt2_tmp,2000d0,3000d0,10d0,'log')
-      n=n+1
-
-      call bookplot(n,tag,'3000 < m(3456) < 4000',
-     & m3456,wt_tmp,wt2_tmp,3000d0,4000d0,10d0,'log')
-      n=n+1
-
-      call bookplot(n,tag,'4000 < m(3456) < 5000',
-     & m3456,wt_tmp,wt2_tmp,4000d0,5000d0,10d0,'log')
-      n=n+1
-
-      call bookplot(n,tag,'5000 < m(3456) < 6000',
-     & m3456,wt_tmp,wt2_tmp,5000d0,6000d0,10d0,'log')
-      n=n+1
-
-      call bookplot(n,tag,'6000 < m(3456) < 7000',
-     & m3456,wt_tmp,wt2_tmp,6000d0,7000d0,10d0,'log')
-      n=n+1
-
-      call bookplot(n,tag,'7000 < m(3456) < 8000',
-     & m3456,wt_tmp,wt2_tmp,7000d0,8000d0,10d0,'log')
-      n=n+1
-
-
 
 c      call bookplot(n,tag,'pt_nu_1',pt3,wt,wt2,0d0,100d0,2.5d0,'lin')
 c      n=n+1
