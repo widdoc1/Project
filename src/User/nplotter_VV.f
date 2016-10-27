@@ -485,13 +485,13 @@ c--- Coarse grid
       n=n+1
 
 c--- Finer grid
-      call bookplot(n,tag,'200 < m(3456) < 1100',
-     & m3456,wt_tmp,wt2_tmp,200d0,1100d0,20d0,'log')
+      call bookplot(n,tag,'200 < m(3456) < 1200',
+     & m3456,wt_tmp,wt2_tmp,200d0,1200d0,20d0,'log')
       n=n+1
 
-      call bookplot(n,tag,'1100 < m(3456) < 2000',
-     & m3456,wt_tmp,wt2_tmp,1100d0,2000d0,20d0,'log')
-      n=n+1
+c      call bookplot(n,tag,'1100 < m(3456) < 2000',
+c     & m3456,wt_tmp,wt2_tmp,1100d0,2000d0,20d0,'log')
+c      n=n+1
 
 c      call bookplot(n,tag,'pt_nu_1',pt3,wt,wt2,0d0,100d0,2.5d0,'lin')
 c      n=n+1

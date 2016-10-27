@@ -504,6 +504,13 @@ c---- read-in the technical parameters
       if (verbose) call writeinput(6,' * ',' ','bfi')
       read(20,*) bff
       if (verbose) call writeinput(6,' * ',' ','bff')
+      
+      if (verbose) write(6,*)
+      read(20,99) line
+c--- write-out comment line
+      read(20,99) line
+      if (verbose) write(6,*) '* ',line
+c--- resum options
       read(20,*) VVcut
       if (verbose) call writeinput(6,' * ',' ','VVcut')
       read(20,*) cgg

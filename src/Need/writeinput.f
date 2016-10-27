@@ -552,6 +552,12 @@ c      endif
       if ((tag .eq. 'bff') .or. (writeall)) then
       write(unitno,fmt=f99) bff,'bff'
       endif
+      
+      if (writeall) then
+      write(unitno,*)
+      write(unitno,*) lstring//
+     & ' [Parameters for the resummation]'
+      endif
       if ((tag .eq. 'VVcut') .or. (writeall)) then
       write(unitno,fmt=f97) VVCut,'VVcut'
       endif
