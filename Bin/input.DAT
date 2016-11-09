@@ -118,7 +118,7 @@
 
 [Technical parameters that should not normally be changed]
 .false.		[debug]
-.true.		[verbose]
+.false.		[verbose]
 .false.		[new_pspace]
 .false.		[virtonly]
 .false.		[realonly]

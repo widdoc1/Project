@@ -3,10 +3,10 @@
 # Replace this with the location of Cernlib on your system (if desired)
 CERNLIB     = 
 # Replace this with the location of LHAPDF on your system (if desired)
-LHAPDFLIB   = /home/luke/libs/LHAPDF-5.9.1/lib
+LHAPDFLIB   = /home/luke/libs/LHAPDF-6.1.6/lib
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
-USEOMP = YES
+USEOMP = NO
 ifeq ($(USEOMP),YES)
   OBJNAME=obj_omp
   OMPFLAG=-fopenmp

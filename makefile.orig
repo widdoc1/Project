@@ -3,7 +3,7 @@
 # Replace this with the location of Cernlib on your system (if desired)
 CERNLIB     = 
 # Replace this with the location of LHAPDF on your system (if desired)
-LHAPDFLIB=/home/luke/libs/LHAPDF-5.9.1/lib 
+LHAPDFLIB   = /home/luke/libs/LHAPDF-5.9.1/lib
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
 USEOMP = YES
@@ -985,7 +985,8 @@ lowint.o \
 realint.o \
 virtint.o \
 resum_lo.o \
-resum_nlo.o
+resum_nlo.o \
+resum_expanded.o 
 
 QQHFILES = \
 qq_Hqq_g.o \
