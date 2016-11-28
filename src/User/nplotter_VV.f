@@ -169,11 +169,65 @@ C rapidities of leptons
 C pt of leptons     
       ptll = pttwo(4,5,p) 
 
-C     8 TEV CUTS       
-C     mumu  cuts of ATLAS CONF 014-33
-      if (abs(sqrts-8000.d0) < 1d0) then 
+C==========================================
+C     13 TeV cuts ATLAS CONF 016-090
+
+      if (abs(sqrts-13000.d0) < 1d0) then 
+
+         if (VVcut .eq. 3) then 
+C     emu 
+            if (abs(eta5) > 2.4) passcuts=.false.
+            if (abs(eta4) > 2.47) passcuts=.false.
+            if (abs(eta4) > 1.37 .and. abs(eta4) < 1.52) 
+     C           passcuts=.false. 
+            if (m45 < 10) passcuts = .false. 
+            if (ptmiss < 20 ) passcuts = .false.
+            if (ptrel < 15d0) passcuts = .false.
+            
+            if (pt(4,p) < 25d0) passcuts=.false.
+            if (pt(5,p) < 25d0) passcuts=.false. 
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5) 
+     C           passveto = .false. 
+            endif
+
+            
+
+         elseif (VVcut .eq. 4) then 
+C     mue 
+            if (abs(eta5) > 2.4) passcuts=.false.
+            if (abs(eta4) > 2.47) passcuts=.false.
+            if (abs(eta4) > 1.37 .and. abs(eta4) < 1.52) 
+     C           passcuts=.false. 
+            if (m45 < 10) passcuts = .false. 
+            if (ptmiss < 20 ) passcuts = .false.
+            if (ptrel < 15d0) passcuts = .false. 
+            
+            if (pt(4,p) < 25d0) passcuts=.false.
+            if (pt(5,p) < 25d0) passcuts=.false.
+
+            if (jets > 0) then 
+               if (ptj > ptveto .and. abs(etaj) < 4.5) 
+     C           passveto = .false. 
+            endif
+
+C   only jet veto cuts
+         elseif (VVcut .eq. 5) then 
+            if (jets > 0) then 
+               if (ptj > ptveto) passcuts = .false. 
+            endif
+
+         else
+            stop 'VVcuts not set' 
+         endif
+C==========================================
+C     8 TeV cuts ATLAS CONF 014-033
+
+      elseif (abs(sqrts-8000.d0) < 1d0) then 
          
          if (VVcut .eq. 1) then 
+C     mumu 
             if (abs(eta4).gt.2.4) passcuts=.false.
             if (abs(eta5).gt.2.4) passcuts=.false.
             if (m45 .lt. 15) passcuts = .false. 
@@ -191,7 +245,7 @@ C     mumu  cuts of ATLAS CONF 014-33
 
 
          elseif (VVcut .eq. 2) then 
-C     ee  cuts of ATLAS CONF 014-33
+C     ee 
             if (abs(eta4).gt.2.47) passcuts=.false.
             if (abs(eta5).gt.2.47) passcuts=.false.
             if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) 
@@ -214,7 +268,7 @@ C     ee  cuts of ATLAS CONF 014-33
 
 
          elseif (VVcut .eq. 3) then 
-C     emu  cuts of ATLAS CONF 014-33
+C     emu 
             if (abs(eta5).gt.2.4) passcuts=.false.
             if (abs(eta4).gt.2.47) passcuts=.false.
             if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) 
@@ -234,7 +288,7 @@ C     emu  cuts of ATLAS CONF 014-33
             
 
          elseif (VVcut .eq. 4) then 
-C     mue  cuts of ATLAS CONF 014-33
+C     mue 
             if (abs(eta4).gt.2.4) passcuts=.false.
             if (abs(eta5).gt.2.47) passcuts=.false.
             if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) 
