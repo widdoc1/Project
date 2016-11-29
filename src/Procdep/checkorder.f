@@ -17,7 +17,7 @@ c--- special cases where there is no LO calculation
       endif
       
 c--- if we're calculating LO only, there's no problem      
-      if (part .eq. 'lord') return
+      if ( (part .eq. 'lord') .or. (part .eq. 'rmlo') ) return
       
 c--- otherwise, we must be performing a NLO calculation, and this list of
 c--- process numbers can't be calculated beyond LO 
