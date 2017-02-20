@@ -37,7 +37,7 @@ c      include 'ptilde.f'
 c      include 'APPLinclude.f'
       double precision rtsmin,p1ext(4),p2ext(4),p(mxpart,4),val
       integer j,k
-      character*72 inputfile,workdir
+      character*255 inputfile,workdir
       common/rtsmin/rtsmin
       common/pext/p1ext,p2ext
       data p/mxpart*3d0,mxpart*4d0,mxpart*0d0,mxpart*5d0/

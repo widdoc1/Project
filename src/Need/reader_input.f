@@ -59,7 +59,7 @@ c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
 c--- APPLgrid - end
-      character*72 workdir,inputfile
+      character*255 workdir,inputfile
       character*90 line
       logical spira,dryrun,makecuts,creategrid
       integer nmin,nmax,ii

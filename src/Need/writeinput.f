@@ -54,7 +54,7 @@ c      include 'ptilde.f'
 c      include 'APPLinclude.f'
 c--- APPLgrid - end
       character*(*) tag,lstring,rstring
-      character*72 f94,f95,f96,f97,f98,f99
+      character*255 f94,f95,f96,f97,f98,f99
       logical dryrun,makecuts,writeall,spira
       integer unitno, nmin,nmax
       integer ih1,ih2,itmx1,itmx2,ncall1,ncall2,origij

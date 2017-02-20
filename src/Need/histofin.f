@@ -73,7 +73,6 @@ c      outfilepwg=runname
       outfileerr(nlength+1:nlength+10)='_error.top'
 c      outfilepwg(nlength+1:nlength+7)='pwg.top'
       
-
       if ((PDFerrors) .and. (ICOUNTHISTO .gt. 0)) then
         open(unit=95,file=outfileerr,status='unknown')
       endif

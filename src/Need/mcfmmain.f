@@ -25,7 +25,7 @@
       logical dryrun
       integer i,pflav,pbarflav
       double precision p(mxpart,4),wt
-      character*72 inputfile,workdir
+      character*255 inputfile,workdir
       common/iterat/itmx1,ncall1,itmx2,ncall2
       common/dryrun/dryrun
        

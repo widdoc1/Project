@@ -39,7 +39,7 @@
       integer nargs
       double precision Rcut,randummy,ran2
       double precision cmass,bmass
-      character*72 optionsfile
+      character*255 optionsfile
       logical makecuts,dryrun
       logical spira
       double precision rtsmin

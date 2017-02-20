@@ -1,7 +1,7 @@
       subroutine determinefilenames(inputfile,workdir)
       implicit none
-      character*72 workdir
-      character*72 inputfile,getinput
+      character*255 workdir
+      character*255 inputfile,getinput
       integer nargs,lenocc,lenarg
 c--- work out the name of the input file and return it
 
