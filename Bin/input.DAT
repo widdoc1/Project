@@ -29,7 +29,7 @@
 4		[itmx1, number of iterations for pre-conditioning]
 10000		[ncall1]
 10		[itmx2, number of iterations for final run]
-10000		[ncall2]
+100000		[ncall2]
 1089		[ij]
 .false.		[dryrun]
 .true.		[Qflag]
@@ -111,8 +111,7 @@
 1d0             [Gamma_H/Gamma_H(SM)] 
 
 [Technical VEGAS parameters]
-0.3		[ALPH]
-100		[NDMX]
+1.5		[ALPH]
 
 [How to resume/save a run]
 .false.		[readin]

@@ -465,9 +465,9 @@ c      endif
       if ((tag .eq. 'ALPH') .or. (writeall)) then
       write(unitno,fmt=f99) ALPH,'ALPHA'
       endif
-      if ((tag .eq. 'NDMX') .or. (writeall)) then
-      write(unitno,fmt=f97) NDMX,'NDMX'
-      endif
+c      if ((tag .eq. 'NDMX') .or. (writeall)) then
+c      write(unitno,fmt=f97) NDMX,'NDMX'
+c      endif
 
       if (writeall) then
       write(unitno,*)

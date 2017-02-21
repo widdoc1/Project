@@ -423,9 +423,9 @@ c--- vegas parameter ALPHA
       read(20,*) ALPH
       if (verbose) call writeinput(6,' * ',' ','ALPH')
 c--- vegas parameter NDMX 
-      read(20,*) NDMX
-      if (verbose) call writeinput(6,' * ',' ','NDMX')
-      
+c      read(20,*) NDMX
+c      if (verbose) call writeinput(6,' * ',' ','NDMX')
+
       if (verbose) write(6,*)
       read(20,99) line
 c--- write-out comment line
