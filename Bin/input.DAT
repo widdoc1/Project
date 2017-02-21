@@ -29,7 +29,7 @@
 4		[itmx1, number of iterations for pre-conditioning]
 10000		[ncall1]
 10		[itmx2, number of iterations for final run]
-100000		[ncall2]
+10000		[ncall2]
 1089		[ij]
 .false.		[dryrun]
 .true.		[Qflag]

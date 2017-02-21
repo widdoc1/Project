@@ -463,10 +463,10 @@ c      endif
      . lstring//' [Technical VEGAS parameters] )'
       endif
       if ((tag .eq. 'ALPH') .or. (writeall)) then
-      write(unitno,fmt=f99) hwidth_ratio,'ALPHA'
+      write(unitno,fmt=f99) ALPH,'ALPHA'
       endif
       if ((tag .eq. 'NDMX') .or. (writeall)) then
-      write(unitno,fmt=f99) hwidth_ratio,'NDMX'
+      write(unitno,fmt=f97) NDMX,'NDMX'
       endif
 
       if (writeall) then
