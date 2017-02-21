@@ -49,6 +49,7 @@ c--- by the strings 'lstring' and 'rstring'
       include 'ptveto.f'
       include 'ptvetomax.f'
       include 'resumscale.f'
+      include 'vegas_params.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -456,6 +457,17 @@ c      endif
       write(unitno,fmt=f99) hwidth_ratio,'Gamma_H/Gamma_H(SM)'
       endif
       
+      if (writeall) then
+      write(unitno,*)
+      write(unitno,*) 
+     . lstring//' [Technical VEGAS parameters] )'
+      endif
+      if ((tag .eq. 'ALPH') .or. (writeall)) then
+      write(unitno,fmt=f99) hwidth_ratio,'ALPHA'
+      endif
+      if ((tag .eq. 'NDMX') .or. (writeall)) then
+      write(unitno,fmt=f99) hwidth_ratio,'NDMX'
+      endif
 
       if (writeall) then
       write(unitno,*)
