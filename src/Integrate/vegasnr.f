@@ -39,11 +39,12 @@
       include 'epinv.f'
       include 'epinv2.f'
       include 'histo.f'
-      INTEGER init,itmx,ncall,ndim,nprn,NDMX
-      DOUBLE PRECISION tgral,chi2a,sd,region(2*mxdim),fxn,ALPH,TINY
+      include 'vegas_params.f'
+      INTEGER init,itmx,ncall,ndim,nprn
+      DOUBLE PRECISION tgral,chi2a,sd,region(2*mxdim),fxn,TINY
 c--- Note: NDMX increased to 100 (from 50) compared with versions 5.1 and
 c---  earlier, to aid calculation of H+2 jets process
-      PARAMETER (ALPH=1.5d0,NDMX=100,TINY=1d-30)
+      PARAMETER (TINY=1d-30)
 c--- DEBUG: no adapting
 c      PARAMETER (ALPH=0d0,NDMX=100,TINY=1d-30)
       EXTERNAL fxn

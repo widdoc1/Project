@@ -55,6 +55,7 @@
       include 'VVcut.f'
       include 'cgg.f'
       include 'ptveto.f'
+      include 'vegas_params.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -412,6 +413,18 @@ c--- write-out comment line
 c--- width of the Higgs 
       read(20,*) hwidth_ratio
       if (verbose) call writeinput(6,' * ',' ','hwidth_ratio')
+      
+      if (verbose) write(6,*)
+      read(20,99) line
+c--- write-out comment line
+      read(20,99) line
+      if (verbose) write(6,*) '* ',line
+c--- vegas parameter ALPHA 
+      read(20,*) ALPH
+      if (verbose) call writeinput(6,' * ',' ','ALPH')
+c--- vegas parameter NDMX 
+      read(20,*) NDMX
+      if (verbose) call writeinput(6,' * ',' ','NDMX')
       
       if (verbose) write(6,*)
       read(20,99) line
