@@ -6,7 +6,7 @@ CERNLIB     =
 LHAPDFLIB   = /home/luke/libs/LHAPDF-6.1.6/lib 
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
-USEOMP = NO
+USEOMP = YES
 ifeq ($(USEOMP),YES)
   OBJNAME=obj_omp
   OMPFLAG=-fopenmp
@@ -1935,7 +1935,7 @@ LIBFLAGS=-lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(
 # the files that do not go into the library                                                      
 NONLIB= \
 $(MAIN) \
-usercode_f77.o  
+usercode.o  
 
 # Check NTUPLES flag
 ifeq ($(NTUPLES),FROOT)
