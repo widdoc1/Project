@@ -56,7 +56,7 @@ FC = gfortran
 F90 = gfortran
 
 # Flags for compilation
-FFLAGS 	=  -fno-f2c $(OMPFLAG) -O2 -I$(INCPATH) -I$(TENSORREDDIR)/Include -I$(OBJNAME) -g
+FFLAGS 	=  -fno-f2c $(OMPFLAG) -O2 -I$(INCPATH) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
 F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(OBJNAME) -J$(OBJNAME)
 
 # If using FROOT package for ROOT ntuples, first specify C++ compiler:
@@ -73,6 +73,7 @@ ROOTINCLUDE     := -I `root-config --prefix=$(ROOTDIR) --incdir`
 
 DIRS	=	$(MCFMHOME):\
 		$(OBJDIR):\
+        $(SOURCEDIR)/Resum:\
 		$(SOURCEDIR)/User:$(SOURCEDIR)/Procdep:$(SOURCEDIR)/Vol:\
 		$(SOURCEDIR)/Need:$(SOURCEDIR)/Lib:$(SOURCEDIR)/Phase:\
 		$(SOURCEDIR)/Parton:$(SOURCEDIR)/Integrate:\
@@ -121,6 +122,14 @@ DIRS	=	$(MCFMHOME):\
 
 # -----------------------------------------------------------------------------
 # Specify the object files. 
+
+RESUM = \
+consts_mod.o \
+emsn_tools_mod.o \
+qcd_mod.o \
+rad_tools_mod.o \
+resummation_mod.o \
+types_mod.o
 
 WBFFILES = \
 getvbfpoint.o \
@@ -984,8 +993,9 @@ gen_realps.o \
 lowint.o \
 realint.o \
 virtint.o \
-resum_lo.o \
-resum_nlo.o \
+resum_LL.o \
+resum_NLL.o \
+resum_NNLL.o \
 resum_expanded.o 
 
 QQHFILES = \
@@ -2046,7 +2056,8 @@ endif
 
 OMPTEST = $(PARTONFILES) testff.o
 
-OURCODE = $(LIBFILES) $(NEEDFILES)  $(PROCDEPFILES) $(SPINORFILES) \
+OURCODE = $(RESUM) \
+          $(LIBFILES) $(NEEDFILES)  $(PROCDEPFILES) $(SPINORFILES) \
           $(PHASEFILES) $(SINGLETOPFILES) \
           $(TOPHFILES) $(TOPZFILES) $(TOPWFILES) $(TOPDKFILES) \
           $(USERFILES) $(VOLFILES) $(WFILES) $(W2JETFILES) \
@@ -2180,3 +2191,12 @@ qqqqampl.o: consts_dp.o spinfns.o recurrence.o
 qqqqgampl.o: consts_dp.o spinfns.o recurrence.o
 qqb_wpwp_qqb.o: qqqqampl.o consts_dp.o
 qqb_wpwp_qqb_g.o: qqqqgampl.o consts_dp.o
+
+# 
+types_mod.o:
+consts_mod.o: types_mod.o
+qcd_mod.o: types_mod.o consts_mod.o 
+rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
+emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
+resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o
+ 

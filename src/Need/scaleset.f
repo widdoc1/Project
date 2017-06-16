@@ -63,8 +63,8 @@ c--- routines for exact definitions of the scales.
         write(6,*)'*                                                  *'
         write(6,*)'*                  FACTORIZATION                   *'
         write(6,45) ' mu_fac  =',fscalestart,dynstring
-      if ( (part .eq. "rmlo") .or. (part .eq. "resm") .or. 
-     &     (part .eq. "rmex") ) then
+      if ( (part .eq. "LL") .or. (part .eq. "NLL") .or. 
+     &     (part .eq. "NNLL") .or. (part .eq. "rmex") ) then
         write(6,*)'*                                                  *'
         write(6,*)'*                   RESUMMATION                    *'
         write(6,45) ' mu_resum  =',resumscalestart,dynstring

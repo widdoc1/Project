@@ -1,4 +1,6 @@
       double precision function resum_LL(r,wgt)
+      use types_mod
+!      use consts_mod
       implicit none
       include 'constants.f'
       include 'masses.f'

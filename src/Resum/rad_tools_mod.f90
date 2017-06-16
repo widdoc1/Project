@@ -4,10 +4,8 @@
 ! -------------------------------------------------------
 !========================================================
 module rad_tools_mod
-  use types; use consts_dp
-  use hoppet_v1
-  use ew_parameters
-  use mass_corr
+  use types_mod; use consts_mod
+  use qcd_mod
   implicit none
 
   private
@@ -34,7 +32,7 @@ module rad_tools_mod
 
 
   public :: order_string
-  public :: process_and_parameters, set_process_and_parameters, print_parameters, get_lambda
+  public :: process_and_parameters, set_process_and_parameters, get_lambda
   public  :: init_proc, Ltilde, Rad, Rad_p, Rad_pNNLL, Rad_s, g1, g2, g3
   real(dp), public :: A(3), B(2), H(2), Hm(1)  
   real(dp), public :: CC, BB, H1, Hm1 ! colour factor & our B
@@ -53,8 +51,8 @@ contains
        res = "NLL"
     case(order_NNLL)
        res = "NNLL"
-    case default
-       call wae_error("value of order was not recognized in order_string",intval=order)
+!    case default
+!       call wae_error("value of order was not recognized in order_string",intval=order)
     end select
   end function order_string
 
@@ -103,11 +101,11 @@ contains
 
   !======================================================================
   ! 
-  subroutine set_process_and_parameters(cs, collider, proc, rts, M, muR, muF, Q, p, &
+  subroutine set_process_and_parameters(cs, collider, proc, rts, M, muR, muF, as, Q, p, &
        &jet_radius,loop_mass,observable)
     type(process_and_parameters), intent(out) :: cs
     character(len=*),          intent(in)  :: collider, proc, loop_mass, observable
-    real(dp),                  intent(in)  :: rts, M, muR, muF, Q, p, jet_radius
+    real(dp),                  intent(in)  :: rts, M, muR, muF, Q, p, as, jet_radius
     !-------------------------------------------------------
     cs%collider   = collider
     cs%proc       = proc
@@ -116,7 +114,7 @@ contains
     cs%Q          = Q
     cs%muR        = muR
     cs%muF        = muF
-    cs%alphas_muR = RunningCoupling(muR)
+    cs%alphas_muR = as
     cs%as2pi      = cs%alphas_muR/twopi
     cs%p          = p
     cs%ln_muR2_M2 = 2*log(muR/M)
@@ -179,7 +177,7 @@ contains
     end if
     
 
-    if (order > order_NNLL .or. order < order_LL) call wae_error("Illegal value for order", intval=order)
+!    if (order > order_NNLL .or. order < order_LL) call wae_error("Illegal value for order", intval=order)
   end function Rad
 
   !=========================================================

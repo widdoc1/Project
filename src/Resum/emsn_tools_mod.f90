@@ -4,8 +4,8 @@
 ! -------------------------------------------------------
 !========================================================
 module emsn_tools_mod
-  use types; use consts_dp
-  use rad_tools; use hoppet_v1
+  use types_mod; use consts_mod
+  use rad_tools_mod; use qcd_mod
   implicit none
   private
 

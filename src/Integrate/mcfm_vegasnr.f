@@ -53,12 +53,14 @@
       common/bin/bin
       common/xreal/xreal,xreal2
       double precision lowint,virtint,realint,fragint
-      double precision resum_lo,resum_nlo,resum_expanded
+      double precision resum_LL,resum_NLL,resum_NNLL
+      double precision resum_expanded
       double precision region(2*mxdim),lord_bypart(-1:1,-1:1)
       logical first,myreadin
       common/bypart/lord_bypart
       external lowint,virtint,realint,fragint
-      external resum_lo,resum_nlo,resum_expanded
+      external resum_LL,resum_NLL,resum_NNLL
+      external resum_expanded
       data first/.true./
       save first,sigips,sdips
            
@@ -192,10 +194,17 @@ c--- Basic lowest-order integration
      .               nprn,sig,sd,chi)
       endif
       
-c--- Resummation of LO 
-      if (part .eq. 'rmlo') then
+c--- (Leading-Logarithmic) LL resummation
+      if (part .eq. 'LL') then
        call boundregion(ndim,region)
-       call vegasnr(region,ndim,resum_lo,myinit,myncall,myitmx,
+       call vegasnr(region,ndim,resum_LL,myinit,myncall,myitmx,
+     .               nprn,sig,sd,chi)
+      endif
+      
+c--- NLL resummation
+      if (part .eq. 'NLL') then
+       call boundregion(ndim,region)
+       call vegasnr(region,ndim,resum_NLL,myinit,myncall,myitmx,
      .               nprn,sig,sd,chi)
       endif
 
@@ -255,14 +264,14 @@ c--- (added and then taken away)
         ndim=ndim-1
       endif
       
-c--- resummation at NLO 
+c--- NNLL resummation 
       if (mypart .eq. 'resm')  then
         part='resm'        
         reset=.true.
         scalereset=.true.
         ndim=ndim+1
         call boundregion(ndim,region)
-        call vegasnr(region,ndim,resum_nlo,myinit,myncall,myitmx,
+        call vegasnr(region,ndim,resum_NNLL,myinit,myncall,myitmx,
      .              nprn,sig,sd,chi)
         ndim=ndim-1
       endif

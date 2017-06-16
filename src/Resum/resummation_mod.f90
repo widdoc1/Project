@@ -1,11 +1,7 @@
 module resummation_mod
-  use types_mod; use consts_dp
-  use rad_tools
-  use pdfs_tools
-  use warnings_and_errors
-  use emsn_tools
-  use ew_parameters; use mass_corr
-  use special_functions_mod
+  use types_mod; use consts_mod
+  use rad_tools_mod
+  use emsn_tools_mod
   implicit none
 
   private
@@ -13,7 +9,7 @@ module resummation_mod
 
 contains
   !======================================================================
-  function resummed_sigma(pt, cs, order, dlumi_lumi) result(sigma)
+  function resummed_sigma(pt, cs, order) result(sigma)
     real(dp),                  intent(in) :: pt(:)
     type(process_and_parameters), intent(in) :: cs
     integer,                   intent(in) :: order
@@ -34,35 +30,19 @@ contains
     sigma = zero
     where (lambda < half)  sigma = exp(Rad(L_tilde, cs, order))
 
-    if (present(dlumi_lumi))  dlumi_lumi = zero    
-
+! this is redundant, tidy up
     if (order == order_LL) then
        sigma = sigma
     else if (order == order_NLL) then
        sigma = sigma
     else
-       if (order /= order_NNLL) call wae_error("expected order_NNLL, found", intval=order)  
+!       if (order /= order_NNLL) call wae_error("expected order_NNLL, found", intval=order)  
              ! - Original code -
         sigma = sigma * (1 + &
              & non_incl(cs%jet_radius,'all') * Rad_p(lambda)*two*cs%as2pi/(1-two*lambda))
-       endif
+!       endif
     endif
 
   end function resummed_sigma
-
-
-  !! extend dgamma to negative arguments
-  function gammafull(x) result (res)
-    use types; use consts_dp
-    use special_functions
-    real(dp)             :: res
-    real(dp), intent(in) :: x
-    if (x < zero) then
-       res = pi/dgamma(one-x)/sin(pi*x)
-    else
-       res = dgamma(x)
-    end if
-  end function gammafull
-
 
 end module resummation_mod

@@ -1,5 +1,4 @@
       double precision function resum_NLL(r,wgt)
-        use resummation_mod
       implicit none
       include 'constants.f'
       include 'masses.f'
