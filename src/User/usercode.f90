@@ -46,7 +46,8 @@ logical function userincludedipole(nd, ppart, mcfm_result)
   common/energy/sqrts 
 
   ! take the MCFM result as the default choice
-  ! userincludedipole = mcfm_result
+  userincludedipole = mcfm_result
+  return
   
   !cuts for Process 61,
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))

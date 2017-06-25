@@ -10,25 +10,21 @@ module resummation_mod
 contains
   !======================================================================
   function resummed_sigma(pt, cs, order) result(sigma)
-    real(dp),                  intent(in) :: pt(:)
+    real(dp),                  intent(in) :: pt
     type(process_and_parameters), intent(in) :: cs
     integer,                   intent(in) :: order
-    real(dp)  :: sigma(size(pt))
+    real(dp)  :: sigma
     !------------------------------
-    real(dp) :: L_tilde(size(pt)), lambda(size(pt)), lNLL(size(pt)), &
-         &lNNLL(size(pt)), dlNLL(size(pt))
+    real(dp) :: L_tilde, lambda
     real(dp) :: normalisation
-    real(dp) :: rp(size(pt)),rs(size(pt)),resum_fact(size(pt)),drp(size(pt))
-    real(dp) :: av_lnz(size(pt)), av_ln2z(size(pt)), as2pi_pt(size(pt)), non_incl_largeR(size(pt))
     integer :: i 
-    real(dp) :: tmp(size(pt))
     
 
     L_tilde = Ltilde(pt/cs%Q, cs%p)
     lambda  = get_lambda(L_tilde, cs)
 
     sigma = zero
-    where (lambda < half)  sigma = exp(Rad(L_tilde, cs, order))
+    if (lambda < half)  sigma = exp(Rad(L_tilde, cs, order))
 
 ! this is redundant, tidy up
     if (order == order_LL) then

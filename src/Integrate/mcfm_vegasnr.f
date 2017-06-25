@@ -208,7 +208,6 @@ c--- NLL resummation
      .               nprn,sig,sd,chi)
       endif
 
-
 c---- REMOVE THIS PIECE EVENTUALLY
       if (part .eq. 'frit') then
          ndim=ndim+1

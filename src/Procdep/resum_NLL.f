@@ -1,4 +1,7 @@
       double precision function resum_NLL(r,wgt)
+      use types_mod
+      use rad_tools_mod
+      use resummation_mod
       implicit none
       include 'constants.f'
       include 'masses.f'
@@ -38,8 +41,14 @@ c --- DSW.
       include 'x1x2.f'
       include 'bypart.f'
       integer pflav,pbarflav
-c--- resummation
-      double precision Ltilde
+
+!    
+      type(process_and_parameters)  :: cs
+      double precision mu0
+      include 'qcdcouple.f'
+      
+!      double precision pt(2)
+
 c--- To use VEGAS random number sequence :
       double precision ran2
       integer ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -63,6 +72,10 @@ c--- To use VEGAS random number sequence :
       common/bin/bin
       common/BrnRat/BrnRat
       common/bqscale/b1scale,q2scale,q1scale,b2scale
+!      
+      double precision Rcut  
+      common/Rcut/Rcut
+
       external qq_tchan_ztq,qq_tchan_ztq_mad
       external qq_tchan_htq,qq_tchan_htq_mad,qq_tchan_htq_amp
       external qqb_gamgam_g,qqb_gmgmjt_gvec
@@ -99,8 +112,32 @@ c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
      
-      call calcLtilde(resumscale,Ltilde) 
-      facscale=facscale*exp(-Ltilde)
+      !call calcLtilde(resumscale,Ltilde) 
+      !facscale=facscale*exp(-Ltilde)
+      !write(*,*) facscale
+      
+      mu0=(p(3,4)+p(4,4))**2-(p(3,1)+p(4,1))**2
+     &     -(p(3,2)+p(4,2))**2-(p(3,3)+p(4,3))**2       
+      mu0=dsqrt(dabs(mu0))
+      
+      call set_process_and_parameters(cs, 'pp', 'DY', mu0, scale, 
+     &   facscale, as, resumscale, 5.0_dp, Rcut, 'pt_jet')
+     
+      call init_proc(cs)
+      
+!      write(*,*) "----------------"
+!      write(*,*) "M= ", cs%M
+!      write(*,*) "muR= ", cs%muR
+!      write(*,*) "muF= ", cs%muF
+!      write(*,*) "Q= ", cs%Q
+!      write(*,*) "as= ", cs%alphas_muR
+!      write(*,*) "Rjet= ", cs%jet_radius
+!      write(*,*) resummed_sigma(30.0_dp, cs, 1)
+
+!      call calcLtilde(resumscale,Ltilde) 
+!      facscale=facscale*exp(-Ltilde)
+      
+      facscale=facscale*exp(-Ltilde(30.0_dp/cs%Q, cs%p))
       
       xx(1)=-2d0*p(1,4)/sqrts
       xx(2)=-2d0*p(2,4)/sqrts
@@ -752,7 +789,7 @@ c--- DEFAULT
       enddo
 
       if (currentPDF .eq. 0) then
-        resum_NLL=flux*pswt*xmsq/BrnRat
+        resum_NLL=flux*pswt*xmsq*resummed_sigma(30.0_dp, cs, 1)/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary

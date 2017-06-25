@@ -101,15 +101,15 @@ contains
 
   !======================================================================
   ! 
-  subroutine set_process_and_parameters(cs, collider, proc, rts, M, muR, muF, as, Q, p, &
-       &jet_radius,loop_mass,observable)
+  subroutine set_process_and_parameters(cs, collider, proc, M, muR, muF, as, Q, p, &
+       &jet_radius,observable)
     type(process_and_parameters), intent(out) :: cs
-    character(len=*),          intent(in)  :: collider, proc, loop_mass, observable
-    real(dp),                  intent(in)  :: rts, M, muR, muF, Q, p, as, jet_radius
+    character(len=*),          intent(in)  :: collider, proc, observable
+    real(dp),                  intent(in)  :: M, muR, muF, Q, p, as, jet_radius
     !-------------------------------------------------------
     cs%collider   = collider
     cs%proc       = proc
-    cs%rts        = rts
+    !cs%rts        = rts
     cs%M          = M
     cs%Q          = Q
     cs%muR        = muR
@@ -121,7 +121,7 @@ contains
     cs%ln_Q2_M2   = 2*log(Q/M)
     cs%ln_Q2_muR2 = 2*log(Q/muR)
     cs%ln_muF2_M2 = 2*log(muF/M)
-    cs%M2_rts2    = M**2/rts**2
+    !cs%M2_rts2    = M**2/rts**2
     cs%jet_radius = jet_radius
     ! maybe put a check here to make sure only pass 'H' or 'DY'
   end subroutine set_process_and_parameters
@@ -129,9 +129,9 @@ contains
   !=========================================================
   ! Computes the modified logarithm
   function Ltilde(v,p) result(res)
-    real(dp), intent(in) :: v(:), p
-    real(dp) :: Z(size(v))
-    real(dp) :: res(size(v))
+    real(dp), intent(in) :: v, p
+    real(dp) :: Z
+    real(dp) :: res
     
     if (p >= 0) then
        ! Ltilde is defined setting ptmax->infty
@@ -146,10 +146,10 @@ contains
 
   !======================================================================
   function get_lambda(L, cs) result(res)
-    real(dp),                  intent(in) :: L(:)
+    real(dp),                  intent(in) :: L
     type(process_and_parameters), intent(in) :: cs
     !-----------------------------------------
-    real(dp):: res(size(L))
+    real(dp):: res
 
     res = cs%alphas_muR * L * beta0
   end function get_lambda
@@ -161,12 +161,12 @@ contains
   ! ln(Q/ptveto), or (at the user's choice) a modified logarithm that
   ! is equivalent for small ptveto.
   function Rad(L, cs, order) result(res)
-    real(dp),                  intent(in) :: L(:)
+    real(dp),                  intent(in) :: L
     type(process_and_parameters), intent(in) :: cs
     integer,                   intent(in) :: order !(0=LL,1=NLL,2=NNLL)
-    real(dp)                              :: res(size(L))
+    real(dp)                              :: res
     !----------------------------------
-    real(dp):: lambda(size(L))
+    real(dp):: lambda
 
     lambda = get_lambda(L, cs)
 
@@ -186,9 +186,9 @@ contains
   ! 
   ! It is the derivative of Lg1(as L) with respect to L.
   function Rad_p(lambda) result(res)
-    real(dp), intent(in) :: lambda(:)
+    real(dp), intent(in) :: lambda
     !----------------------------------
-    real(dp):: res(size(lambda))
+    real(dp):: res
 
     res = A(1)/pi/beta0*two*lambda/(one-two*lambda)
   end function Rad_p
@@ -198,10 +198,10 @@ contains
   ! The NNLL contribution to the first derivative of the
   ! radiator necessary for ptB
   function Rad_pNNLL(lambda,cs) result(res)
-    real(dp), intent(in) :: lambda(:)
+    real(dp), intent(in) :: lambda
     type(process_and_parameters), intent(in) :: cs
     !----------------------------------
-    real(dp):: res(size(lambda))
+    real(dp):: res
 
     res =  twopi*cs%as2pi*((-two*lambda*pi*beta1*A(1)*log(one-two*lambda) + &
          &  beta0*(A(2)*lambda + beta0*(one - two*lambda)*pi*B(1) + &
@@ -212,10 +212,10 @@ contains
   !=========================================================
   ! The second derivative of the radiator @ NLL accuracy 
   function Rad_s(lambda,cs) result(res)
-    real(dp), intent(in) :: lambda(:)
+    real(dp), intent(in) :: lambda
     type(process_and_parameters), intent(in) :: cs
     !----------------------------------
-    real(dp):: res(size(lambda))
+    real(dp):: res
 
     res = 4*A(1)*cs%as2pi/((one - two*lambda)**2)
   end function Rad_s
@@ -224,47 +224,47 @@ contains
   !=========================================================
   ! Eq.10a from BMSZ
   function g1(lambda) result(res)
-    real(dp), intent(in)  :: lambda(:)
+    real(dp), intent(in)  :: lambda
     !----------------------------------
-    real(dp) :: res(size(lambda))
+    real(dp) :: res
 
-    where (lambda /= 0)
+    if (lambda /= 0) then
        res = A(1)/pi/beta0*(one+half*log(one-two*lambda)/lambda)   
-    else where
+    else
        res = zero
-    end where
+    endif
   end function g1
 
   !=========================================================
   ! Eq.10b from BMSZ
   function g2(lambda, cs) result(res)
-    real(dp),                  intent(in) :: lambda(:)
+    real(dp),                  intent(in) :: lambda
     type(process_and_parameters), intent(in) :: cs
     !----------------------------------
-    real(dp) :: res(size(lambda))
+    real(dp) :: res
 
-    where (lambda /= 0)
+    if (lambda /= 0) then
        res = B(1)/twopi/beta0*log(one-two*lambda)&
             &-A(2)/four/pisq/beta0**2*(two*lambda/(one-two*lambda)+log(one-two*lambda))&
             & +A(1)/twopi/beta0*((two*lambda/(one-two*lambda)&
             &+log(one-two*lambda))*cs%ln_Q2_muR2+log(one-two*lambda)*(-cs%ln_Q2_M2)) &
             & +A(1)/two*(pisq*beta1)/(pi*beta0)**3*(half*log(one-two*lambda)**2&
             &+(log(one-two*lambda)+two*lambda)/(one-two*lambda))
-    else where
+    else
        res = zero
-    end where
+    endif
 
   end function g2
 
   !=========================================================  
   ! Eq.10c from BMSZ
   function g3(lambda, cs) result(res)
-    real(dp),                  intent(in) :: lambda(:)
+    real(dp),                  intent(in) :: lambda
     type(process_and_parameters), intent(in) :: cs
     !----------------------------------
-    real(dp) :: res(size(lambda))
+    real(dp) :: res
 
-    where (lambda /= 0)
+    if (lambda /= 0) then
        res = -half*A(3)/8._dp/pisq/beta0**2*(two*lambda/(one-two*lambda))**2 &
             & -(B(2)+A(2)*(-cs%ln_Q2_M2))/four/pi/beta0*two*lambda/(one-two*lambda) &
             & +A(2)/four*(pisq*beta1)/(pi*beta0)**3*(lambda*(three*two*lambda-two)/(one-two*lambda)**2 &
@@ -282,9 +282,9 @@ contains
             &          (pi*beta0)**4+(pisq*beta1)**2/(pi*beta0)**4/(one-two*lambda))&
             & +one/(pi*beta0)**4*lambda/(one-two*lambda)**2&
             &     *(pi*beta0*pi**3*beta2*(two-three*two*lambda)+(pisq*beta1)**2*two*lambda))
-    else where
+    else
        res = zero
-    end where
+    endif
   end function g3
 
   !========================================================
