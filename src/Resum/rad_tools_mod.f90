@@ -18,6 +18,7 @@ module rad_tools_mod
   ! a type to conveniently hold the coupling and information on 
   ! scale ratios
   type process_and_parameters
+     sequence
      character(len=5) :: collider, proc
      real(dp) :: rts
      real(dp) :: alphas_muR, as2pi

@@ -847,6 +847,7 @@ read_dm_params.o\
 readcoup.o \
 reader_input.o \
 realhistos.o \
+resumset.o\
 Rgen.o \
 scaleset.o \
 scaleset_m34.o \
@@ -986,6 +987,7 @@ wtgen.o
 
 PROCDEPFILES = \
 checkorder.o \
+check_resm_order.o\
 chooser.o \
 fragint.o \
 gen_lops.o \
