@@ -1,6 +1,7 @@
       double precision function resum_LL(r,wgt)
       use types_mod
-!      use consts_mod
+      use rad_tools_mod
+      use resummation_mod
       implicit none
       include 'constants.f'
       include 'masses.f'
@@ -40,8 +41,6 @@ c --- DSW.
       include 'x1x2.f'
       include 'bypart.f'
       integer pflav,pbarflav
-c--- resummation
-      double precision Ltilde
 c--- To use VEGAS random number sequence :
       double precision ran2
       integer ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -100,9 +99,6 @@ c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
-     
-      call calcLtilde(resumscale,Ltilde) 
-      facscale=facscale*exp(-Ltilde)
       
       xx(1)=-2d0*p(1,4)/sqrts
       xx(2)=-2d0*p(2,4)/sqrts

@@ -19,8 +19,7 @@ module rad_tools_mod
   ! scale ratios
   type process_and_parameters
      sequence
-     character(len=5) :: collider, proc
-     real(dp) :: rts
+     character(len=5) :: proc
      real(dp) :: alphas_muR, as2pi
      real(dp) :: M, muR, muF, Q, p
      real(dp) :: ln_muR2_M2
@@ -102,15 +101,13 @@ contains
 
   !======================================================================
   ! 
-  subroutine set_process_and_parameters(cs, collider, proc, M, muR, muF, as, Q, p, &
+  subroutine set_process_and_parameters(cs, proc, M, muR, muF, as, Q, p, &
        &jet_radius,observable)
     type(process_and_parameters), intent(out) :: cs
-    character(len=*),          intent(in)  :: collider, proc, observable
+    character(len=*),          intent(in)  :: proc, observable
     real(dp),                  intent(in)  :: M, muR, muF, Q, p, as, jet_radius
     !-------------------------------------------------------
-    cs%collider   = collider
     cs%proc       = proc
-    !cs%rts        = rts
     cs%M          = M
     cs%Q          = Q
     cs%muR        = muR
@@ -122,9 +119,7 @@ contains
     cs%ln_Q2_M2   = 2*log(Q/M)
     cs%ln_Q2_muR2 = 2*log(Q/muR)
     cs%ln_muF2_M2 = 2*log(muF/M)
-    !cs%M2_rts2    = M**2/rts**2
     cs%jet_radius = jet_radius
-    ! maybe put a check here to make sure only pass 'H' or 'DY'
   end subroutine set_process_and_parameters
 
   !=========================================================

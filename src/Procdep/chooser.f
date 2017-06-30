@@ -78,7 +78,7 @@ c---- total cross-section comes out correctly when the BR is removed
       enddo
 
 !      string='process.DAT' 
-      string='process_resm.DAT'
+      string='process_ptj.DAT'
       open(unit=21,file=string,status='old',err=43)
       call checkversion(21,string)
       
