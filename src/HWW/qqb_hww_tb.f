@@ -10,7 +10,6 @@ c--- including both top and bottom quark loops
       include 'sprods_com.f'
       include 'zprods_decl.f'
       include 'anom_higgs.f' 
-      include 'cgg.f'
       integer h1,h2,j,k
       double precision p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac
       double precision mfsq,tau,tauinv,rt,rescale
@@ -44,13 +43,7 @@ c--- fill amplitudes with contributions of Higgs: top loop
          f=czip
       endif
       e3De4=2d0*za(3,5)*zb(6,4)/(s(3,4)*s(5,6))
-c      amphiggs=mfsq*(cone+(cone-dcmplx(tauinv))*f)*im*e3De4
-
-c---  add additional effective coupling from dimension-6 operator
-c     only needed on top or bottom loop as only 1 diagram ggH 
-      amphiggs=(mfsq*(cone+(cone-dcmplx(tauinv))*f)
-     c           +s(1,2)/6*12*pi*vevsq/as*cgg)*im*e3De4
-     
+      amphiggs=mfsq*(cone+(cone-dcmplx(tauinv))*f)*im*e3De4
       Ahiggs(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
       Ahiggs(1,2)=czip
       Ahiggs(2,1)=czip
@@ -73,6 +66,18 @@ c--- fill amplitudes with contributions of Higgs: bottom loop
 
       Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
       Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
+      
+c--- fill amplitudes with contributions of Higgs: ggH
+
+      amphiggs=(s(1,2)/6)*im*e3De4
+      
+      Ahiggs(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs(1,2)=czip
+      Ahiggs(2,1)=czip
+      Ahiggs(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
+      
+!      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
+!      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
 
 c--- Rescale for width study
       if((keep_smhiggs_norm).and.(anom_higgs)) then 
