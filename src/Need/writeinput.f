@@ -45,7 +45,7 @@ c--- by the strings 'lstring' and 'rstring'
       include 'energy.f'
       include 'nproc.f'
       include 'VVcut.f'
-      include 'cgg.f'
+      include 'kappa.f'
       include 'ptveto.f'
       include 'ptvetomax.f'
       include 'resumscale.f'
@@ -399,6 +399,21 @@ c      endif
       if ((tag .eq. 'epsilon_h') .or. (writeall)) then
       write(unitno,fmt=f99) epsilon_h,'epsilon_h'
       endif
+      
+      if (writeall) then
+      write(unitno,*)
+      write(unitno,*)
+     . lstring//' [Coupling rescaling in kappa formalism] )'
+      endif
+      if ((tag .eq. 'k_t') .or. (writeall)) then
+      write(unitno,fmt=f99) k_t,'k_t'
+      endif
+      if ((tag .eq. 'k_b') .or. (writeall)) then
+      write(unitno,fmt=f99) k_b,'k_b'
+      endif
+      if ((tag .eq. 'k_g') .or. (writeall)) then
+      write(unitno,fmt=f99) k_g,'k_g'
+      endif
 
       if (writeall) then
       write(unitno,*)
@@ -573,9 +588,9 @@ c      endif
       if ((tag .eq. 'VVcut') .or. (writeall)) then
       write(unitno,fmt=f97) VVCut,'VVcut'
       endif
-      if ((tag .eq. 'cgg') .or. (writeall)) then
-      write(unitno,fmt=f99) cgg,'cgg'
-      endif
+c      if ((tag .eq. 'cgg') .or. (writeall)) then
+c      write(unitno,fmt=f99) cgg,'cgg'
+c      endif
       if ((tag .eq. 'ptveto') .or. (writeall)) then
       write(unitno,fmt=f99) ptveto,'ptveto'
       endif
