@@ -43,6 +43,9 @@ Bin/mcfm_omp
 *.dat
 *.gnu
 
+# plots
+*.ps
+
 # vegas grid
 *.grid
 
@@ -51,6 +54,9 @@ Bin/mcfm_omp
 *.dvi
 *.log
 *.toc
+
+# latex output
+*.pdf
 
 # folders
 QCDLoop
