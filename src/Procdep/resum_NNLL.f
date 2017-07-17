@@ -85,6 +85,7 @@ c---- SSend
       double precision z,x1onz,x2onz,flux,omz,
      . BrnRat,xmsq_old,tmp,ptmp,pttwo
       double precision xmsq_bypart(-1:1,-1:1)
+      double precision askton2pi
       integer nshot,rvcolourchoice,sgnj,sgnk
       logical bin,includedipole,checkpiDpjk
       double precision QandGint
@@ -183,24 +184,37 @@ c--- for stop+b, splittings on light quark line produce a quark
         epcorr=epinv+2d0*dlog(renscale_L/facscale_L)
       endif
 
-      AP(q,q,1)=+ason2pi/(1-2*as*beta0)*Cf*1.5d0*epcorr
-      AP(q,q,2)=+ason2pi/(1-2*as*beta0)*Cf*(-1d0-z)*epcorr
-      AP(q,q,3)=+ason2pi/(1-2*as*beta0)*Cf*2d0/omz*epcorr
-      AP(a,a,1)=+ason2pi/(1-2*as*beta0)*Cf*1.5d0*epcorr
-      AP(a,a,2)=+ason2pi/(1-2*as*beta0)*Cf*(-1d0-z)*epcorr
-      AP(a,a,3)=+ason2pi/(1-2*as*beta0)*Cf*2d0/omz*epcorr
+c---  calculate as(pt)/(2*pi), as this is the factor for the
+c---  resummation. this corresponds to a factor of
+c---  ason2pi/(1-2*as*beta0*L)
+
+      askton2pi = ason2pi/(1-2*as*beta0*Ltilde(ptveto/resm_opts%Q,
+     &                                      resm_opts%p))
+
+c$$$      write(*,*) "ason2pi=",ason2pi
+c$$$      write(*,*) "askton2pi=",askton2pi
+c$$$      write(*,*) "1-2*as*beta0*L=",1-2*as*beta0*Ltilde(
+c$$$     & ptveto/resm_opts%Q,resm_opts%p)
+c$$$      write(*,*) "Log(1/v)=",Ltilde(ptveto/resm_opts%Q,resm_opts%p)
+c$$$
+      AP(q,q,1)=+askton2pi*Cf*1.5d0*epcorr
+      AP(q,q,2)=+askton2pi*Cf*(-1d0-z)*epcorr
+      AP(q,q,3)=+askton2pi*Cf*2d0/omz*epcorr
+      AP(a,a,1)=+askton2pi*Cf*1.5d0*epcorr
+      AP(a,a,2)=+askton2pi*Cf*(-1d0-z)*epcorr
+      AP(a,a,3)=+askton2pi*Cf*2d0/omz*epcorr
 
       AP(q,g,1)=0d0
-      AP(q,g,2)=ason2pi/(1-2*as*beta0)*Tr*(z**2+omz**2)*epcorr
+      AP(q,g,2)=askton2pi*Tr*(z**2+omz**2)*epcorr
       AP(q,g,3)=0d0
       AP(a,g,1)=0d0
-      AP(a,g,2)=ason2pi/(1-2*as*beta0)*Tr*(z**2+omz**2)*epcorr
+      AP(a,g,2)=askton2pi*Tr*(z**2+omz**2)*epcorr
       AP(a,g,3)=0d0
 
 c--- modifications for running with mb>0
       if ( ((case .eq. 'W_twdk') .or. (case .eq. 'W_tndk'))
      .  .and. (runstring(1:4) .eq. 'mass')) then
-         AP(q,g,2)=-ason2pi/(1-2*as*beta0)*Tr*(z**2+omz**2)*
+         AP(q,g,2)=-askton2pi*Tr*(z**2+omz**2)*
      &               *dlog(facscale**2/mbsq)
       AP(a,g,2)=AP(q,g,2)
       endif
@@ -218,15 +232,15 @@ c--- for stop+b, splittings on heavy quark line produce a gluon
       endif
 
       AP(g,q,1)=0d0
-      AP(g,q,2)=ason2pi/(1-2*as*beta0)*Cf*(1d0+omz**2)/z*epcorr
+      AP(g,q,2)=askton2pi*Cf*(1d0+omz**2)/z*epcorr
       AP(g,q,3)=0d0
       AP(g,a,1)=0d0
-      AP(g,a,2)=ason2pi/(1-2*as*beta0)*Cf*(1d0+omz**2)/z*epcorr
+      AP(g,a,2)=askton2pi*Cf*(1d0+omz**2)/z*epcorr
       AP(g,a,3)=0d0
 
-      AP(g,g,1)=+ason2pi/(1-2*as*beta0)*b0*epcorr
-      AP(g,g,2)=+ason2pi/(1-2*as*beta0)*xn*2d0*(1d0/z+z*omz-2d0)*epcorr
-      AP(g,g,3)=+ason2pi/(1-2*as*beta0)*xn*2d0/omz*epcorr
+      AP(g,g,1)=+askton2pi*b0*epcorr
+      AP(g,g,2)=+askton2pi*xn*2d0*(1d0/z+z*omz-2d0)*epcorr
+      AP(g,g,3)=+askton2pi*xn*2d0/omz*epcorr
 
 c--- for single top+b, make sure factors of alphas are correct
       if ( (case .eq. 'qg_tbq') .or. (case .eq. '4ftwdk')
@@ -740,7 +754,7 @@ c--- calculating corrections on the quark line
         call qqb_Wbjet(p,msq)
         call qqb_Wbjet_v(p,msqv)
         call qqb_Wbjet_z(p,z)
-        APqg_mass=-ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq)
+        APqg_mass=-askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq)
       elseif (case .eq. 'Wcsbar') then
         call qqb_w(p,msq)
         call qqb_w_v(p,msqv)
@@ -760,7 +774,7 @@ c--- massive subtraction term only
         AP(j,k,3)=0d0
         enddo
         enddo
-        AP(q,g,2)=-ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mcsq)
+        AP(q,g,2)=-askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mcsq)
         
       elseif (case.eq.'dm_jet') then
          call qqb_dm_monojet_v(p,msqv) 
@@ -1608,9 +1622,9 @@ C--gQ
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_aq*(AP(a,g,2)+Q1(a,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_qq*(AP(q,g,2)+Q1(q,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1z(g)/z*fx2(k)
        endif
 C--gQbar
@@ -1632,9 +1646,9 @@ C--gQbar
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_qa*(AP(q,g,2)+Q1(q,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_aa*(AP(a,g,2)+Q1(a,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1z(g)/z*fx2(k)
        endif
        endif
@@ -1659,9 +1673,9 @@ C--Qg
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_qa*(AP(a,g,2)+Q2(a,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_qq*(AP(q,g,2)+Q2(q,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1(j)*fx2z(g)/z
        endif
 C--Qbarg
@@ -1683,9 +1697,9 @@ C--Qbarg
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_aq*(AP(q,g,2)+Q2(q,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_aa*(AP(a,g,2)+Q2(a,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1(j)*fx2z(g)/z
        endif
        endif

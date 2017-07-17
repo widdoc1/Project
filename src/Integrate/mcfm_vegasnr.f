@@ -264,8 +264,8 @@ c--- (added and then taken away)
       endif
       
 c--- NNLL resummation 
-      if (mypart .eq. 'resm')  then
-        part='resm'        
+      if (mypart .eq. 'NNLL')  then
+        part='NNLL'        
         reset=.true.
         scalereset=.true.
         ndim=ndim+1
