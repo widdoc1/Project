@@ -1,4 +1,7 @@
       double precision function resum_NNLL(r,wgt)
+      use types_mod
+      use rad_tools_mod
+      use resummation_mod
       implicit none
       include 'constants.f'
       include 'noglue.f'

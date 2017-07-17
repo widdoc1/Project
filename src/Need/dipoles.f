@@ -71,7 +71,7 @@ c + [1/(1-x)_(0)]
 c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       select case (part)
-        case ("resm")
+        case ("NNLL")
           if (vorz .eq. 1) then
             ii_qq= -pisq/12d0/(1 - 2 * as * beta00 * Ltilde)
             if (scheme .eq. 'tH-V') then
@@ -197,7 +197,7 @@ c [x^2+(1-x)^2] + [x^2+(1-x)^2]*L + 2*[x^2+(1-x)^2]*[ln(1-x)]
 c  - [x^2+(1-x)^2]*epinv
 
       select case (part)
-        case ("resm") 
+        case ("NNLL") 
           ii_qg=0d0
           if ((vorz .eq. 1) .or. (vorz .eq. 3)) return
       
