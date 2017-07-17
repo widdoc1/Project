@@ -41,6 +41,10 @@ c --- DSW.
       include 'x1x2.f'
       include 'bypart.f'
       integer pflav,pbarflav
+
+      include 'resum_params.f'
+      include 'ptveto.f'
+
 c--- To use VEGAS random number sequence :
       double precision ran2
       integer ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -99,7 +103,9 @@ c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
-      
+
+      call resumset(p)
+
       xx(1)=-2d0*p(1,4)/sqrts
       xx(2)=-2d0*p(2,4)/sqrts
 
@@ -750,7 +756,8 @@ c--- DEFAULT
       enddo
 
       if (currentPDF .eq. 0) then
-        resum_LL=flux*pswt*xmsq/BrnRat
+         resum_LL=flux*pswt*xmsq*
+     &              resummed_sigma(ptveto,resm_opts,0)/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary

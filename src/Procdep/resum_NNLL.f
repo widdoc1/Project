@@ -1,5 +1,6 @@
       double precision function resum_NNLL(r,wgt)
       use types_mod
+      use qcd_mod, only: beta0 ! just beta0 from running
       use rad_tools_mod
       use resummation_mod
       implicit none
@@ -22,7 +23,6 @@
       include 'qcdcouple.f'
       include 'scale.f'
       include 'facscale.f'
-      include 'resumscale.f'
       include 'dynamicscale.f'
       include 'efficiency.f'
       include 'lc.f'
@@ -53,6 +53,8 @@
       include 'energy.f'
       include 'first.f'
       include 'initialscales.f'
+      include 'resum_params.f'
+      include 'ptveto.f'
 c--- APPLgrid - grid includes
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -70,9 +72,6 @@ c---- SSbegin
       common/useropt1/purevirt
       data purevirt/.false./
 c---- SSend 
-
-c---- resum 
-      double precision Ltilde
 
       integer ih1,ih2,j,k,m,n,cs,ics,csmax,nvec,is,iq,ia,ib,ic,ii
       double precision p(mxpart,4),pjet(mxpart,4),r(mxdim),W,xmsq,
@@ -139,9 +138,9 @@ c--- bother calculating the matrix elements for it, instead bail out
       
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
-     
-      call calcLtilde(resumscale,Ltilde)
-     
+
+      call resumset(p)
+
       z=r(ndim)**2
 c      if (nshot .eq. 1) z=0.95d0
       xjac=two*dsqrt(z)
@@ -166,7 +165,6 @@ c--- point to restart from when checking epsilon poles
 c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
       epcorr=epinv+2d0*dlog(scale/facscale)
-     &                  /(1 - 2 * as * beta00 * Ltilde)
       
 c--- for the case of virtual correction in the top quark decay,
 c--- ('tdecay','ttdkay','Wtdkay') there are no extra initial-state
@@ -185,24 +183,25 @@ c--- for stop+b, splittings on light quark line produce a quark
         epcorr=epinv+2d0*dlog(renscale_L/facscale_L)
       endif
 
-      AP(q,q,1)=+ason2pi*Cf*1.5d0*epcorr
-      AP(q,q,2)=+ason2pi*Cf*(-1d0-z)*epcorr
-      AP(q,q,3)=+ason2pi*Cf*2d0/omz*epcorr
-      AP(a,a,1)=+ason2pi*Cf*1.5d0*epcorr
-      AP(a,a,2)=+ason2pi*Cf*(-1d0-z)*epcorr
-      AP(a,a,3)=+ason2pi*Cf*2d0/omz*epcorr
+      AP(q,q,1)=+ason2pi/(1-2*as*beta0)*Cf*1.5d0*epcorr
+      AP(q,q,2)=+ason2pi/(1-2*as*beta0)*Cf*(-1d0-z)*epcorr
+      AP(q,q,3)=+ason2pi/(1-2*as*beta0)*Cf*2d0/omz*epcorr
+      AP(a,a,1)=+ason2pi/(1-2*as*beta0)*Cf*1.5d0*epcorr
+      AP(a,a,2)=+ason2pi/(1-2*as*beta0)*Cf*(-1d0-z)*epcorr
+      AP(a,a,3)=+ason2pi/(1-2*as*beta0)*Cf*2d0/omz*epcorr
 
       AP(q,g,1)=0d0
-      AP(q,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+      AP(q,g,2)=ason2pi/(1-2*as*beta0)*Tr*(z**2+omz**2)*epcorr
       AP(q,g,3)=0d0
       AP(a,g,1)=0d0
-      AP(a,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+      AP(a,g,2)=ason2pi/(1-2*as*beta0)*Tr*(z**2+omz**2)*epcorr
       AP(a,g,3)=0d0
 
 c--- modifications for running with mb>0
       if ( ((case .eq. 'W_twdk') .or. (case .eq. 'W_tndk'))
      .  .and. (runstring(1:4) .eq. 'mass')) then
-      AP(q,g,2)=-ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq)
+         AP(q,g,2)=-ason2pi/(1-2*as*beta0)*Tr*(z**2+omz**2)*
+     &               *dlog(facscale**2/mbsq)
       AP(a,g,2)=AP(q,g,2)
       endif
       
@@ -219,15 +218,15 @@ c--- for stop+b, splittings on heavy quark line produce a gluon
       endif
 
       AP(g,q,1)=0d0
-      AP(g,q,2)=ason2pi*Cf*(1d0+omz**2)/z*epcorr
+      AP(g,q,2)=ason2pi/(1-2*as*beta0)*Cf*(1d0+omz**2)/z*epcorr
       AP(g,q,3)=0d0
       AP(g,a,1)=0d0
-      AP(g,a,2)=ason2pi*Cf*(1d0+omz**2)/z*epcorr
+      AP(g,a,2)=ason2pi/(1-2*as*beta0)*Cf*(1d0+omz**2)/z*epcorr
       AP(g,a,3)=0d0
 
-      AP(g,g,1)=+ason2pi*b0*epcorr
-      AP(g,g,2)=+ason2pi*xn*2d0*(1d0/z+z*omz-2d0)*epcorr
-      AP(g,g,3)=+ason2pi*xn*2d0/omz*epcorr
+      AP(g,g,1)=+ason2pi/(1-2*as*beta0)*b0*epcorr
+      AP(g,g,2)=+ason2pi/(1-2*as*beta0)*xn*2d0*(1d0/z+z*omz-2d0)*epcorr
+      AP(g,g,3)=+ason2pi/(1-2*as*beta0)*xn*2d0/omz*epcorr
 
 c--- for single top+b, make sure factors of alphas are correct
       if ( (case .eq. 'qg_tbq') .or. (case .eq. '4ftwdk')
@@ -825,8 +824,8 @@ c          fx2(0)=1d0
 c          fx2(1)=1d0
 c        else   
 c--- usual case            
-          call fdist(ih1,xx(1),facscale*exp(-Ltilde),fx1)
-          call fdist(ih2,xx(2),facscale*exp(-Ltilde),fx2)
+          call fdist(ih1,xx(1),facscale,fx1)
+          call fdist(ih2,xx(2),facscale,fx2)
 c      endif
       endif
       
@@ -850,7 +849,7 @@ c          fx1z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih1,x1onz,facscale*exp(-Ltilde),fx1z)
+            call fdist(ih1,x1onz,facscale,fx1z)
 c--- APPLgrid - set factor
 c            f_X1overZ = 1d0
 c--- APPLgrid - end
@@ -872,7 +871,7 @@ c          fx2z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih2,x2onz,facscale*exp(-Ltilde),fx2z)
+            call fdist(ih2,x2onz,facscale,fx2z)
 c--- APPLgrid - set factor
 c            f_X2overZ = 1d0
 c--- APPLgrid - end
@@ -1731,7 +1730,9 @@ c---  SSend
       enddo
 
       if (currentPDF .eq. 0) then
-        resum_NNLL=flux*xjac*pswt*xmsq/BrnRat
+c$$$         resum_NNLL=flux*xjac*pswt*xmsq* 
+c$$$     &                resummed_sigma(ptveto, resm_opts, 2)/BrnRat
+         resum_NNLL=flux*xjac*pswt*xmsq/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary

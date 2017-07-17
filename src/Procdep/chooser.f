@@ -57,7 +57,6 @@ c---- total cross-section comes out correctly when the BR is removed
       integer mproc,j,isub,ilomomenta
       character*100 pname
       character*1 order
-      character*4 resm_order
       character*72 string
       character*82 pwrite
       double precision Vud,Vus,Vub,Vcd,Vcs,Vcb
@@ -77,15 +76,14 @@ c---- total cross-section comes out correctly when the BR is removed
       mcfmplotinfo(j)=-1
       enddo
 
-!      string='process.DAT' 
-      string='process_ptj.DAT'
+      string='process.DAT' 
       open(unit=21,file=string,status='old',err=43)
       call checkversion(21,string)
       
       if (verbose) write(6,*) 'Chooser:process chosen by nproc=',nproc
 
       do j=1,600
-      read(21,*,err=44) mproc,pname,order,resm_order
+      read(21,*,err=44) mproc,pname,order
       
       if (nproc .lt. 0) then 
       write(6,*) mproc,pname 
@@ -7457,22 +7455,7 @@ c--- report on the removed BR, if necessary
       endif
 
 c--- check that calculation can be performed
-
-!     vanilla MCFM modes
-      if ( (part .eq. 'lord') .or. (part .eq. 'virt')  
-     c   .or. (part .eq. 'real') .or. (part .eq. 'tota') 
-     c   .or. (part .eq. 'todk') ) then
-        call checkorder(order)
-        
-!     resummation modes
-      else if ( (part .eq. 'LL') .or. (part .eq. 'NLL') 
-     c   .or. (part .eq. 'NNLL') ) then
-        call check_resm_order(resm_order)
-        
-!     catch modes that aren't allowed   
-      else
-        write(*,*) "this isn't supported!"
-      endif
+      call checkorder(order)
 
 c--- initialize arrays that are used in is_functions
       call init_is_functions()

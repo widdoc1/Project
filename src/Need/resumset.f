@@ -48,19 +48,21 @@
       observable = 'pt_jet' 
       
       ! set up parameters for the radiator
-      call set_process_and_parameters(cs, process, inv_mass,
+      call set_process_and_parameters(resm_opts, process, inv_mass,
      &   muR, muF, coupling, muResum, pow_sup, jet_radius, observable) 
 
       ! initialise parameters needed in the radiator
-      call init_proc(cs)
+      call init_proc(resm_opts)
 
       ! rescale factorisation scale for PDFs
       if (part .eq. 'LL') then
         return
       else if (part .eq. 'NLL') then
-        facscale = facscale * exp(-Ltilde(ptveto/cs%Q, cs%p))
+         facscale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+     &                                 resm_opts%p))
       else if (part .eq. 'NNLL') then
-        facscale = facscale * exp(-Ltilde(ptveto/cs%Q, cs%p))
+         facscale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+     &                                 resm_opts%p))
       else
         write(*,*) 'something wrong...'
         stop

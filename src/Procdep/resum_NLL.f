@@ -760,7 +760,9 @@ c--- DEFAULT
       enddo
 
       if (currentPDF .eq. 0) then
-        resum_NLL=flux*pswt*xmsq*resummed_sigma(ptveto, cs, 1)/BrnRat
+         resum_NLL=flux*pswt*xmsq
+     &               *resummed_sigma(ptveto, resm_opts, 1)/BrnRat
+c$$$         resum_NLL=flux*pswt*xmsq/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary

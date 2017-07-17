@@ -38,12 +38,12 @@ contains
 
     if (R>pi) then
        ! Taken from 1206.4998 Eq.(45)
-       indep = -half*A(1)*((pi/6._dp*R**2-1/pi/8._dp*R**4)*&
+       indep = -half*Rad_A(1)*((pi/6._dp*R**2-1/pi/8._dp*R**4)*&
             & atan(pi/sqrt(R**2-pisq)) &!this avoids Floating point exceptions for R<pi
             & +(R**2/8._dp-pisq/12._dp)*sqrt(R**2-pisq)) 
     else
        ! Taken from 1203.5773 A.18 (and independently derived by PFM)
-       indep = -half*A(1)*(pisq*R**2/12._dp-R**4/16._dp)
+       indep = -half*Rad_A(1)*(pisq*R**2/12._dp-R**4/16._dp)
     end if
 
     select case(trim(part))

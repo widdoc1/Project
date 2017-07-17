@@ -34,8 +34,8 @@ module rad_tools_mod
   public :: order_string
   public :: process_and_parameters, set_process_and_parameters, get_lambda
   public  :: init_proc, Ltilde, Rad, Rad_p, Rad_pNNLL, Rad_s, g1, g2, g3
-  real(dp), public :: A(3), B(2), H(2), Hm(1)  
-  real(dp), public :: CC, BB, H1, Hm1 ! colour factor & our B
+  real(dp), public :: Rad_A(3), Rad_B(2) 
+  real(dp), public :: CC, BB ! colour factor & our B
 
 contains
 
@@ -76,22 +76,22 @@ contains
        !! The explicit formulae are in section 1 of the supplementary
        !! material of BMSZ.
     case('H')
-       A(1) = two*ca_def
+       Rad_A(1) = two*ca_def
        CC   = ca_def
-       A(2) = cmw_K*A(1) 
-       A(3) = cmw_K2*A(1)+pi*beta0*ca_def*(ca_def*(808._dp/27._dp-28._dp*zeta3)-224._dp/27._dp*tf_def)
+       Rad_A(2) = cmw_K*Rad_A(1) 
+       Rad_A(3) = cmw_K2*Rad_A(1)+pi*beta0*ca_def*(ca_def*(808._dp/27._dp-28._dp*zeta3)-224._dp/27._dp*tf_def)
        BB   = -beta0 * pi/ca_def
-       B(1) = -two*twopi*beta0     
-       B(2) = -two*(ca_def**2*(8._dp/3._dp+three*zeta3)-cf_def*tf_def-four/three*ca_def*tf_def) &
+       Rad_B(1) = -two*twopi*beta0     
+       Rad_B(2) = -two*(ca_def**2*(8._dp/3._dp+three*zeta3)-cf_def*tf_def-four/three*ca_def*tf_def) &
             & +twopi_beta0*zeta2*ca_def !! Becher & Neubert arxiv:1205.3806v1 had additional: +8._dp*zeta3*ca_def**2
     case('DY')
-       A(1) = two*cf_def
+       Rad_A(1) = two*cf_def
        CC   = cf_def
-       A(2) = cmw_K*A(1)
-       A(3) = cmw_K2*A(1)+pi*beta0*cf_def*(ca_def*(808._dp/27._dp-28._dp*zeta3)-224._dp/27._dp*tf_def) 
+       Rad_A(2) = cmw_K*Rad_A(1)
+       Rad_A(3) = cmw_K2*Rad_A(1)+pi*beta0*cf_def*(ca_def*(808._dp/27._dp-28._dp*zeta3)-224._dp/27._dp*tf_def) 
        BB   = -three/four
-       B(1) = -three*cf_def
-       B(2) =   -two*(cf_def**2*(-half*pisq+3._dp/8._dp+6._dp*zeta3)&
+       Rad_B(1) = -three*cf_def
+       Rad_B(2) =   -two*(cf_def**2*(-half*pisq+3._dp/8._dp+6._dp*zeta3)&
             & + cf_def*ca_def*(11._dp/18._dp*pisq+17._dp/24._dp-three*zeta3) &
             & + cf_def*tf_def*(-one/6._dp-two/9._dp*pisq)) &
             & + twopi_beta0*zeta2*cf_def 
@@ -186,7 +186,7 @@ contains
     !----------------------------------
     real(dp):: res
 
-    res = A(1)/pi/beta0*two*lambda/(one-two*lambda)
+    res = Rad_A(1)/pi/beta0*two*lambda/(one-two*lambda)
   end function Rad_p
 
 
@@ -199,9 +199,9 @@ contains
     !----------------------------------
     real(dp):: res
 
-    res =  twopi*cs%as2pi*((-two*lambda*pi*beta1*A(1)*log(one-two*lambda) + &
-         &  beta0*(A(2)*lambda + beta0*(one - two*lambda)*pi*B(1) + &
-         &  beta0*pi*A(1)*((one - two*lambda)*(-cs%ln_Q2_M2) + &
+    res =  twopi*cs%as2pi*((-two*lambda*pi*beta1*Rad_A(1)*log(one-two*lambda) + &
+         &  beta0*(Rad_A(2)*lambda + beta0*(one - two*lambda)*pi*Rad_B(1) + &
+         &  beta0*pi*Rad_A(1)*((one - two*lambda)*(-cs%ln_Q2_M2) + &
          &  two*lambda*(-cs%ln_Q2_muR2))))/(beta0**2*(one - two*lambda)**2*pi**2))
   end function Rad_pNNLL
 
@@ -213,7 +213,7 @@ contains
     !----------------------------------
     real(dp):: res
 
-    res = 4*A(1)*cs%as2pi/((one - two*lambda)**2)
+    res = 4*Rad_A(1)*cs%as2pi/((one - two*lambda)**2)
   end function Rad_s
 
 
@@ -225,7 +225,7 @@ contains
     real(dp) :: res
 
     if (lambda /= 0) then
-       res = A(1)/pi/beta0*(one+half*log(one-two*lambda)/lambda)   
+       res = Rad_A(1)/pi/beta0*(one+half*log(one-two*lambda)/lambda)   
     else
        res = zero
     endif
@@ -240,11 +240,11 @@ contains
     real(dp) :: res
 
     if (lambda /= 0) then
-       res = B(1)/twopi/beta0*log(one-two*lambda)&
-            &-A(2)/four/pisq/beta0**2*(two*lambda/(one-two*lambda)+log(one-two*lambda))&
-            & +A(1)/twopi/beta0*((two*lambda/(one-two*lambda)&
+       res = Rad_B(1)/twopi/beta0*log(one-two*lambda)&
+            &-Rad_A(2)/four/pisq/beta0**2*(two*lambda/(one-two*lambda)+log(one-two*lambda))&
+            & +Rad_A(1)/twopi/beta0*((two*lambda/(one-two*lambda)&
             &+log(one-two*lambda))*cs%ln_Q2_muR2+log(one-two*lambda)*(-cs%ln_Q2_M2)) &
-            & +A(1)/two*(pisq*beta1)/(pi*beta0)**3*(half*log(one-two*lambda)**2&
+            & +Rad_A(1)/two*(pisq*beta1)/(pi*beta0)**3*(half*log(one-two*lambda)**2&
             &+(log(one-two*lambda)+two*lambda)/(one-two*lambda))
     else
        res = zero
@@ -261,18 +261,18 @@ contains
     real(dp) :: res
 
     if (lambda /= 0) then
-       res = -half*A(3)/8._dp/pisq/beta0**2*(two*lambda/(one-two*lambda))**2 &
-            & -(B(2)+A(2)*(-cs%ln_Q2_M2))/four/pi/beta0*two*lambda/(one-two*lambda) &
-            & +A(2)/four*(pisq*beta1)/(pi*beta0)**3*(lambda*(three*two*lambda-two)/(one-two*lambda)**2 &
+       res = -half*Rad_A(3)/8._dp/pisq/beta0**2*(two*lambda/(one-two*lambda))**2 &
+            & -(Rad_B(2)+Rad_A(2)*(-cs%ln_Q2_M2))/four/pi/beta0*two*lambda/(one-two*lambda) &
+            & +Rad_A(2)/four*(pisq*beta1)/(pi*beta0)**3*(lambda*(three*two*lambda-two)/(one-two*lambda)**2 &
             & -(one-four*lambda)/(one-two*lambda)**2*log(one-two*lambda)) &
-            & +(B(1)+A(1)*(-cs%ln_Q2_M2))/two*(pisq*beta1)/pisq/beta0**2&
+            & +(Rad_B(1)+Rad_A(1)*(-cs%ln_Q2_M2))/two*(pisq*beta1)/pisq/beta0**2&
             &        *(two*lambda/(one-two*lambda)+log(one-two*lambda)/(one-two*lambda)) &
-            & -half*A(1)/two*(two*lambda/(one-two*lambda))**2*cs%ln_Q2_muR2**2 &
-            & +((B(1)+A(1)*(-cs%ln_Q2_M2))/two*two*lambda/(one-two*lambda)&
-            & +A(2)/four/pi/beta0*(two*lambda/(one-two*lambda))**2 &
-            & +A(1)/two*pisq*beta1/pisq/beta0**2*(two*lambda/(one-two*lambda) &
+            & -half*Rad_A(1)/two*(two*lambda/(one-two*lambda))**2*cs%ln_Q2_muR2**2 &
+            & +((Rad_B(1)+Rad_A(1)*(-cs%ln_Q2_M2))/two*two*lambda/(one-two*lambda)&
+            & +Rad_A(2)/four/pi/beta0*(two*lambda/(one-two*lambda))**2 &
+            & +Rad_A(1)/two*pisq*beta1/pisq/beta0**2*(two*lambda/(one-two*lambda) &
             & +(one-four*lambda)/(one-two*lambda)**2*log(one-two*lambda)))*cs%ln_Q2_muR2 &
-            & +A(1)/two*((pisq*beta1)**2/two/(pi*beta0)**4*(one-four*lambda)/&
+            & +Rad_A(1)/two*((pisq*beta1)**2/two/(pi*beta0)**4*(one-four*lambda)/&
             & (one-two*lambda)**2*log(one-two*lambda)**2 &
             & +log(one-two*lambda)*((pi*beta0*pi**3*beta2-(pisq*beta1)**2)/&
             &          (pi*beta0)**4+(pisq*beta1)**2/(pi*beta0)**4/(one-two*lambda))&
