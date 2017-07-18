@@ -681,13 +681,13 @@ c---  (applies only if dynstring = 'DDIS')
             call fdist(ih1,xx(1),q1scale,fx1)
             call fdist(ih2,xx(2),b2scale,fxb2)
         else          
-            call fdist(ih1,xx(1),facscale,fx1)
-            call fdist(ih2,xx(2),facscale,fx2)
+            call fdist(ih1,xx(1),facscaleLtilde,fx1)
+            call fdist(ih2,xx(2),facscaleLtilde,fx2)
         endif
         else   
 c--- usual case            
-          call fdist(ih1,xx(1),facscale,fx1)
-          call fdist(ih2,xx(2),facscale,fx2)
+          call fdist(ih1,xx(1),facscaleLtilde,fx1)
+          call fdist(ih2,xx(2),facscaleLtilde,fx2)
         endif
       endif
 

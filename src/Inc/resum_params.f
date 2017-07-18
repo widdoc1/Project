@@ -1,8 +1,9 @@
-!     use rad_tools_mod
+!     assorted parameters needed for the resummation
+
+!     parts for computing the radiator
       type(process_and_parameters) :: resm_opts
-      real(dp) :: facrescale
-!      real(dp) :: A(3), B(2)
-!      real(dp) :: CC, BB
+!     the modified factorisation scale needed for PDFs
+!     muF -> muF*exp(-Ltilde) ~ pt_jet (max)
+      real(dp) :: facscaleLtilde
       
-      common/resum_params/resm_opts,facrescale
-!      common/resum_params/A, B, BB, CC
+      common/resum_params/resm_opts,facscaleLtilde

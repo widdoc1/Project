@@ -839,8 +839,8 @@ c          fx2(0)=1d0
 c          fx2(1)=1d0
 c        else   
 c--- usual case            
-          call fdist(ih1,xx(1),facscale,fx1)
-          call fdist(ih2,xx(2),facscale,fx2)
+          call fdist(ih1,xx(1),facscaleLtilde,fx1)
+          call fdist(ih2,xx(2),facscaleLtilde,fx2)
 c      endif
       endif
       
@@ -864,7 +864,7 @@ c          fx1z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih1,x1onz,facscale,fx1z)
+            call fdist(ih1,x1onz,facscaleLtilde,fx1z)
 c--- APPLgrid - set factor
 c            f_X1overZ = 1d0
 c--- APPLgrid - end
@@ -886,7 +886,7 @@ c          fx2z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih2,x2onz,facscale,fx2z)
+            call fdist(ih2,x2onz,facscaleLtilde,fx2z)
 c--- APPLgrid - set factor
 c            f_X2overZ = 1d0
 c--- APPLgrid - end

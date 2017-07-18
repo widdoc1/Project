@@ -56,12 +56,13 @@
 
       ! rescale factorisation scale for PDFs
       if (part .eq. 'LL') then
+        facscaleLtilde = facscale
         return
       else if (part .eq. 'NLL') then
-         facrescale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+        facscaleLtilde = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
      &                                 resm_opts%p))
       else if (part .eq. 'NNLL') then
-         facrescale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+        facscaleLtilde = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
      &                                 resm_opts%p))
       else
         write(*,*) 'something wrong...'
