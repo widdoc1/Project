@@ -1,7 +1,7 @@
       subroutine calcLtilde(muresum,Ltilde)
       implicit none
 
-      include 'resumscale.f'
+c      include 'resumscale.f'
       include 'ptveto.f'
 c      include 'ptvetomax.f'
       double precision muresum, jetpow, Ltilde

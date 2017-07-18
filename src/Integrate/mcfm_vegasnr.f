@@ -31,6 +31,7 @@
       include 'realwt.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'resumscale.f'
       include 'vegas_common.f'
       include 'PDFerrors.f'
       include 'frag.f'

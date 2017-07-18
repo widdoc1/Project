@@ -41,6 +41,7 @@
       include 'alfacut.f'
 c---
       include 'part.f'
+      include 'facscale.f'
       include 'resumscale.f'
       include 'scale.f'
       include 'qcdcouple.f'

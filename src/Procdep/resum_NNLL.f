@@ -23,6 +23,7 @@
       include 'qcdcouple.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'resumscale.f'
       include 'dynamicscale.f'
       include 'efficiency.f'
       include 'lc.f'

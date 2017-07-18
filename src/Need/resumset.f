@@ -18,7 +18,7 @@
       common/Rcut/Rcut
       integer ilomomenta
       common/ilomomenta/ilomomenta
-      
+
       character(len=5) collider
       character(len=2) process
       character(len=6) observable
@@ -58,10 +58,10 @@
       if (part .eq. 'LL') then
         return
       else if (part .eq. 'NLL') then
-         facscale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+         facrescale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
      &                                 resm_opts%p))
       else if (part .eq. 'NNLL') then
-         facscale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+         facrescale = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
      &                                 resm_opts%p))
       else
         write(*,*) 'something wrong...'
