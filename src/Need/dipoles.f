@@ -74,7 +74,8 @@ c  * ( 1/2*L^2 - 1/6*pisq - epinv*L + epinv^2 )
 c 
 c + [1/(1-x)_(0)]
 c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
-
+c$$$      ii_qq = 0d0
+c$$$      return
       select case (part)
         case ("NNLL")
           if (vorz .eq. 1) then
@@ -172,6 +173,9 @@ c---       pieces for the expansion of the resummation
 
 ***************************** Quark-Gluon *****************************
       double precision function ii_qg(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod, only: process_and_parameters
       implicit none
       integer vorz
       double precision x,L,omx,lx,lomx
@@ -179,11 +183,13 @@ c---       pieces for the expansion of the resummation
       include 'epinv.f'
       include 'alfacut.f'
 c---
-      include 'resumscale.f'
-      include 'ptveto.f'
-      include 'scale.f'
-      include 'qcdcouple.f'
+      include 'resum_params.f'
       include 'part.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'resumscale.f'
+      include 'qcdcouple.f'
+
       double precision Ltilde,ls_Q
       
       call calcLtilde(resumscale,Ltilde)
@@ -210,8 +216,8 @@ c  - [x^2+(1-x)^2]*epinv
           lx=dlog(x)
       
           if (vorz .eq. 2) then
-            ii_qg=(x*omx/tr + ( x**2 + omx**2 ) * 
-     c           log(resumscale**2/musq))/(1 - 2 * as * beta00 * Ltilde) 
+            ii_qg=(2*x*omx + (x**2 + omx**2)*
+     c           log(resumscale**2/musq))/(1-2*as*beta0*Ltilde)
           endif
           return
         

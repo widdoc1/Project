@@ -796,20 +796,24 @@ c--- massive subtraction term only
       endif
 
 c---  modify virtual
-
-      xl12=log(two*dot(p,1,2)/musq)
-
       do j=-nf,nf
       do k=-nf,nf
-         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(rad_A(1)/2) ! get the pure virtual with no casimirs
+
+         if (abs(msqv(j,k)) .lt. 1d-9) then
+            msqv(j,k) = 0d0
+         else
+         xl12=log(two*dot(p,1,2)/musq)
+         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
 
          ! get H(1) finite
          msqv(j,k)=msqv(j,k)-
      &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
      &        -3d0*(epinv-xl12))
 
+c$$$         write(*,*) "msqv = ",msqv(j,k)
+
          ! additional pi**2/6 due to coupling mismatch
-         msqv(j,k)=msqv(j,k)+pisq/6d0
+         msqv(j,k)=msqv(j,k)+pisqo6
 
          ! restore casimirs
          msqv(j,k)=msqv(j,k)*half*rad_A(1)
@@ -818,12 +822,19 @@ c---  modify virtual
          msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
      &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
      &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
+
+         ! restore prefactors
+         msqv(j,k)=msqv(j,k)*ason2pi*msq(j,k)
+
 c$$$         msqv(j,k)=msqv(j,k)*
 c$$$         write(*,*) "msq =", msq(j,k)
 c$$$         write(*,*) "musq = ",musq
 c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
 c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
-         write(*,*) "msqv =", msqv(j,k)
+c$$$         write(*,*) "msqv =", msqv(j,k)
+
+         endif
+
       enddo
       enddo
 
