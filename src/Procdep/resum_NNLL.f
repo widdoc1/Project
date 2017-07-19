@@ -190,8 +190,9 @@ c---  resummation. this corresponds to a factor of
 c---  ason2pi/(1-2*as*beta0*L)
 
       askton2pi = ason2pi/(1-2*as*beta0*Ltilde(ptveto/resm_opts%Q,
-     &                                      resm_opts%p))
-
+     &     resm_opts%p))
+c$$$      write(*,*) "suda = ", resummed_sigma(ptveto, resm_opts, 2)
+c$$$      write(*,*) "exp(-R)=", resummed_sigma(ptveto, resm_opts, 2)
 c$$$      write(*,*) "ason2pi=",ason2pi
 c$$$      write(*,*) "askton2pi=",askton2pi
 c$$$      write(*,*) "1-2*as*beta0*L=",1-2*as*beta0*Ltilde(
@@ -1745,9 +1746,9 @@ c---  SSend
       enddo
 
       if (currentPDF .eq. 0) then
-c$$$         resum_NNLL=flux*xjac*pswt*xmsq* 
-c$$$     &                resummed_sigma(ptveto, resm_opts, 2)/BrnRat
-         resum_NNLL=flux*xjac*pswt*xmsq/BrnRat
+        resum_NNLL=flux*xjac*pswt*xmsq* 
+     &                resummed_sigma(ptveto, resm_opts, 2)/BrnRat
+c$$$         resum_NNLL=flux*xjac*pswt*xmsq/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary

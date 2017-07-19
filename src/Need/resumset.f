@@ -11,10 +11,8 @@
       include 'qcdcouple.f'
       include 'part.f'
       include 'ptveto.f'
-      
-!      type(process_and_parameters) cs
-      
-      real(dp) Rcut  
+
+      real(dp) Rcut
       common/Rcut/Rcut
       integer ilomomenta
       common/ilomomenta/ilomomenta
@@ -46,7 +44,15 @@
       pow_sup    = 5.0_dp
       jet_radius = Rcut
       observable = 'pt_jet' 
-      
+
+c$$$      write(*,*) "inv_mass=", inv_mass
+c$$$      write(*,*) "muR=", muR
+c$$$      write(*,*) "muF=", muF
+c$$$      write(*,*) "muRes=", muResum
+c$$$      write(*,*) "as=", as
+c$$$      write(*,*) "jet_rad=", jet_radius
+c$$$      write(*,*) "Ltilde=", Ltilde(ptveto/resm_opts%Q, resm_opts%p)
+
       ! set up parameters for the radiator
       call set_process_and_parameters(resm_opts, process, inv_mass,
      &   muR, muF, coupling, muResum, pow_sup, jet_radius, observable) 
@@ -54,7 +60,10 @@
       ! initialise parameters needed in the radiator
       call init_proc(resm_opts)
 
-      ! rescale factorisation scale for PDFs
+!     rescale factorisation scale for PDFs
+!     maybe add in scales for facscale_L/H for
+!     stops?
+
       if (part .eq. 'LL') then
         facscaleLtilde = facscale
         return
