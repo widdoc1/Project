@@ -36,6 +36,7 @@ module rad_tools_mod
   public  :: init_proc, Ltilde, Rad, Rad_p, Rad_pNNLL, Rad_s, g1, g2, g3
   real(dp), public :: Rad_A(3), Rad_B(2) 
   real(dp), public :: CC, BB ! colour factor & our B
+  real(dp), public :: as_pow
 
 contains
 
@@ -61,7 +62,7 @@ contains
     implicit none
     type(process_and_parameters), intent(in) :: cs
   !======================================================================
-    real(dp) :: as_pow
+    ! real(dp) :: as_pow
 
     select case(trim(cs%proc))
        !! the hard part of the coefficient function (form factor) is not part of B(2)
@@ -76,6 +77,7 @@ contains
        !! The explicit formulae are in section 1 of the supplementary
        !! material of BMSZ.
     case('H')
+       as_pow = two
        Rad_A(1) = two*ca_def
        CC   = ca_def
        Rad_A(2) = cmw_K*Rad_A(1) 
@@ -85,6 +87,7 @@ contains
        Rad_B(2) = -two*(ca_def**2*(8._dp/3._dp+three*zeta3)-cf_def*tf_def-four/three*ca_def*tf_def) &
             & +twopi_beta0*zeta2*ca_def !! Becher & Neubert arxiv:1205.3806v1 had additional: +8._dp*zeta3*ca_def**2
     case('DY')
+       as_pow = zero
        Rad_A(1) = two*cf_def
        CC   = cf_def
        Rad_A(2) = cmw_K*Rad_A(1)

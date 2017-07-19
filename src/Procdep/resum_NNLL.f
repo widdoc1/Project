@@ -91,6 +91,7 @@ c---- SSend
       logical bin,includedipole,checkpiDpjk
       double precision QandGint
       character*4 mypart
+      double precision dot, xl12
 
       integer t
 
@@ -793,8 +794,40 @@ c--- massive subtraction term only
          call qqb_dm_monophot_z(p,z) 
          
       endif
-      
-C---initialize to zero
+
+c---  modify virtual
+
+      xl12=log(two*dot(p,1,2)/musq)
+
+      do j=-nf,nf
+      do k=-nf,nf
+         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(rad_A(1)/2) ! get the pure virtual with no casimirs
+
+         ! get H(1) finite
+         msqv(j,k)=msqv(j,k)-
+     &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
+     &        -3d0*(epinv-xl12))
+
+         ! additional pi**2/6 due to coupling mismatch
+         msqv(j,k)=msqv(j,k)+pisq/6d0
+
+         ! restore casimirs
+         msqv(j,k)=msqv(j,k)*half*rad_A(1)
+
+         ! change into form for resummation
+         msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
+     &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
+     &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
+c$$$         msqv(j,k)=msqv(j,k)*
+c$$$         write(*,*) "msq =", msq(j,k)
+c$$$         write(*,*) "musq = ",musq
+c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
+c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
+         write(*,*) "msqv =", msqv(j,k)
+      enddo
+      enddo
+
+c---initialize to zero
       do j=-1,1
       do k=-1,1
       xmsq_bypart(j,k)=0d0

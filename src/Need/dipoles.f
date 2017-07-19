@@ -31,6 +31,9 @@
 
 ***************************** Quark-Quark *****************************
       double precision function ii_qq(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod, only: process_and_parameters
       implicit none
       integer vorz
       double precision x,L,omx,lx,lomx
@@ -40,10 +43,11 @@
       include 'scheme.f'
       include 'alfacut.f'
 c---
+      include 'resum_params.f'
       include 'part.f'
+      include 'scale.f'
       include 'facscale.f'
       include 'resumscale.f'
-      include 'scale.f'
       include 'qcdcouple.f'
 
       double precision Ltilde,ls_Q
@@ -74,13 +78,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       select case (part)
         case ("NNLL")
           if (vorz .eq. 1) then
-            ii_qq= -pisq/12d0/(1 - 2 * as * beta00 * Ltilde)
+            ii_qq= -pisq/12d0/(1-2*as*beta0*Ltilde)
             if (scheme .eq. 'tH-V') then
               return
             elseif (scheme .eq. 'dred') then
-c---       pieces to get in the correct form of the master formula
-              ii_qq=ii_qq-half+pisq/12d0 + (-3d0 + L)*L/2d0 
-     c              - (-3d0 + ls_Q)*ls_Q/2d0
+              ii_qq=ii_qq-half !+pisq/12d0 + (-3d0 + L)*L/2d0 
+!     c              - (-3d0 + ls_Q)*ls_Q/2d0
               return
             else
               write(6,*) 'Value of scheme not implemented properly ',
@@ -94,12 +97,12 @@ c---       pieces to get in the correct form of the master formula
           lx=dlog(x)
       
           if (vorz .eq. 2) then
-            ii_qq= omx/(1 - 2 * as * beta00 * Ltilde) 
+            ii_qq= omx/(1-2*as*beta0*Ltilde)
             return
           endif
       
           ii_qq=(1+x**2)/omx * 2d0* log(resumscale/scale)
-     c         /(1 - 2 * as * beta00 * Ltilde) 
+     c         /(1-2*as*beta0*Ltilde)
       
           return
           
@@ -164,7 +167,7 @@ c---       pieces for the expansion of the resummation
           ii_qq=two/omx*(two*lomx+L-epinv)
       
           return
-      end select  
+      end select
       end
 
 ***************************** Quark-Gluon *****************************
