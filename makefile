@@ -2194,7 +2194,7 @@ qqqqgampl.o: consts_dp.o spinfns.o recurrence.o
 qqb_wpwp_qqb.o: qqqqampl.o consts_dp.o
 qqb_wpwp_qqb_g.o: qqqqgampl.o consts_dp.o
 
-# 
+# f95 modules for resummation
 types_mod.o:
 consts_mod.o: types_mod.o
 qcd_mod.o: types_mod.o consts_mod.o 
