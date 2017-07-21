@@ -806,6 +806,8 @@ c---  modify virtual
          msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
 
          ! get H(1) finite
+         ! need to make this more general, this is the form of a
+         ! dipole for qq, qg or gq, but not gg!
          msqv(j,k)=msqv(j,k)-
      &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
      &        -3d0*(epinv-xl12))
