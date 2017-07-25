@@ -1,4 +1,8 @@
-      double precision function resum_nlo(r,wgt)
+      double precision function resum_NNLL(r,wgt)
+      use types_mod
+      use qcd_mod, only: beta0 ! just beta0 from running
+      use rad_tools_mod
+      use resummation_mod
       implicit none
       include 'constants.f'
       include 'noglue.f'
@@ -50,6 +54,8 @@
       include 'energy.f'
       include 'first.f'
       include 'initialscales.f'
+      include 'resum_params.f'
+      include 'ptveto.f'
 c--- APPLgrid - grid includes
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -68,9 +74,6 @@ c---- SSbegin
       data purevirt/.false./
 c---- SSend 
 
-c---- resum 
-      double precision Ltilde
-
       integer ih1,ih2,j,k,m,n,cs,ics,csmax,nvec,is,iq,ia,ib,ic,ii
       double precision p(mxpart,4),pjet(mxpart,4),r(mxdim),W,xmsq,
      . val,val2,fx1(-nf:nf),fx2(-nf:nf),fx1z(-nf:nf),fx2z(-nf:nf),xmsqt,
@@ -83,10 +86,12 @@ c---- resum
       double precision z,x1onz,x2onz,flux,omz,
      . BrnRat,xmsq_old,tmp,ptmp,pttwo
       double precision xmsq_bypart(-1:1,-1:1)
+      double precision askton2pi
       integer nshot,rvcolourchoice,sgnj,sgnk
       logical bin,includedipole,checkpiDpjk
       double precision QandGint
       character*4 mypart
+      double precision dot, xl12
 
       integer t
 
@@ -111,7 +116,7 @@ c      data p/56*0d0/
       endif
 
       ntotshot=ntotshot+1
-      resum_nlo=0d0
+      resum_NNLL=0d0
 c--- ensure isolation code does not think this is fragmentation piece
       z_frag=0d0
 
@@ -136,9 +141,9 @@ c--- bother calculating the matrix elements for it, instead bail out
       
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
-     
-      call calcLtilde(resumscale,Ltilde)
-     
+
+      call resumset(p)
+
       z=r(ndim)**2
 c      if (nshot .eq. 1) z=0.95d0
       xjac=two*dsqrt(z)
@@ -163,7 +168,6 @@ c--- point to restart from when checking epsilon poles
 c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
       epcorr=epinv+2d0*dlog(scale/facscale)
-     &                  /(1 - 2 * as * beta00 * Ltilde)
       
 c--- for the case of virtual correction in the top quark decay,
 c--- ('tdecay','ttdkay','Wtdkay') there are no extra initial-state
@@ -182,24 +186,39 @@ c--- for stop+b, splittings on light quark line produce a quark
         epcorr=epinv+2d0*dlog(renscale_L/facscale_L)
       endif
 
-      AP(q,q,1)=+ason2pi*Cf*1.5d0*epcorr
-      AP(q,q,2)=+ason2pi*Cf*(-1d0-z)*epcorr
-      AP(q,q,3)=+ason2pi*Cf*2d0/omz*epcorr
-      AP(a,a,1)=+ason2pi*Cf*1.5d0*epcorr
-      AP(a,a,2)=+ason2pi*Cf*(-1d0-z)*epcorr
-      AP(a,a,3)=+ason2pi*Cf*2d0/omz*epcorr
+c---  calculate as(pt)/(2*pi), as this is the factor for the
+c---  resummation. this corresponds to a factor of
+c---  ason2pi/(1-2*as*beta0*L)
+
+      askton2pi = ason2pi/(1-2*as*beta0*Ltilde(ptveto/resm_opts%Q,
+     &     resm_opts%p))
+c$$$      write(*,*) "suda = ", resummed_sigma(ptveto, resm_opts, 2)
+c$$$      write(*,*) "exp(-R)=", resummed_sigma(ptveto, resm_opts, 2)
+c$$$      write(*,*) "ason2pi=",ason2pi
+c$$$      write(*,*) "askton2pi=",askton2pi
+c$$$      write(*,*) "1-2*as*beta0*L=",1-2*as*beta0*Ltilde(
+c$$$     & ptveto/resm_opts%Q,resm_opts%p)
+c$$$      write(*,*) "Log(1/v)=",Ltilde(ptveto/resm_opts%Q,resm_opts%p)
+c$$$
+      AP(q,q,1)=+askton2pi*Cf*1.5d0*epcorr
+      AP(q,q,2)=+askton2pi*Cf*(-1d0-z)*epcorr
+      AP(q,q,3)=+askton2pi*Cf*2d0/omz*epcorr
+      AP(a,a,1)=+askton2pi*Cf*1.5d0*epcorr
+      AP(a,a,2)=+askton2pi*Cf*(-1d0-z)*epcorr
+      AP(a,a,3)=+askton2pi*Cf*2d0/omz*epcorr
 
       AP(q,g,1)=0d0
-      AP(q,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+      AP(q,g,2)=askton2pi*Tr*(z**2+omz**2)*epcorr
       AP(q,g,3)=0d0
       AP(a,g,1)=0d0
-      AP(a,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+      AP(a,g,2)=askton2pi*Tr*(z**2+omz**2)*epcorr
       AP(a,g,3)=0d0
 
 c--- modifications for running with mb>0
       if ( ((case .eq. 'W_twdk') .or. (case .eq. 'W_tndk'))
      .  .and. (runstring(1:4) .eq. 'mass')) then
-      AP(q,g,2)=-ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq)
+         AP(q,g,2)=-askton2pi*Tr*(z**2+omz**2)*
+     &               *dlog(facscale**2/mbsq)
       AP(a,g,2)=AP(q,g,2)
       endif
       
@@ -216,15 +235,15 @@ c--- for stop+b, splittings on heavy quark line produce a gluon
       endif
 
       AP(g,q,1)=0d0
-      AP(g,q,2)=ason2pi*Cf*(1d0+omz**2)/z*epcorr
+      AP(g,q,2)=askton2pi*Cf*(1d0+omz**2)/z*epcorr
       AP(g,q,3)=0d0
       AP(g,a,1)=0d0
-      AP(g,a,2)=ason2pi*Cf*(1d0+omz**2)/z*epcorr
+      AP(g,a,2)=askton2pi*Cf*(1d0+omz**2)/z*epcorr
       AP(g,a,3)=0d0
 
-      AP(g,g,1)=+ason2pi*b0*epcorr
-      AP(g,g,2)=+ason2pi*xn*2d0*(1d0/z+z*omz-2d0)*epcorr
-      AP(g,g,3)=+ason2pi*xn*2d0/omz*epcorr
+      AP(g,g,1)=+askton2pi*b0*epcorr
+      AP(g,g,2)=+askton2pi*xn*2d0*(1d0/z+z*omz-2d0)*epcorr
+      AP(g,g,3)=+askton2pi*xn*2d0/omz*epcorr
 
 c--- for single top+b, make sure factors of alphas are correct
       if ( (case .eq. 'qg_tbq') .or. (case .eq. '4ftwdk')
@@ -738,7 +757,7 @@ c--- calculating corrections on the quark line
         call qqb_Wbjet(p,msq)
         call qqb_Wbjet_v(p,msqv)
         call qqb_Wbjet_z(p,z)
-        APqg_mass=-ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq)
+        APqg_mass=-askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq)
       elseif (case .eq. 'Wcsbar') then
         call qqb_w(p,msq)
         call qqb_w_v(p,msqv)
@@ -758,7 +777,7 @@ c--- massive subtraction term only
         AP(j,k,3)=0d0
         enddo
         enddo
-        AP(q,g,2)=-ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mcsq)
+        AP(q,g,2)=-askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mcsq)
         
       elseif (case.eq.'dm_jet') then
          call qqb_dm_monojet_v(p,msqv) 
@@ -775,8 +794,53 @@ c--- massive subtraction term only
          call qqb_dm_monophot_z(p,z) 
          
       endif
-      
-C---initialize to zero
+
+c---  modify virtual
+      do j=-nf,nf
+      do k=-nf,nf
+
+         if (abs(msqv(j,k)) .lt. 1d-9) then
+            msqv(j,k) = 0d0
+         else
+         xl12=log(two*dot(p,1,2)/musq)
+         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
+
+         ! get H(1) finite
+         ! need to make this more general, this is the form of a
+         ! dipole for qq, qg or gq, but not gg!
+         msqv(j,k)=msqv(j,k)-
+     &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
+     &        -3d0*(epinv-xl12))
+
+c$$$         write(*,*) "msqv = ",msqv(j,k)
+
+         ! additional pi**2/6 due to coupling mismatch
+         msqv(j,k)=msqv(j,k)+pisqo6
+
+         ! restore casimirs
+         msqv(j,k)=msqv(j,k)*half*rad_A(1)
+
+         ! change into form for resummation
+         msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
+     &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
+     &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
+
+         ! restore prefactors
+         msqv(j,k)=msqv(j,k)*ason2pi*msq(j,k)
+
+c$$$         msqv(j,k)=msqv(j,k)*
+c$$$         write(*,*) "msq =", msq(j,k)
+c$$$         write(*,*) "musq = ",musq
+c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
+c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
+c$$$         write(*,*) "msqv =", msqv(j,k)
+
+         endif
+
+      enddo
+      enddo
+
+c---initialize to zero
       do j=-1,1
       do k=-1,1
       xmsq_bypart(j,k)=0d0
@@ -822,8 +886,8 @@ c          fx2(0)=1d0
 c          fx2(1)=1d0
 c        else   
 c--- usual case            
-          call fdist(ih1,xx(1),facscale*exp(-Ltilde),fx1)
-          call fdist(ih2,xx(2),facscale*exp(-Ltilde),fx2)
+          call fdist(ih1,xx(1),facscaleLtilde,fx1)
+          call fdist(ih2,xx(2),facscaleLtilde,fx2)
 c      endif
       endif
       
@@ -847,7 +911,7 @@ c          fx1z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih1,x1onz,facscale*exp(-Ltilde),fx1z)
+            call fdist(ih1,x1onz,facscaleLtilde,fx1z)
 c--- APPLgrid - set factor
 c            f_X1overZ = 1d0
 c--- APPLgrid - end
@@ -869,7 +933,7 @@ c          fx2z(j)=0d0
 c          enddo
 c          else   
 c--- usual case            
-            call fdist(ih2,x2onz,facscale*exp(-Ltilde),fx2z)
+            call fdist(ih2,x2onz,facscaleLtilde,fx2z)
 c--- APPLgrid - set factor
 c            f_X2overZ = 1d0
 c--- APPLgrid - end
@@ -925,7 +989,7 @@ c      tmp=xmsq
 c--- quark-quark or antiquark-antiquark
       if (  ((j .gt. 0).and.(k .gt. 0))
      . .or. ((j .lt. 0).and.(k .lt. 0))) then
-c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resum_NNLL: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       if (j .eq. k) then
         m=+1
         n=+1
@@ -950,12 +1014,12 @@ c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
      & +msq_struc(cs,j,g)*(AP(g,q,2)+H2(g,q,q,cs,2)))*fx1(j)*fx2z(k)/z
       enddo      
       xmsq=xmsq+xmsqt
-c      write(6,*) 'resum_nlo: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resum_NNLL: j,k,  ct=',j,k,xmsqt
 
 c--- quark-antiquark or antiquark-quark
       elseif (  ((j .gt. 0).and.(k .lt. 0))
      .     .or. ((j .lt. 0).and.(k .gt. 0))) then
-c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resum_NNLL: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       if (j .eq. -k) then
         m=+1
         n=-1
@@ -983,11 +1047,11 @@ c      do cs=4,6
 c   67 continue   
       enddo
       xmsq=xmsq+xmsqt
-c      write(6,*) 'resum_nlo: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resum_NNLL: j,k,  ct=',j,k,xmsqt
 
 c--- gluon-gluon
       elseif ((j .eq. g) .and. (k .eq. g)) then
-c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resum_NNLL: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       xmsqt=0d0
 c--- loop up to 3 to cancel poles from gggg
 c      do cs=1,3
@@ -1013,11 +1077,11 @@ c      do cs=1,3
      &  +msq_gq*(AP(q,g,2)+H2(q,g,g,cs,2)))*fx1(g)*fx2z(g)/z
       enddo
       xmsq=xmsq+xmsqt
-c      write(6,*) 'resum_nlo: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resum_NNLL: j,k,  ct=',j,k,xmsqt
 
 c--- quark-gluon and anti-quark gluon
       elseif ((j .ne. 0) .and. (k .eq. g)) then
-c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resum_NNLL: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       m=+1
       n=0
       xmsqt=0d0
@@ -1047,12 +1111,12 @@ c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       xmsqt=xmsqt     
      & +msq_struc(iqr,m,-m)*(AP(a,g,2)+H2(a,g,q,iqr,2))*fx1(j)*fx2z(g)/z
       xmsq=xmsq+xmsqt
-c      write(6,*) 'resum_nlo: j,k,  ct=',j,k,xmsqt
-c      write(6,*) 'resum_nlo: j,k, SUM=',j,k,xmsqt+fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resum_NNLL: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resum_NNLL: j,k, SUM=',j,k,xmsqt+fx1(j)*fx2(k)*msqv(j,k)
       
 c--- gluon-quark and gluon anti-quark
       elseif ((j .eq. 0) .and. (k .ne. 0)) then
-c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resum_NNLL: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       m=0
       n=+1
       xmsqt=0d0
@@ -1082,7 +1146,7 @@ c      write(6,*) 'resum_nlo: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       xmsqt=xmsqt     
      & +msq_struc(iqr,-n,n)*(AP(a,g,2)+H1(a,g,q,iqr,2))*fx1z(g)/z*fx2(k)
       xmsq=xmsq+xmsqt
-c      write(6,*) 'resum_nlo: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resum_NNLL: j,k,  ct=',j,k,xmsqt
 
       endif
       
@@ -1606,9 +1670,9 @@ C--gQ
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_aq*(AP(a,g,2)+Q1(a,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_qq*(AP(q,g,2)+Q1(q,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1z(g)/z*fx2(k)
        endif
 C--gQbar
@@ -1630,9 +1694,9 @@ C--gQbar
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_qa*(AP(q,g,2)+Q1(q,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_aa*(AP(a,g,2)+Q1(a,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1z(g)/z*fx2(k)
        endif
        endif
@@ -1657,9 +1721,9 @@ C--Qg
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_qa*(AP(a,g,2)+Q2(a,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_qq*(AP(q,g,2)+Q2(q,g,q,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1(j)*fx2z(g)/z
        endif
 C--Qbarg
@@ -1681,9 +1745,9 @@ C--Qbarg
 c--- replace subtraction with a b in initial state by massive sub
         xmsq=xmsq-(
      & +   msq_aq*(AP(q,g,2)+Q2(q,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      & +   msq_aa*(AP(a,g,2)+Q2(a,g,a,2)
-     &            +ason2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
+     &            +askton2pi*Tr*(z**2+omz**2)*dlog(facscale**2/mbsq))
      &            )*fx1(j)*fx2z(g)/z
        endif
        endif
@@ -1728,7 +1792,9 @@ c---  SSend
       enddo
 
       if (currentPDF .eq. 0) then
-        resum_nlo=flux*xjac*pswt*xmsq/BrnRat
+        resum_NNLL=flux*xjac*pswt*xmsq* 
+     &                resummed_sigma(ptveto, resm_opts, 2)/BrnRat
+c$$$         resum_NNLL=flux*xjac*pswt*xmsq/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary
@@ -1790,10 +1856,10 @@ c      endif
       enddo
       enddo
 
-      val=resum_nlo*wgt 
+      val=resum_NNLL*wgt 
       val2=val**2 
 c---  SSbegin
-      resum_nlo = resum_nlo*reweight
+      resum_NNLL = resum_NNLL*reweight
 c---  SSend
 c--- update the maximum weight so far, if necessary
       if (abs(val) .gt. wtmax) then
@@ -1814,24 +1880,24 @@ c--- POWHEG-style output if requested
 
 c--- handle special caase of Qflag and Gflag
       if (QandGflag) then
-        QandGint=QandGint+resum_nlo
+        QandGint=QandGint+resum_NNLL
         if ((Gflag) .and. (.not.(Qflag))) then
 c--- go back for second pass (Qflag)
         Qflag=.true.
         Gflag=.false.
         goto 44
       else
-c--- return both to .true. and assign value to resum_nlo (to return to VEGAS)
+c--- return both to .true. and assign value to resum_NNLL (to return to VEGAS)
         Qflag=.true.
         Gflag=.true.
-        resum_nlo=QandGint
+        resum_NNLL=QandGint
       endif
       endif
       
       return
 
  999  continue
-      resum_nlo=0d0
+      resum_NNLL=0d0
       ntotzero=ntotzero+1
 c--- safety catch
       if (QandGflag) then

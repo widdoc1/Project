@@ -1,4 +1,7 @@
-      double precision function resum_lo(r,wgt)
+      double precision function resum_NLL(r,wgt)
+      use types_mod
+      use rad_tools_mod
+      use resummation_mod
       implicit none
       include 'constants.f'
       include 'masses.f'
@@ -38,8 +41,14 @@ c --- DSW.
       include 'x1x2.f'
       include 'bypart.f'
       integer pflav,pbarflav
-c--- resummation
-      double precision Ltilde
+
+!    
+!      type(process_and_parameters)  :: cs
+!      double precision mu0
+!      include 'qcdcouple.f'
+      include 'resum_params.f'
+      include 'ptveto.f'
+
 c--- To use VEGAS random number sequence :
       double precision ran2
       integer ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -69,7 +78,7 @@ c--- To use VEGAS random number sequence :
 !$omp threadprivate(/bqscale/)
 
       ntotshot=ntotshot+1
-      resum_lo=0d0
+      resum_NLL=0d0
 c--- ensure isolation code does not think this is fragmentation piece
       z_frag=0d0
       
@@ -98,9 +107,8 @@ c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,
      &                                          initresumscale,p)
-     
-      call calcLtilde(resumscale,Ltilde) 
-      facscale=facscale*exp(-Ltilde)
+
+      call resumset(p)
       
       xx(1)=-2d0*p(1,4)/sqrts
       xx(2)=-2d0*p(2,4)/sqrts
@@ -621,7 +629,7 @@ c      call checkgvec(-1,2,5,p,qq_tbg,qq_tbg_gvec)
         fx1(2)=1d0
         fx2(-1)=1d0
       else
-        write(6,*) 'Unimplemented process in resum_lo : case=',case
+        write(6,*) 'Unimplemented process in resum_NLL : case=',case
         stop 
       endif
       
@@ -673,13 +681,13 @@ c---  (applies only if dynstring = 'DDIS')
             call fdist(ih1,xx(1),q1scale,fx1)
             call fdist(ih2,xx(2),b2scale,fxb2)
         else          
-            call fdist(ih1,xx(1),facscale,fx1)
-            call fdist(ih2,xx(2),facscale,fx2)
+            call fdist(ih1,xx(1),facscaleLtilde,fx1)
+            call fdist(ih2,xx(2),facscaleLtilde,fx2)
         endif
         else   
 c--- usual case            
-          call fdist(ih1,xx(1),facscale,fx1)
-          call fdist(ih2,xx(2),facscale,fx2)
+          call fdist(ih1,xx(1),facscaleLtilde,fx1)
+          call fdist(ih2,xx(2),facscaleLtilde,fx2)
         endif
       endif
 
@@ -752,7 +760,9 @@ c--- DEFAULT
       enddo
 
       if (currentPDF .eq. 0) then
-        resum_lo=flux*pswt*xmsq/BrnRat
+         resum_NLL=flux*pswt*xmsq
+     &               *resummed_sigma(ptveto, resm_opts, 1)/BrnRat
+c$$$         resum_NLL=flux*pswt*xmsq/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary
@@ -786,10 +796,10 @@ c--- loop over all PDF error sets, if necessary
       enddo
       enddo
 
-      val=resum_lo*wgt
+      val=resum_NLL*wgt
       val2=val**2
 c---  SSbegin
-      resum_lo = resum_lo*reweight
+      resum_NLL = resum_NLL*reweight
 c---  SSend
 c--- update the maximum weight so far, if necessary
 c---  but not if we are already unweighting ...
@@ -823,22 +833,22 @@ c         write(6,*) 'Keep event with weight',val
             newwt = wtabs/wtmax
           endif
           if (newwt .gt. 1.0d0) then
-            write(6,*) 'WARNING : resum_lo : event with |weight| > 1.',
+            write(6,*) 'WARNING : resum_NLL : event with |weight| > 1.',
      &                 ' |weight| = ',newwt
           endif
 c ---     just in case the weight was negative :
           newwt = newwt*dsign(1d0,val)
 c         call nplotter(pjet,newwt,newwt,0)
-!$omp critical(resum_loWriteLHE)
+!$omp critical(resum_NLLWriteLHE)
           call mcfm_writelhe(pjet,xmsq_array,newwt)
-!$omp end critical(resum_loWriteLHE)
+!$omp end critical(resum_NLLWriteLHE)
         endif
       endif
 
       return
 
  999  continue
-      resum_lo=0d0
+      resum_NLL=0d0
       ntotzero=ntotzero+1
       
       return

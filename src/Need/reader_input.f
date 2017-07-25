@@ -622,8 +622,8 @@ c--- check that we have a valid value of 'part'
 c--- for the moment allow resummation of all processes
       if ( (part .ne. 'lord') .and. (part .ne. 'real') .and.
      .     (part .ne. 'virt') .and. (part .ne. 'tota') .and.
-     .     (part .ne. 'rmlo') .and. (part .ne. 'resm') .and.
-     .     (part .ne. 'rmex') ) then
+     .     (part .ne. 'LL') .and. (part .ne. 'NLL') .and.
+     .     (part .ne. 'NNLL') .and. (part .ne. 'rmex') ) then
         if    ( (part .eq. 'todk') .and.
      .          ((case .eq. 'bq_tpq') .or. (case .eq. 't_bbar')
      .      .or. (case .eq. 'W_twdk') .or. (case .eq. 'tt_bbl')
