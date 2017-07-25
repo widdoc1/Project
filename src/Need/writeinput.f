@@ -47,7 +47,6 @@ c--- by the strings 'lstring' and 'rstring'
       include 'VVcut.f'
       include 'kappa.f'
       include 'ptveto.f'
-      include 'ptvetomax.f'
       include 'resumscale.f'
       include 'vegas_params.f'
 c--- APPLgrid - flag using grid
@@ -588,15 +587,9 @@ c      endif
       if ((tag .eq. 'VVcut') .or. (writeall)) then
       write(unitno,fmt=f97) VVCut,'VVcut'
       endif
-c      if ((tag .eq. 'cgg') .or. (writeall)) then
-c      write(unitno,fmt=f99) cgg,'cgg'
-c      endif
       if ((tag .eq. 'ptveto') .or. (writeall)) then
       write(unitno,fmt=f99) ptveto,'ptveto'
       endif
-c      if ((tag .eq. 'ptvetomax') .or. (writeall)) then
-c      write(unitno,fmt=f99) ptvetomax,'ptvetomax'
-c      endif
       
       if (writeall) then
       write(unitno,*)
