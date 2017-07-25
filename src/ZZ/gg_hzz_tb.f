@@ -13,8 +13,9 @@ c--- The exact result for massive bottom and top quark loops is included
       double precision p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac,
      & pswap(mxpart,4),oprat
       double complex ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),
-     & ggH_tree(2,2,2,2),Ahiggs,ggH_bquark_swap(2,2,2,2),
-     & ggH_tquark_swap(2,2,2,2),ggH_tree_swap(2,2,2,2),Ahiggs_swap
+     & ggH_6(2,2,2,2),Ahiggs,
+     & ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),
+     & ggH_6_swap(2,2,2,2),Ahiggs_swap
 
       if (qlfirst) then
         qlfirst=.false. 
@@ -23,7 +24,7 @@ c--- The exact result for massive bottom and top quark loops is included
       
       msq(:,:)=0d0
       
-      call getggHZZamps(p,ggH_bquark,ggH_tquark,ggH_tree)
+      call getggHZZamps(p,ggH_bquark,ggH_tquark,ggH_6)
       
       if (interference) then
 c--- for interference, compute amplitudes after 4<->6 swap
@@ -34,7 +35,7 @@ c--- for interference, compute amplitudes after 4<->6 swap
        pswap(5,:)=p(5,:)
        pswap(6,:)=p(4,:)
        call getggHZZamps(pswap,ggH_bquark_swap,ggH_tquark_swap,
-     &  ggH_tree_swap)
+     &      ggH_6_swap)
       endif
       
       msqgg=0d0
@@ -47,8 +48,7 @@ c--- compute total Higgs amplitude
       AHiggs=
      &  +k_b*ggH_bquark(h1,h2,h34,h56)
      &  +k_t*ggH_tquark(h1,h2,h34,h56)
-     &  +k_g*ggH_tree(h1,h2,h34,h56)
-      
+     &  +k_g*ggH_6(h1,h2,h34,h56)
      
       if (interference .eqv. .false.) then
 c--- normal case
@@ -58,7 +58,7 @@ c--- with interference
         AHiggs_swap=
      &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
      &  +k_t*ggH_tquark_swap(h1,h2,h34,h56)
-     &  +k_g*ggH_tree_swap(h1,h2,h34,h56)
+     &  +k_g*ggH_6_swap(h1,h2,h34,h56)
         if (h34 .eq. h56) then
           oprat=1d0-2d0*dble(dconjg(AHiggs)*AHiggs_swap)
      &                 /(cdabs(AHiggs)**2+cdabs(AHiggs_swap)**2)

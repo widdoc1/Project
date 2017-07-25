@@ -20,14 +20,13 @@ c--- The effect of massive bottom and top quark loops is included
      & Mloop_bquark(2,2,2,2),Mloop_tquark(2,2,2,2),
      & Sloop_uptype(2,2,2,2),Sloop_dntype(2,2,2,2),
      & Sloop_bquark(2,2,2,2),Sloop_tquark(2,2,2,2),
-     & ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),ggH_tree(2,2,2,2),
+     & ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),ggH_6(2,2,2,2),
      & Acont,Ahiggs,ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),
-     & ggH_tree_swap(2,2,2,2),Ahiggs_swap,
-     & Acont_swap,Mamp,Samp
+     & ggH_6_swap(2,2,2,2),Ahiggs_swap,Acont_swap,Mamp,Samp
       logical includegens1and2,includebottom,includetop
 
 c--- set this to true to include generations 1 and 2 of (light) quarks
-      includegens1and2=.true.      
+      includegens1and2=.true.
 c--- set this to true to include massive bottom quark
       includebottom=.true.
 c--- set this to true to include massive top quark
@@ -58,7 +57,7 @@ c      if (pttwo(3,4,p) .lt. 7d0) return ! Kauer gg2VV cut on |H+C|^2
       call getggZZamps(p,includegens1and2,includebottom,includetop,
      & Mloop_uptype,Mloop_dntype,Mloop_bquark,Mloop_tquark)
 
-      call getggHZZamps(p,ggH_bquark,ggH_tquark,ggH_tree)
+      call getggHZZamps(p,ggH_bquark,ggH_tquark,ggH_6)
       
       if (interference) then
 c--- for interference, compute amplitudes after 4<->6 swap
@@ -71,7 +70,7 @@ c--- for interference, compute amplitudes after 4<->6 swap
        call getggZZamps(pswap,includegens1and2,includebottom,includetop,
      &  Sloop_uptype,Sloop_dntype,Sloop_bquark,Sloop_tquark)
        call getggHZZamps(pswap,ggH_bquark_swap,ggH_tquark_swap,
-     &  ggH_tree_swap)
+     &  ggH_6_swap)
       endif
       
       msqgg=0d0
@@ -90,7 +89,8 @@ c--- compute total Higgs amplitude
       AHiggs=
      &  +k_b*ggH_bquark(h1,h2,h34,h56)   
      &  +k_t*ggH_tquark(h1,h2,h34,h56)   
-     &  +k_g*ggH_tree(h1,h2,h34,h56)
+     &  +k_g*ggH_6(h1,h2,h34,h56)
+
 c---- This accumulates all contributions
       Mamp=Acont+AHiggs
       
@@ -107,7 +107,7 @@ c--- with interference
         AHiggs_swap=
      &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
      &  +k_t*ggH_tquark_swap(h1,h2,h34,h56)
-     &  +k_g*ggH_tree_swap(h1,h2,h34,h56)
+     &  +k_g*ggH_6_swap(h1,h2,h34,h56)
         Samp=Acont_swap+AHiggs_swap
         if (h34 .eq. h56) then
           oprat=1d0-2d0*dble(dconjg(Mamp)*Samp)
