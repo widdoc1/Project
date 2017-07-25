@@ -21,13 +21,207 @@ logical function userincludedipole(nd, ppart, mcfm_result)
   include 'constants.f'
   include 'npart.f'
   include 'jetlabel.f'
-  include 'ptveto.f'
-!  include 'VVcut.f'
+  include 'nproc.f'
   integer,          intent(in) :: nd
   double precision, intent(in) :: ppart(mxpart,4)
   logical,          intent(in) :: mcfm_result
+   !------------
+  logical :: bin, ATLAS_hww2017
+  common/bin/bin
+
+  ! take the MCFM result as the default choice
+  userincludedipole = mcfm_result
+  ! return
+
+  if ( (nproc .eq. 61) .or. (nproc .eq. 66) .or. (nproc .eq. 69) &
+       & .or. (nproc .eq. 123) .or. (nproc .eq. 124) .or. (nproc .eq. 125) &
+       & .or. (nproc .eq. 126) ) then
+     if (ATLAS_hww2017(ppart)) then
+        userincludedipole = mcfm_result
+     else
+        userincludedipole = .false.
+     endif
+  endif
+
+  return
+end function userincludedipole
+
+!----------------------------------------------------------------------
+! Variables passed to this routine:
+! 
+!      p:  4-momenta of jets in the format p(i,4)
+!          with the particles numbered according to the input file
+!          and components labelled by (px,py,pz,E).
+! 
+!     wt:  weight of this event
+! 
+!    wt2:  weight^2 of this event
+! 
+!     nd:  an integer specifying the dipole number of this contribution
+!          (if applicable), otherwise equal to zero
+
+subroutine userplotter(ppart, wt,wt2, nd)
+  implicit none
+  include 'constants.f'
+  include 'ptilde.f'
+  include 'npart.f'
+  include 'nplot.f'
+  double precision, intent(in)  :: ppart(mxpart,4)
+  double precision, intent(in)  :: wt,wt2
+  integer,          intent(in)  :: nd
+  !---------------------------------------------
+  integer :: i, iplot 
+  double precision :: m34, m45, m56, m3456
+  double precision :: MT1, MT2
+  double precision :: ptll, pt45(2), ptmiss, pt36(2), MTll, &
+       & dphillmiss, pttwo
+  double precision :: ht, htjet
+  logical, save :: first = .true.
+  character*4   :: tag
+  if (first) then
+    tag   = "book"
+    first = .false.
+  else                
+    tag = "plot"
+  end if
   
-	double precision :: etarap,pt
+  iplot = nextnplot
+
+  !ht    = sum(sqrt(sum(ptilde   (nd,3:2+npart,1:2)**2,dim=2)))
+  !htjet = sum(sqrt(sum(ptildejet(nd,3:2+npart,1:2)**2,dim=2)))
+
+  !call bookplot(iplot,tag,'UserHT',ht,wt,wt2,0d0,500d0,20d0,'lin') 
+  !iplot = iplot + 1
+   
+  !call bookplot(iplot,tag,'UserHTJet',htjet,wt,wt2,0d0,500d0,20d0,'lin')
+  !iplot = iplot + 1
+  
+  !define quantities to plot
+	m45=(ppart(4,4)+ppart(5,4))**2 
+	do i=1,3
+		m45=m45-(ppart(4,i)+ppart(5,i))**2
+	enddo
+	m45=sqrt(m45)
+	m34=(ppart(3,4)+ppart(4,4))**2 
+	m3456=(ppart(3,4)+ppart(4,4)+ppart(5,4)+ppart(6,4))**2
+	do i=1,3
+		m34=m34-(ppart(3,i)+ppart(4,i))**2
+		m3456=m3456-(ppart(3,i)+ppart(4,i)+ppart(5,i)+ppart(6,i))**2
+	enddo
+	m34=sqrt(m34)
+	m3456=sqrt(m3456)
+	m56=(ppart(5,4)+ppart(6,4))**2 
+	do i=1,3
+		m56=m56-(ppart(5,i)+ppart(6,i))**2
+	enddo
+  m56=sqrt(m56)
+
+  ! transverse mass proxy for MWW
+	ptll = pttwo(4,5,ppart) 
+  pt45(1) = ppart(4,1)+ppart(5,1)
+  pt45(2) = ppart(4,2)+ppart(5,2)
+
+  ptmiss = pttwo(3,6,ppart) 
+  pt36(1) = ppart(3,1)+ppart(6,1)
+	pt36(2) = ppart(3,2)+ppart(6,2)
+
+  MTll=sqrt(ptll**2+m45**2)
+
+  MT1=(MTll+ptmiss)**2
+  do i=1,2
+    MT1=MT1-(pt45(i)+pt36(i))**2
+  enddo
+  MT1=sqrt(MT1)
+
+  dphillmiss=acos((pt36(1)*pt45(1)+pt36(2)*pt45(2))/ptmiss/ptll)
+
+  MT2=sqrt(2d0*ptll*ptmiss*(1-cos(dphillmiss)))
+
+  ! m(45) dists
+	call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,8000d0,80d0,'log')
+	iplot = iplot + 1
+
+	call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+  
+	call bookplot(iplot,tag,'m(45)',m45,wt,wt2,100d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  ! m(3456) dists
+	call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
+	iplot = iplot + 1
+
+	call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+  
+  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,100d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  ! MT1
+  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
+	iplot = iplot + 1
+
+	call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,100d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  ! MT2
+  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
+	iplot = iplot + 1
+
+	call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,100d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  ! update nextnplot so we get userplots and generic plots from nplotter routines
+  nextnplot = iplot
+
+end subroutine userplotter
+
+!----------------------------------------------------------------------
+! user code to write info 
+subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
+  implicit none
+  integer,          intent(in) :: unitno
+  character*2,      intent(in) :: comment_string
+  double precision, intent(in) :: xsec, xsec_err
+  integer,          intent(in) :: itno
+  
+  !write(6,*) "have reached iteration number", itno
+  !write(unitno,"(a,a)") comment_string, "any additional user comments"
+  !call mcfmfwrite(unitno, comment_string//"any additional user comments")
+end subroutine userwriteinfo
+
+subroutine userhistofin(xsec,xsec_err,itno,itmx)
+!	This function allows for extra user-defined operations 
+!	at the end of each iteration (itno>0) and at the end of 
+!	the run of the program (itno=0).
+	implicit none
+	integer itno,itmx
+	double precision xsec,xsec_err
+end subroutine userhistofin
+
+! subroutine userscale(event_momenta, muR, muF)
+!   double precision, intent(out) :: muR, muF
+! end subroutine userscale
+
+function ATLAS_hww2017(ppart) result(res)
+  implicit none
+  include 'constants.f'
+  include 'npart.f'
+  include 'jetlabel.f'
+  include 'energy.f'
+  include 'VVcut.f'
+  include 'ptveto.f'
+
+  double precision, intent(in) :: ppart(mxpart,4)
+  logical :: res
+
+  double precision :: etarap,pt
 	double precision :: y4,y5,pt3,pt4,pt5,pt6
 	double precision :: pt34,pttwo
 	double precision :: pt45,pt56,m45,mt45,mtrans
@@ -37,18 +231,6 @@ logical function userincludedipole(nd, ppart, mcfm_result)
 	double precision etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
 	double precision dphi,ptrel,pt36(2) 
 
-  !------------
-  logical    bin
-  double precision sqrts
-	integer VVcut
-	common/VVcut/VVcut
-  common/bin/bin
-  common/energy/sqrts 
-
-  ! take the MCFM result as the default choice
-  ! userincludedipole = mcfm_result
-  
-  !cuts for Process 61,
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
 
 	pt3 = pt(3,ppart)
@@ -87,7 +269,6 @@ logical function userincludedipole(nd, ppart, mcfm_result)
 
 	mt45=0d0 
 	mt45=(sqrt(sqrt(pttwo(4,5,ppart)**2+m45**2)+etmiss(ppart,et_vec))**2)
-!    endif
 
 !     PFM & GZ place cuts for WW
 	passcuts = .true. 
@@ -133,7 +314,7 @@ logical function userincludedipole(nd, ppart, mcfm_result)
 
 	if (abs(sqrts-13000.d0) < 1d0) then 
 
-		if (VVcut .eq. 3) then 
+    if (VVcut .eq. 3) then 
 !     emu 
 			if (abs(eta5) > 2.4) passcuts=.false.
 			if (abs(eta4) > 2.47) passcuts=.false.
@@ -361,127 +542,16 @@ logical function userincludedipole(nd, ppart, mcfm_result)
 			endif
 
 		else
-			stop 'VVcut not set' 
+			stop 'VVcuts not set' 
 		endif
 	else
 		stop 'Energy not OK for this study' 
 	endif
 	
 	if (passveto .and. passcuts) then
-		userincludedipole = mcfm_result
+		res = .true.
 	else
-		userincludedipole = .false. 
+		res = .false. 
 	endif
 
-end function userincludedipole
-
-!----------------------------------------------------------------------
-! Variables passed to this routine:
-! 
-!      p:  4-momenta of jets in the format p(i,4)
-!          with the particles numbered according to the input file
-!          and components labelled by (px,py,pz,E).
-! 
-!     wt:  weight of this event
-! 
-!    wt2:  weight^2 of this event
-! 
-!     nd:  an integer specifying the dipole number of this contribution
-!          (if applicable), otherwise equal to zero
-
-subroutine userplotter(ppart, wt,wt2, nd)
-  implicit none
-  include 'constants.f'
-  include 'ptilde.f'
-  include 'npart.f'
-  include 'nplot.f'
-  double precision, intent(in)  :: ppart(mxpart,4)
-  double precision, intent(in)  :: wt,wt2
-  integer,          intent(in)  :: nd
-  !---------------------------------------------
-  integer :: i, iplot 
-  double precision :: m34, m45, m56, m3456
-  double precision :: ht, htjet
-  logical, save :: first = .true.
-  character*4   :: tag
-  if (first) then
-    tag   = "book"
-    first = .false.
-  else                
-    tag = "plot"
-  end if
-  
-  iplot = nextnplot
-
-  !ht    = sum(sqrt(sum(ptilde   (nd,3:2+npart,1:2)**2,dim=2)))
-  !htjet = sum(sqrt(sum(ptildejet(nd,3:2+npart,1:2)**2,dim=2)))
-
-  !call bookplot(iplot,tag,'UserHT',ht,wt,wt2,0d0,500d0,20d0,'lin') 
-  !iplot = iplot + 1
-   
-  !call bookplot(iplot,tag,'UserHTJet',htjet,wt,wt2,0d0,500d0,20d0,'lin')
-  !iplot = iplot + 1
-  
-  !define quantities to plot
-	m45=(ppart(4,4)+ppart(5,4))**2 
-	do i=1,3
-		m45=m45-(ppart(4,i)+ppart(5,i))**2
-	enddo
-	m45=sqrt(m45)
-	m34=(ppart(3,4)+ppart(4,4))**2 
-	m3456=(ppart(3,4)+ppart(4,4)+ppart(5,4)+ppart(6,4))**2
-	do i=1,3
-		m34=m34-(ppart(3,i)+ppart(4,i))**2
-		m3456=m3456-(ppart(3,i)+ppart(4,i)+ppart(5,i)+ppart(6,i))**2
-	enddo
-	m34=sqrt(m34)
-	m3456=sqrt(m3456)
-	m56=(ppart(5,4)+ppart(6,4))**2 
-	do i=1,3
-		m56=m56-(ppart(5,i)+ppart(6,i))**2
-	enddo
-	m56=sqrt(m56)
-
-	call bookplot(iplot,tag,'m_{ll}',m45,wt,wt2,0d0,8000d0,80d0,'log')
-	iplot = iplot + 1
-
-	call bookplot(iplot,tag,'m_{ll}',m45,wt,wt2,0d0,1000d0,20d0,'log')
-  iplot = iplot + 1
-  
-	call bookplot(iplot,tag,'m_{WW}',m3456,wt,wt2,0d0,8000d0,80d0,'log')
-	iplot = iplot + 1
-
-	call bookplot(iplot,tag,'m_{WW}',m3456,wt,wt2,0d0,1000d0,20d0,'log')
-  iplot = iplot + 1
-  
-  ! update nextnplot so we get userplots and generic plots from nplotter routines
-  nextnplot = iplot
-
-end subroutine userplotter
-
-!----------------------------------------------------------------------
-! user code to write info 
-subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
-  implicit none
-  integer,          intent(in) :: unitno
-  character*2,      intent(in) :: comment_string
-  double precision, intent(in) :: xsec, xsec_err
-  integer,          intent(in) :: itno
-  
-  !write(6,*) "have reached iteration number", itno
-  !write(unitno,"(a,a)") comment_string, "any additional user comments"
-  !call mcfmfwrite(unitno, comment_string//"any additional user comments")
-end subroutine userwriteinfo
-
-subroutine userhistofin(xsec,xsec_err,itno,itmx)
-!	This function allows for extra user-defined operations 
-!	at the end of each iteration (itno>0) and at the end of 
-!	the run of the program (itno=0).
-	implicit none
-	integer itno,itmx
-	double precision xsec,xsec_err
-end subroutine userhistofin
-
-! subroutine userscale(event_momenta, muR, muF)
-!   double precision, intent(out) :: muR, muF
-! end subroutine userscale
+end function

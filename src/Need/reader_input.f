@@ -53,7 +53,7 @@
       include 'nproc.f'
       include 'resumscale.f'
       include 'VVcut.f'
-      include 'cgg.f'
+      include 'kappa.f'
       include 'ptveto.f'
       include 'vegas_params.f'
 c--- APPLgrid - flag using grid
@@ -370,6 +370,19 @@ c--- settings for photon processes
 c--- write-out comment line
       read(20,99) line
       if (verbose) write(6,*) '* ',line
+c--- kappas
+      read(20,*) k_t
+      if (verbose) call writeinput(6,' * ',' ','k_t')
+      read(20,*) k_b
+      if (verbose) call writeinput(6,' * ',' ','k_b')
+      read(20,*) k_g
+      if (verbose) call writeinput(6,' * ',' ','k_g')
+
+      if (verbose) write(6,*)
+      read(20,99) line
+c--- write-out comment line
+      read(20,99) line
+      if (verbose) write(6,*) '* ',line
 c--- anomalous couplings 
       read(20,*) delg1_z
       if (verbose) call writeinput(6,' * ',' ','delg1_z')
@@ -523,15 +536,11 @@ c---- read-in the technical parameters
 c--- write-out comment line
       read(20,99) line
       if (verbose) write(6,*) '* ',line
-c--- resum options
+c--- read in hww cut parameters
       read(20,*) VVcut
       if (verbose) call writeinput(6,' * ',' ','VVcut')
-      read(20,*) cgg
-      if (verbose) call writeinput(6,' * ',' ','cgg')
       read(20,*) ptveto
       if (verbose) call writeinput(6,' * ',' ','ptveto')
-c      read(20,*) ptvetomax
-c      if (verbose) call writeinput(6,' * ',' ','ptvetomax')
       if (verbose) write(6,*)
       close(unit=20)
 
