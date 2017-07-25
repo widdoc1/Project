@@ -105,9 +105,9 @@ c--- with interference
      &      +Sloop_bquark(h1,h2,h34,h56)
      &      +Sloop_tquark(h1,h2,h34,h56)
         AHiggs_swap=
-     &  +ggH_bquark_swap(h1,h2,h34,h56)
-     &  +ggH_tquark_swap(h1,h2,h34,h56)
-     &  +ggH_tree_swap(h1,h2,h34,h56)
+     &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
+     &  +k_t*ggH_tquark_swap(h1,h2,h34,h56)
+     &  +k_g*ggH_tree_swap(h1,h2,h34,h56)
         Samp=Acont_swap+AHiggs_swap
         if (h34 .eq. h56) then
           oprat=1d0-2d0*dble(dconjg(Mamp)*Samp)
