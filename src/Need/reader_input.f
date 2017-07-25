@@ -53,7 +53,6 @@
       include 'nproc.f'
       include 'resumscale.f'
       include 'VVcut.f'
-c      include 'cgg.f'
       include 'kappa.f'
       include 'ptveto.f'
       include 'vegas_params.f'
@@ -537,15 +536,11 @@ c---- read-in the technical parameters
 c--- write-out comment line
       read(20,99) line
       if (verbose) write(6,*) '* ',line
-c--- resum options
+c--- read in hww cut parameters
       read(20,*) VVcut
       if (verbose) call writeinput(6,' * ',' ','VVcut')
-c      read(20,*) cgg
-c      if (verbose) call writeinput(6,' * ',' ','cgg')
       read(20,*) ptveto
       if (verbose) call writeinput(6,' * ',' ','ptveto')
-c      read(20,*) ptvetomax
-c      if (verbose) call writeinput(6,' * ',' ','ptvetomax')
       if (verbose) write(6,*)
       close(unit=20)
 
