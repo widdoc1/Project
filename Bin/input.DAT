@@ -14,7 +14,7 @@
 
 [General options to specify the process and execution]
 31	 	[nproc]
-'resm'  	[part 'lord','real' or 'virt','tota']
+'NNLL'  	[part 'lord','real' or 'virt','tota']
 'default'		['runstring']
 13000d0		[sqrts in GeV]
 +1		[ih1 =1 for proton and -1 for antiproton]
@@ -91,6 +91,11 @@
 0.4d0           [cone size for isolation]
 0.5d0		[epsilon_h, energy fraction for isolation]
 
+[Coupling rescaling in kappa formalism]
+1.0d0			[Kappa_t]
+0.0d0			[Kappa_b]
+0.0d0			[Kappa_g]
+
 [Anomalous couplings of the W and Z]
 0.0d0		[Delta_g1(Z)]
 0.0d0		[Delta_K(Z)]
@@ -147,5 +152,4 @@
 
 [Parameters for the resummation]
 1		[VVcut]
-0d0		[cgg]
-0d0		[jetveto]
+25d0		[jetveto]
