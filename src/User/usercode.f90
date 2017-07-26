@@ -158,23 +158,23 @@ subroutine userplotter(ppart, wt,wt2, nd)
   iplot = iplot + 1
 
   ! MT1
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,8000d0,80d0,'log')
 	iplot = iplot + 1
 
-	call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+	call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,1000d0,20d0,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,100d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,100d0,1000d0,20d0,'log')
   iplot = iplot + 1
 
   ! MT2
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,8000d0,80d0,'log')
 	iplot = iplot + 1
 
-	call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+	call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,1000d0,20d0,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,100d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,100d0,1000d0,20d0,'log')
   iplot = iplot + 1
 
   ! update nextnplot so we get userplots and generic plots from nplotter routines
