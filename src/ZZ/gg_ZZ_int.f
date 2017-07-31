@@ -1,35 +1,39 @@
       subroutine gg_ZZ_int(p,msq)
       implicit none
+      include 'types.f'
+      
 c--- Author: J. M. Campbell, September 2013
 c--- Effect of interference between gg -> H -> ZZ signal process
 c--- and gg -> ZZ NNLO contribution to continuum background
 c--- The effect of massive bottom and top quark loops is included
       include 'constants.f'
+      include 'nf.f'
+      include 'mxpart.f'
+      include 'cplx.h'
       include 'ewcouple.f'
       include 'qcdcouple.f'
       include 'noglue.f'
       include 'qlfirst.f'
       include 'interference.f'
-      include 'kappa.f'
-      integer h1,h2,h34,h56
-      double precision p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac,
+      integer:: h1,h2,h34,h56
+      real(dp):: p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac,
      & pswap(mxpart,4),oprat
-      double complex 
+      complex(dp):: 
      & Mloop_uptype(2,2,2,2),Mloop_dntype(2,2,2,2),
      & Mloop_bquark(2,2,2,2),Mloop_tquark(2,2,2,2),
      & Sloop_uptype(2,2,2,2),Sloop_dntype(2,2,2,2),
      & Sloop_bquark(2,2,2,2),Sloop_tquark(2,2,2,2),
-     & ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),ggH_6(2,2,2,2),
-     & Acont,Ahiggs,ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),
-     & ggH_6_swap(2,2,2,2),Ahiggs_swap,Acont_swap,Mamp,Samp
-      logical includegens1and2,includebottom,includetop
+     & ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),Acont,Ahiggs,
+     & ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),Ahiggs_swap,
+     & Acont_swap,Mamp,Samp
+      logical:: includegens1and2,includebottom,includetop
 
 c--- set this to true to include generations 1 and 2 of (light) quarks
       includegens1and2=.true.      
 c--- set this to true to include massive bottom quark
       includebottom=.true.
 c--- set this to true to include massive top quark
-      includetop=.true.
+      includetop=.false.
 
       if (qlfirst) then
         qlfirst=.false. 
@@ -49,14 +53,14 @@ c--- if noglue print warning message and stop
          stop
       endif
             
-      msq(:,:)=0d0
+      msq(:,:)=0._dp
       
-c      if (pttwo(3,4,p) .lt. 7d0) return ! Kauer gg2VV cut on |H+C|^2
+c      if (pttwo(3,4,p) < 7._dp) return ! Kauer gg2VV cut on |H+C|^2
 
       call getggZZamps(p,includegens1and2,includebottom,includetop,
      & Mloop_uptype,Mloop_dntype,Mloop_bquark,Mloop_tquark)
 
-      call getggHZZamps(p,ggH_bquark,ggH_tquark,ggH_6)
+      call getggHZZamps(p,ggH_bquark,ggH_tquark)
       
       if (interference) then
 c--- for interference, compute amplitudes after 4<->6 swap
@@ -68,11 +72,10 @@ c--- for interference, compute amplitudes after 4<->6 swap
        pswap(6,:)=p(4,:)
        call getggZZamps(pswap,includegens1and2,includebottom,includetop,
      &  Sloop_uptype,Sloop_dntype,Sloop_bquark,Sloop_tquark)
-       call getggHZZamps(pswap,ggH_bquark_swap,ggH_tquark_swap,
-     &  ggH_6_swap)
+       call getggHZZamps(pswap,ggH_bquark_swap,ggH_tquark_swap)
       endif
       
-      msqgg=0d0
+      msqgg=0._dp
       do h1=1,2
       do h2=1,2
       do h34=1,2
@@ -80,75 +83,73 @@ c--- for interference, compute amplitudes after 4<->6 swap
       
 c--- compute total continuum amplitude 
       Acont=     
-     &  +2d0*Mloop_uptype(h1,h2,h34,h56)
-     &  +2d0*Mloop_dntype(h1,h2,h34,h56)
+     &  +two*Mloop_uptype(h1,h2,h34,h56)
+     &  +two*Mloop_dntype(h1,h2,h34,h56)
      &      +Mloop_bquark(h1,h2,h34,h56)
      &      +Mloop_tquark(h1,h2,h34,h56)
 c--- compute total Higgs amplitude   
       AHiggs=
-     &  +k_b*ggH_bquark(h1,h2,h34,h56)   
-     &  +k_t*ggH_tquark(h1,h2,h34,h56)   
-     &  +k_g*ggH_6(h1,h2,h34,h56)
+     &  +ggH_bquark(h1,h2,h34,h56)   
+     &  +ggH_tquark(h1,h2,h34,h56)   
 
 c---- This only accumulates contributions from the interference
 
       if (interference .eqv. .false.) then
 c--- normal case
-        msqgg=msqgg+cdabs(Acont+AHiggs)**2
-     &             -cdabs(Acont)**2-cdabs(AHiggs)**2
+        msqgg=msqgg+abs(Acont+AHiggs)**2
+     &             -abs(Acont)**2-abs(AHiggs)**2
       else
 c--- with interference
         Acont_swap=
-     &  +2d0*Sloop_uptype(h1,h2,h34,h56)
-     &  +2d0*Sloop_dntype(h1,h2,h34,h56)
+     &  +two*Sloop_uptype(h1,h2,h34,h56)
+     &  +two*Sloop_dntype(h1,h2,h34,h56)
      &      +Sloop_bquark(h1,h2,h34,h56)
      &      +Sloop_tquark(h1,h2,h34,h56)
         AHiggs_swap=
-     &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
-     &  +k_t*ggH_tquark_swap(h1,h2,h34,h56)
-     &  +k_g*ggH_6_swap(h1,h2,h34,h56)
+     &  +ggH_bquark_swap(h1,h2,h34,h56)
+     &  +ggH_tquark_swap(h1,h2,h34,h56)
         Mamp=Acont+AHiggs
         Samp=Acont_swap+AHiggs_swap
-        if (h34 .eq. h56) then
-          oprat=1d0-2d0*dble(dconjg(Mamp)*Samp)
-     &                 /(cdabs(Mamp)**2+cdabs(Samp)**2)
+        if (h34 == h56) then
+          oprat=1._dp-two*real(conjg(Mamp)*Samp)
+     &                 /(abs(Mamp)**2+abs(Samp)**2)
         else
-          oprat=1d0
+          oprat=1._dp
         endif
         if (bw34_56) then
-          msqgg=msqgg+2d0*cdabs(Mamp)**2*oprat
+          msqgg=msqgg+two*abs(Mamp)**2*oprat
         else
-          msqgg=msqgg+2d0*cdabs(Samp)**2*oprat
+          msqgg=msqgg+two*abs(Samp)**2*oprat
         endif
 c--- subtract |Acont|^2
         Mamp=Acont
         Samp=Acont_swap
-        if (h34 .eq. h56) then
-          oprat=1d0-2d0*dble(dconjg(Mamp)*Samp)
-     &                 /(cdabs(Mamp)**2+cdabs(Samp)**2)
+        if (h34 == h56) then
+          oprat=1._dp-two*real(conjg(Mamp)*Samp)
+     &                 /(abs(Mamp)**2+abs(Samp)**2)
         else
-          oprat=1d0
+          oprat=1._dp
         endif
         if (bw34_56) then
-          msqgg=msqgg-2d0*cdabs(Mamp)**2*oprat
+          msqgg=msqgg-two*abs(Mamp)**2*oprat
         else
-          msqgg=msqgg-2d0*cdabs(Samp)**2*oprat
+          msqgg=msqgg-two*abs(Samp)**2*oprat
         endif
 c--- subtract |AHiggs|^2
-        if (h1 .eq. h2) then
+        if (h1 == h2) then
 c------ Higgs amplitudes only non-zero for h1=h2        
         Mamp=AHiggs
         Samp=AHiggs_swap
-        if (h34 .eq. h56) then
-          oprat=1d0-2d0*dble(dconjg(Mamp)*Samp)
-     &                 /(cdabs(Mamp)**2+cdabs(Samp)**2)
+        if (h34 == h56) then
+          oprat=1._dp-two*real(conjg(Mamp)*Samp)
+     &                 /(abs(Mamp)**2+abs(Samp)**2)
         else
-          oprat=1d0
+          oprat=1._dp
         endif
         if (bw34_56) then
-          msqgg=msqgg-2d0*cdabs(Mamp)**2*oprat
+          msqgg=msqgg-two*abs(Mamp)**2*oprat
         else
-          msqgg=msqgg-2d0*cdabs(Samp)**2*oprat
+          msqgg=msqgg-two*abs(Samp)**2*oprat
         endif
         endif
       endif
@@ -159,7 +160,7 @@ c------ Higgs amplitudes only non-zero for h1=h2
       enddo
 
 c--- overall factor extracted (c.f. getggZZamps.f and getggHZZamps.f )
-      fac=avegg*V*(4d0*esq*gsq/(16d0*pisq)*esq)**2
+      fac=avegg*V*(four*esq*gsq/(16._dp*pisq)*esq)**2
       
       msq(0,0)=msqgg*fac*vsymfact
 
