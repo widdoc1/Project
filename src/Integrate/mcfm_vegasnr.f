@@ -282,6 +282,16 @@ c---  NLL integration
      &        nprn,sig,sd,chi)
       endif
 
+c---  NNLL integration should have one extra dimensions
+c---  (added and then taken away)
+      if (kpart==knnll) then
+         ndim=ndim+1
+         call boundregion(ndim,region)
+         call vegasnr(region,ndim,resmNNLLint,myinit,myncall,myitmx,
+     &        nprn,sig,sd,chi)
+         ndim=ndim-1
+      endif
+
 c--- If we're doing the tota integration, then set up the grid info
       if ((mykpart==ktota) .or. (mykpart==ktodk)
      & .or. (mykpart==knnlo)) then        

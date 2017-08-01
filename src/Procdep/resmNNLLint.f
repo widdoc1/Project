@@ -1,6 +1,9 @@
       function resmNNLLint(r,wgt)
+      use types_mod
+      use qcd_mod, only: beta0  ! just beta0 from running
+      use rad_tools_mod
+      use resummation_mod
       implicit none
-      include 'types.f'
       real(dp):: resmNNLLint
       
       include 'constants.f'
@@ -59,6 +62,9 @@
       include 'kpart.f'
       include 'hbbparams.f'
       include 'mpicommon.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'ptjveto.f'
 c--- APPLgrid - grid includes
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -94,6 +100,7 @@ c---- SSend
       logical:: bin,includedipole,checkpiDpjk
       real(dp):: QandGint
       integer mykpart
+      real(dp) :: dot, xl12
 
       integer:: t
 
@@ -127,6 +134,8 @@ c--- ensure isolation code does not think this is fragmentation piece
 
       call gen_lops(r,p,pswt,*999)
       
+      resum=.true.
+
       nvec=npart+2
       call dotem(nvec,p,s)
 
@@ -146,6 +155,8 @@ c--- bother calculating the matrix elements for it, instead bail out
       
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
      
+      call resmset(p)
+
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
 
@@ -172,8 +183,10 @@ c--- point to restart from when checking epsilon poles
 
 c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
+c$$$      epcorr=epinv+2._dp*log(scale/facscale)
       epcorr=epinv+2._dp*log(scale/facscale)
-      
+     &     /(1-2*as*beta0*Ltilde(ptjveto/resm_opts%Q,resm_opts%p))
+
 c--- for the case of virtual correction in the top quark decay,
 c--- ('tdecay','ttdkay','Wtdkay') there are no extra initial-state
 c--- contributions, so all these should be set to zero
@@ -868,6 +881,53 @@ C---initialize to zero
       enddo
       enddo
 
+
+c---  modify virtual
+      do j=-nf,nf
+      do k=-nf,nf
+
+         if (abs(msqv(j,k)) .lt. 1d-9) then
+            msqv(j,k) = 0d0
+         else
+         xl12=log(two*dot(p,1,2)/musq)
+         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
+
+         ! get H(1) finite
+         ! need to make this more general, this is the form of a
+         ! dipole for qq, qg or gq, but not gg!
+         msqv(j,k)=msqv(j,k)-
+     &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
+     &        -3d0*(epinv-xl12))
+
+c$$$         write(*,*) "msqv = ",msqv(j,k)
+
+         ! additional pi**2/6 due to coupling mismatch
+         msqv(j,k)=msqv(j,k)+pisqo6
+
+         ! restore casimirs
+         msqv(j,k)=msqv(j,k)*half*rad_A(1)
+
+         ! change into form for resummation
+         msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
+     &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
+     &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
+
+         ! restore prefactors
+         msqv(j,k)=msqv(j,k)*ason2pi*msq(j,k)
+
+c$$$         msqv(j,k)=msqv(j,k)*
+c$$$         write(*,*) "msq =", msq(j,k)
+c$$$         write(*,*) "musq = ",musq
+c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
+c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
+c$$$         write(*,*) "msqv =", msqv(j,k)
+
+         endif
+
+      enddo
+      enddo
+
+
       currentPDF=0
             
 c--- initialize a PDF set here, if calculating errors
@@ -920,12 +980,12 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,xx(1),facscale,fx1)
-              call fdist(ih2,xx(2),facscale,fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,xx(1),facscale,fx1)
-              call fdist(ih2,xx(2),facscale,fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
            endif
 c      endif
       endif
@@ -961,10 +1021,10 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,x1onz,facscale,fx1z)
+              call fdist(ih1,x1onz,facscaleLtilde,fx1z)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,x1onz,facscale,fx1z)
+              call fdist(ih1,x1onz,facscaleLtilde,fx1z)
            endif
 c--- APPLgrid - set factor
 c            f_X1overZ = 1._dp
@@ -998,10 +1058,10 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih2,x2onz,facscale,fx2z)
+              call fdist(ih2,x2onz,facscaleLtilde,fx2z)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih2,x2onz,facscale,fx2z)
+              call fdist(ih2,x2onz,facscaleLtilde,fx2z)
            endif
 c--- APPLgrid - set factor
 c            f_X2overZ = 1._dp
@@ -1862,6 +1922,7 @@ c---  SSend
 
       if (currentPDF == 0) then
         resmNNLLint=flux*xjac*pswt*xmsq/BrnRat
+     &        *resummed_sigma(ptjveto,resm_opts,order_NNLL)
       endif
             
 c--- loop over all PDF error sets, if necessary

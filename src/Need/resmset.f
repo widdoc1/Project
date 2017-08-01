@@ -13,20 +13,20 @@
       include 'kpart.f'
       include 'ptjveto.f'
 
-      real(dp) Rcut
+      real(dp) :: Rcut
       common/Rcut/Rcut
-      integer ilomomenta
+      integer :: ilomomenta
       common/ilomomenta/ilomomenta
 
-      character(len=5) collider
-      character(len=2) process
-      character(len=6) observable
-      real(dp) muR, muF, muResum
-      real(dp) inv_mass
-      real(dp) coupling, pow_sup, jet_radius
-      real(dp) p(mxpart,4), mu0
-      real(dp) pb(4)
-      integer j
+      character(len=5) :: collider
+      character(len=2) :: process
+      character(len=6) :: observable
+      real(dp) :: muR, muF, muResum
+      real(dp) :: inv_mass
+      real(dp) :: coupling, pow_sup, jet_radius
+      real(dp) :: p(mxpart,4), mu0
+      real(dp) :: pb(4)
+      integer :: j
       
       ! calculate invariant mass of bosons
       ! resummation lives in born phase space
@@ -57,6 +57,8 @@
 !     rescale factorisation scale for PDFs
 !     maybe add in scales for facscale_L/H for
 !     stops?
+
+      L_tilde = Ltilde(ptjveto/resm_opts%Q,resm_opts%p)
 
       if (kpart==kll) then
         facscaleLtilde = facscale
