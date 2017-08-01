@@ -150,11 +150,19 @@ DIRS	=	$(MCFMHOME):\
 		$(SOURCEDIR)/UTools:$(SOURCEDIR)/WBFZZ\
                 $(SOURCEDIR)/WBFWW:$(SOURCEDIR)/WBFWpWp:$(SOURCEDIR)/WBFWZ\
                 $(SOURCEDIR)/WH1jet:$(SOURCEDIR)/ZH1jet:$(SOURCEDIR)/QT:$(SOURCEDIR)/Mad\
-                $(SOURCEDIR)/QLFF
+                $(SOURCEDIR)/QLFF:$(SOURCEDIR)/JetVHeto
 
 
 # -----------------------------------------------------------------------------
 # Specify the object files. 
+
+JetVHeto = \
+consts_mod.o \
+emsn_tools_mod.o \
+qcd_mod.o \
+rad_tools_mod.o \
+resummation_mod.o \
+types_mod.o
 
 WH1JETFILES = \
 WHqqbgg.o \
@@ -2426,3 +2434,11 @@ qqqqampl.o: consts_dp.o spinfns.o recurrence.o
 qqqqgampl.o: consts_dp.o spinfns.o recurrence.o
 qqb_wpwp_qqb.o: qqqqampl.o consts_dp.o
 qqb_wpwp_qqb_g.o: qqqqgampl.o consts_dp.o
+
+# f95 modules for resummation
+types_mod.o:
+consts_mod.o: types_mod.o
+qcd_mod.o: types_mod.o consts_mod.o 
+rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
+emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
+resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o
