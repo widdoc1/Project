@@ -52,6 +52,8 @@ c--- by the strings 'lstring' and 'rstring'
       include 'taucut.f'
       include 'iterat.f'
       include 'mpicommon.f'
+      include 'JetVHeto.f'
+      include 'ptjveto.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -272,6 +274,27 @@ c--- catch special scale choices for stop+b process
       endif
       if ((tag == 'LHAPDF set') .or. (writeall)) then
       write(unitno,fmt=f97) PDFmember,'LHAPDF set'
+      endif
+
+      if (writeall) then
+         write(unitno,*)
+         write(unitno,*) 
+     &        lstring//' [JetVHeto resummation options] )'
+      endif
+      if ((tag == 'Q_scale') .or. (writeall)) then
+         write(unitno,fmt=f99) Q_scale,'Q_scale'
+      endif
+      if ((tag == 'R_scale') .or. (writeall)) then
+         write(unitno,fmt=f99) R_scale,'R_scale'
+      endif
+      if ((tag == 'observable') .or. (writeall)) then
+         write(unitno,fmt=f96) robs,'observable'
+      endif
+      if ((tag == 'ptjveto') .or. (writeall)) then
+         write(unitno,fmt=f99) ptjveto,'ptjveto'
+      endif
+      if ((tag == 'matching scheme') .or. (writeall)) then
+         write(unitno,fmt=f96) match_scheme,'matching scheme'
       endif
 
       if (writeall) then

@@ -1,5 +1,5 @@
 !     scales used in the JetVHeto resummation
-      logical :: resm          ! whether resummation is to be performed
+      logical :: resum          ! whether resummation is to be performed
 
 !     Boson invariant mass
       real(dp) :: M_B, M_B2
@@ -11,10 +11,11 @@
       real(dp) :: R_scale       ! resummation scale R
       real(dp) :: R_scalestart
 
-! container for resummation ingredients
-      type(process_and_parameters) :: resm_opts
+! observable
+      character(len=10) :: robs
+      character(len=1) :: match_scheme
 
-      common/resminputs/Q_scalestart,R_scalestart
+      common/resminputs/Q_scalestart,R_scalestart,resum,robs,
+     &     match_scheme
       common/resmscale/Q_scale,R_scale
-      common/resmparams/resm_opts
 !$omp threadprivate(/resmscale/)

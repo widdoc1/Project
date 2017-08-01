@@ -47,6 +47,7 @@ c --- DSW.
       integer:: pflav,pbarflav
 !     resummation
       include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
       include 'ptjveto.f'
 c--- To use VEGAS random number sequence :
       real(dp):: ran2
@@ -86,6 +87,8 @@ c--- ensure isolation code does not think this is fragmentation piece
       p(:,:)=0._dp
 
       call gen_lops(r,p,pswt,*999)
+
+      resum=.true.
 
       nvec=npart+2
       call dotem(nvec,p,s)

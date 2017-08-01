@@ -1,7 +1,7 @@
-      function virtint(r,wgt)
+      function resmNNLLint(r,wgt)
       implicit none
       include 'types.f'
-      real(dp):: virtint
+      real(dp):: resmNNLLint
       
       include 'constants.f'
       include 'nf.f'
@@ -74,7 +74,7 @@ c--- APPLgrid - end
 c---- SSbegin
       include 'reweight.f'
       logical:: purevirt
-      common/useropt/purevirt
+      common/useropt1/purevirt
       data purevirt/.false./
 c---- SSend 
 
@@ -108,7 +108,7 @@ c      data p/56*0._dp/
       save nshot
       external gg_ZZ,qqb_w1jet_vbis
 !$omp threadprivate(/rvcolourchoice/)
-!$omp threadprivate(nshot,/useropt/)
+!$omp threadprivate(nshot,/useropt1/)
 
       QandGflag=.false.
       if (first) then
@@ -119,7 +119,7 @@ c      data p/56*0._dp/
 
 !$omp atomic
       ntotshot=ntotshot+1
-      virtint=0._dp
+      resmNNLLint=0._dp
 c--- ensure isolation code does not think this is fragmentation piece
       z_frag=0._dp
 
@@ -1058,7 +1058,7 @@ c      tmp=xmsq
 c--- quark-quark or antiquark-antiquark
       if (  ((j > 0).and.(k > 0))
      & .or. ((j < 0).and.(k < 0))) then
-c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resmNNLLint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       if (j == k) then
         m=+1
         n=+1
@@ -1083,12 +1083,12 @@ c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
      & +msq_struc(cs,j,g)*(AP(g,q,2)+H2(g,q,q,cs,2)))*fx1(j)*fx2z(k)/z
       enddo      
       xmsq=xmsq+xmsqt
-c      write(6,*) 'virtint: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resmNNLLint: j,k,  ct=',j,k,xmsqt
 
 c--- quark-antiquark or antiquark-quark
       elseif (  ((j > 0).and.(k < 0))
      &     .or. ((j < 0).and.(k > 0))) then
-c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resmNNLLint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       if (j == -k) then
         m=+1
         n=-1
@@ -1116,11 +1116,11 @@ c      do cs=4,6
 c   67 continue   
       enddo
       xmsq=xmsq+xmsqt
-c      write(6,*) 'virtint: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resmNNLLint: j,k,  ct=',j,k,xmsqt
 
 c--- gluon-gluon
       elseif ((j == g) .and. (k == g)) then
-c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resmNNLLint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       xmsqt=0._dp
 c--- loop up to 3 to cancel poles from gggg
 c      do cs=1,3
@@ -1146,11 +1146,11 @@ c      do cs=1,3
      &  +msq_gq*(AP(q,g,2)+H2(q,g,g,cs,2)))*fx1(g)*fx2z(g)/z
       enddo
       xmsq=xmsq+xmsqt
-c      write(6,*) 'virtint: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resmNNLLint: j,k,  ct=',j,k,xmsqt
 
 c--- quark-gluon and anti-quark gluon
       elseif ((j .ne. 0) .and. (k == g)) then
-c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resmNNLLint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       m=+1
       n=0
       xmsqt=0._dp
@@ -1180,12 +1180,12 @@ c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       xmsqt=xmsqt     
      & +msq_struc(iqr,m,-m)*(AP(a,g,2)+H2(a,g,q,iqr,2))*fx1(j)*fx2z(g)/z
       xmsq=xmsq+xmsqt
-c      write(6,*) 'virtint: j,k,  ct=',j,k,xmsqt
-c      write(6,*) 'virtint: j,k, SUM=',j,k,xmsqt+fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resmNNLLint: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resmNNLLint: j,k, SUM=',j,k,xmsqt+fx1(j)*fx2(k)*msqv(j,k)
       
 c--- gluon-quark and gluon anti-quark
       elseif ((j == 0) .and. (k .ne. 0)) then
-c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
+c      write(6,*) 'resmNNLLint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       m=0
       n=+1
       xmsqt=0._dp
@@ -1215,7 +1215,7 @@ c      write(6,*) 'virtint: j,k,msqv=',j,k,fx1(j)*fx2(k)*msqv(j,k)
       xmsqt=xmsqt     
      & +msq_struc(iqr,-n,n)*(AP(a,g,2)+H1(a,g,q,iqr,2))*fx1z(g)/z*fx2(k)
       xmsq=xmsq+xmsqt
-c      write(6,*) 'virtint: j,k,  ct=',j,k,xmsqt
+c      write(6,*) 'resmNNLLint: j,k,  ct=',j,k,xmsqt
 
       endif
       
@@ -1861,7 +1861,7 @@ c---  SSend
       enddo
 
       if (currentPDF == 0) then
-        virtint=flux*xjac*pswt*xmsq/BrnRat
+        resmNNLLint=flux*xjac*pswt*xmsq/BrnRat
       endif
             
 c--- loop over all PDF error sets, if necessary
@@ -1937,16 +1937,16 @@ c      endif
       enddo
 
 
-      if(virtint.ne.virtint) then
-         write(6,*) 'Found virtint=',virtint
+      if(resmNNLLint.ne.resmNNLLint) then
+         write(6,*) 'Found resmNNLLint=',resmNNLLint
          write(6,*) 'random #s',r
-         virtint=zip
+         resmNNLLint=zip
          goto 999
       endif
-      val=virtint*wgt 
+      val=resmNNLLint*wgt 
       val2=val**2 
 c---  SSbegin
-      virtint = virtint*reweight
+      resmNNLLint = resmNNLLint*reweight
 c---  SSend
 c--- update the maximum weight so far, if necessary
       if (abs(val) > wtmax) then
@@ -1967,24 +1967,24 @@ c--- POWHEG-style output if requested
 
 c--- handle special caase of Qflag and Gflag
       if (QandGflag) then
-        QandGint=QandGint+virtint
+        QandGint=QandGint+resmNNLLint
         if ((Gflag) .and. (.not.(Qflag))) then
 c--- go back for second pass (Qflag)
         Qflag=.true.
         Gflag=.false.
         goto 44
       else
-c--- return both to .true. and assign value to virtint (to return to VEGAS)
+c--- return both to .true. and assign value to resmNNLLint (to return to VEGAS)
         Qflag=.true.
         Gflag=.true.
-        virtint=QandGint
+        resmNNLLint=QandGint
       endif
       endif
       
       return
 
  999  continue
-      virtint=0._dp
+      resmNNLLint=0._dp
 !$omp atomic
       ntotzero=ntotzero+1
 c--- safety catch

@@ -57,6 +57,8 @@
       include 'taucut.f'
       include 'iterat.f'
       include 'mpicommon.f'
+      include 'JetVHeto.f'
+      include 'ptjveto.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -191,6 +193,12 @@ c------ normal case
         kpart=ksnlo
       elseif ((part == 'nnlo') .or. (part == 'nnlocoeff')) then
         kpart=knnlo
+      elseif ((part == 'll') .or. (part == 'LL')) then
+        kpart=kll
+      elseif ((part == 'nll') .or. (part =='NLL')) then
+        kpart=knll
+      elseif ((part == 'nnll') .or. (part =='NNLL')) then
+         kpart=knnll
       endif
       if (index(part,'coeff') > 0) then
         coeffonly=.true.
@@ -309,6 +317,25 @@ c--- pdf options
       if (verbose) call writeinput(6,' * ',' ','LHAPDF group')
       read(20,*) PDFmember
       if (verbose) call writeinput(6,' * ',' ','LHAPDF set')
+
+      if (verbose) write(6,*)
+      read(20,99) line
+c---  write-out comment line
+      read(20,99) line
+      if (verbose) write(6,*) '* ',line
+c---  JetVHeto resummation options
+      read(20,*) Q_scale
+      Q_scalestart=Q_scale
+      if (verbose) call writeinput(6,' * ',' ','Q_scale')
+      read(20,*) R_scale
+      R_scalestart=R_scale
+      if (verbose) call writeinput(6,' * ',' ','R_scale')
+      read(20,*) robs
+      if (verbose) call writeinput(6,' * ',' ','observable')
+      read(20,*) ptjveto
+      if (verbose) call writeinput(6,' * ',' ','ptjveto')
+      read(20,*) match_scheme
+      if (verbose) call writeinput(6,' * ',' ','matching scheme')
 
       if (verbose) write(6,*)
       read(20,99) line
@@ -640,6 +667,14 @@ c---  create logical:: variable dynamicscale for use in other routines
          dynamicscale=.true. 
       endif
 
+!     set resum
+      if ( (kpart == kll) .or. (kpart == knll) .or.
+     &     (kpart == knnll) ) then
+         resum=.true.
+      else
+         resum=.false.
+      endif
+
 c--- print warning messages if some parton fluxes are not included      
       if (noglue) then
         write(6,*) 'WARNING: no gluon contribution included in PDF'
@@ -706,6 +741,9 @@ c--- this is an allowed combination
 c--- this is an allowed combination
         elseif ((kpart==knnlo) .or. (kpart==ksnlo)) then 
 c--- this is an allowed combination
+        elseif ((kpart==kll) .or. (kpart==knll) .or.
+     &         (kpart==knnll)) then
+c--- temporarily allow all resummation processes
         else 
           write(6,*) 'part=',part,' is not a valid option'
           write(6,*) 'for this process number.'

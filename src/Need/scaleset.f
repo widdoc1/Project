@@ -1,7 +1,6 @@
       subroutine scaleset(rscalestart,fscalestart,p)
-      use types_mod
-      use rad_tools_mod
       implicit none
+      include 'types.f'
 c--- wrapper routine to set a dynamic scale; please refer to individual
 c--- routines for exact definitions of the scales;
 c--- upgraded 3/2016 to convert string to integer on first call, for speed
@@ -46,7 +45,7 @@ c--- upgraded 3/2016 to convert string to integer on first call, for speed
         write(6,*)'*                  FRAGMENTATION                   *'
         write(6,45) ' mu_frag =',frag_scalestart,dynstring
         endif
-        if (resm) then
+        if (resum) then
         write(6,*)'*                                                  *'
         write(6,*)'*                   RESUMMATION                    *'
         write(6,45) ' mu_resm =',Q_scalestart,dynstring

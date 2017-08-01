@@ -5,7 +5,9 @@
       include 'constants.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'mxpart.f'
       include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
       include 'dynamicscale.f'
       include 'qcdcouple.f'
       include 'kpart.f'
@@ -60,10 +62,10 @@
         facscaleLtilde = facscale
         return
       elseif (kpart==knll) then
-        facscaleLtilde = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+        facscaleLtilde = facscale * exp(-Ltilde(ptjveto/resm_opts%Q,
      &                                 resm_opts%p))
       elseif (kpart==knnll) then
-        facscaleLtilde = facscale * exp(-Ltilde(ptveto/resm_opts%Q,
+        facscaleLtilde = facscale * exp(-Ltilde(ptjveto/resm_opts%Q,
      &                                 resm_opts%p))
       else
         write(*,*) 'something wrong...'

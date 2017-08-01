@@ -1078,7 +1078,8 @@ writeinput.o \
 writeout.o \
 writereference.o \
 dips_mass.o \
-zeromsq.o
+zeromsq.o \
+resmset.o
 
 PARTONFILES = \
 checkpath.o \
@@ -1190,7 +1191,10 @@ gen_realps.o \
 lowint.o \
 realint.o \
 virtint.o \
-scetint.o 
+scetint.o \
+resmLLint.o \
+resmNLLint.o \
+resmNNLLint.o
 
 QQHFILES = \
 qq_Hqq_g.o \
