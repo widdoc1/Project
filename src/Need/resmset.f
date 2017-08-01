@@ -9,7 +9,7 @@
       include 'dynamicscale.f'
       include 'qcdcouple.f'
       include 'kpart.f'
-      include 'ptveto.f'
+      include 'ptjveto.f'
 
       real(dp) Rcut
       common/Rcut/Rcut

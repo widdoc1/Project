@@ -1,7 +1,9 @@
       function resmLLint(r,wgt)
+      use types_mod
+      use rad_tools_mod
+      use resummation_mod
       implicit none
-      include 'types.f'
-      real(dp):: lowint
+      real(dp):: resmLLint
       
       include 'constants.f'
       include 'nf.f'
@@ -43,6 +45,9 @@ c --- DSW.
       include 'x1x2.f'
       include 'bypart.f'
       integer:: pflav,pbarflav
+!     resummation
+      include 'JetVHeto.f'
+      include 'ptjveto.f'
 c--- To use VEGAS random number sequence :
       real(dp):: ran2
       integer:: ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -73,7 +78,7 @@ c--- To use VEGAS random number sequence :
 
 !$omp atomic
       ntotshot=ntotshot+1
-      lowint=0._dp
+      resmLLint=0._dp
 c--- ensure isolation code does not think this is fragmentation piece
       z_frag=0._dp
       
@@ -103,6 +108,8 @@ c--- bother calculating the matrix elements for it, instead bail out
 c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
+
+      call resmset(p)
       
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
@@ -649,7 +656,7 @@ c      call checkgvec(-1,2,5,p,qq_tbg,qq_tbg_gvec)
         fx1(2)=1._dp
         fx2(-1)=1._dp
       else
-        write(6,*) 'Unimplemented process in lowint : kcase=',kcase
+        write(6,*) 'Unimplemented process in resmLLint : kcase=',kcase
         stop 
       endif
       
@@ -737,12 +744,12 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,xx(1),facscale,fx1)
-              call fdist(ih2,xx(2),facscale,fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,xx(1),facscale,fx1)
-              call fdist(ih2,xx(2),facscale,fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
            endif
         endif
       endif
@@ -816,7 +823,8 @@ c--- DEFAULT
       enddo
 
       if (currentPDF == 0) then
-        lowint=flux*pswt*xmsq/BrnRat
+        resmLLint=flux*pswt*xmsq/BrnRat
+     &        *resummed_sigma(ptjveto,resm_opts,order_LL)
       endif
             
 c--- loop over all PDF error sets, if necessary
@@ -853,17 +861,17 @@ c--- loop over all PDF error sets, if necessary
 
 
       
-      val=lowint*wgt
+      val=resmLLint*wgt
       val2=val**2
       if(val.ne.val) then
-         write(6,*) 'lowint val = ',val
+         write(6,*) 'resmLLint val = ',val
          write(6,*) 'Discarding point with random variables',r
-         lowint=zip
+         resmLLint=zip
          val=zip
          goto 999
       endif
 c---  SSbegin
-      lowint = lowint*reweight
+      resmLLint = resmLLint*reweight
 c---  SSend
 c--- update the maximum weight so far, if necessary
 c---  but not if we are already unweighting ...
@@ -897,7 +905,7 @@ c         write(6,*) 'Keep event with weight',val
             newwt = wtabs/wtmax
           endif
           if (newwt > 1.0_dp) then
-            write(6,*) 'WARNING : lowint : event with |weight| > 1.',
+            write(6,*) 'WARNING : resmLLint : event with |weight| > 1.',
      &                 ' |weight| = ',newwt
           endif
 c ---     just in case the weight was negative :
@@ -912,7 +920,7 @@ c         call nplotter(pjet,newwt,newwt,0)
       return
 
  999  continue
-      lowint=0._dp
+      resmLLint=0._dp
 !$omp atomic
       ntotzero=ntotzero+1
       
