@@ -54,6 +54,7 @@ c--- by the strings 'lstring' and 'rstring'
       include 'mpicommon.f'
       include 'JetVHeto.f'
       include 'ptjveto.f'
+      include 'kappa.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -430,6 +431,21 @@ c--- catch special scale choices for stop+b process
       endif
       if ((tag == 'n_pow') .or. (writeall)) then
       write(unitno,fmt=f99) n_pow,'n_pow'
+      endif
+
+      if (writeall) then
+         write(unitno,*)
+         write(unitno,*)
+     &        lstring//' [Coupling rescaling in kappa formalism] )'
+      endif
+      if ((tag == 'k_t') .or. (writeall)) then
+         write(unitno,fmt=f99) k_t,'kappa_t'
+      endif
+      if ((tag == 'k_b') .or. (writeall)) then
+         write(unitno,fmt=f99) k_b,'kappa_b'
+      endif
+      if ((tag == 'k_g') .or. (writeall)) then
+         write(unitno,fmt=f99) k_g,'kappa_g'
       endif
 
       if (writeall) then

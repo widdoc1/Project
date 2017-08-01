@@ -59,6 +59,7 @@
       include 'mpicommon.f'
       include 'JetVHeto.f'
       include 'ptjveto.f'
+      include 'kappa.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -440,6 +441,19 @@ c--- settings for photon processes
       if (verbose) call writeinput(6,' * ',' ','epsilon_h')
       read(20,*) n_pow
       if (verbose) call writeinput(6,' * ',' ','n_pow')
+
+      if (verbose) write(6,*)
+      read(20,99) line
+c---  write-out comment line
+      read(20,99) line
+      if (verbose) write(6,*) '* ',line
+c---  kappa's
+      read(20,*) k_t
+      if (verbose) call writeinput(6,' * ',' ','k_t')
+      read(20,*) k_b
+      if (verbose) call writeinput(6,' * ',' ','k_b')
+      read(20,*) k_g
+      if (verbose) call writeinput(6,' * ',' ','k_g')
 
       if (verbose) write(6,*)
       read(20,99) line
