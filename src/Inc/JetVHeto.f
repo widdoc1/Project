@@ -1,6 +1,9 @@
 !     scales used in the JetVHeto resummation
       logical :: resm          ! whether resummation is to be performed
 
+!     Boson invariant mass
+      real(dp) :: M_B, M_B2
+
 ! scale variation of ptjet
       real(dp) :: Q_scale       ! resummation scale Q
       real(dp) :: Q_scalestart

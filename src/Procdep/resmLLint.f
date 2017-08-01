@@ -1,4 +1,4 @@
-      function lowint(r,wgt)
+      function resmLLint(r,wgt)
       implicit none
       include 'types.f'
       real(dp):: lowint

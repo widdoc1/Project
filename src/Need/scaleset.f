@@ -149,6 +149,10 @@ c--- upgraded 3/2016 to convert string to integer on first call, for speed
       frag_scale=frag_scalestart*mu0
       Q_scale=Q_scalestart*mu0
 
+! set boson invariant mass for resummation
+!      M_B = mu0
+!      M_B2 = mu0**2
+
 c--- catch absurdly large and small scales      
       if  (scale > 100000._dp) scale=60000._dp
       if  (facscale > 100000._dp) facscale=60000._dp
