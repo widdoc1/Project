@@ -3,7 +3,7 @@
 # Replace this with the location of Cernlib on your system (if desired)
 CERNLIB     = 
 # Replace this with the location of LHAPDF on your system (if desired)
-LHAPDFLIB   = 
+LHAPDFLIB   = "/home/luke/libs/lhapdf-6.2.0/lib"
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
 USEOMP = YES
@@ -55,7 +55,7 @@ LINKONELOOP     = NO
 #   NATIVE -- internal routines
 #   PDFLIB -- PDFLIB v8.04
 #   LHAPDF -- Les Houches library
-PDFROUTINES = NATIVE
+PDFROUTINES = LHAPDF
 
 # Set this to NO/YES/FROOT
 #   NO  -- no n-tuple output or unweighting is possible
@@ -150,11 +150,19 @@ DIRS	=	$(MCFMHOME):\
 		$(SOURCEDIR)/UTools:$(SOURCEDIR)/WBFZZ\
                 $(SOURCEDIR)/WBFWW:$(SOURCEDIR)/WBFWpWp:$(SOURCEDIR)/WBFWZ\
                 $(SOURCEDIR)/WH1jet:$(SOURCEDIR)/ZH1jet:$(SOURCEDIR)/QT:$(SOURCEDIR)/Mad\
-                $(SOURCEDIR)/QLFF
+                $(SOURCEDIR)/QLFF:$(SOURCEDIR)/JetVHeto
 
 
 # -----------------------------------------------------------------------------
 # Specify the object files. 
+
+JetVHeto = \
+types_mod.o \
+consts_mod.o \
+emsn_tools_mod.o \
+qcd_mod.o \
+rad_tools_mod.o \
+resummation_mod.o 
 
 WH1JETFILES = \
 WHqqbgg.o \
@@ -1070,7 +1078,8 @@ writeinput.o \
 writeout.o \
 writereference.o \
 dips_mass.o \
-zeromsq.o
+zeromsq.o \
+resmset.o
 
 PARTONFILES = \
 checkpath.o \
@@ -1182,7 +1191,10 @@ gen_realps.o \
 lowint.o \
 realint.o \
 virtint.o \
-scetint.o 
+scetint.o \
+resmLLint.o \
+resmNLLint.o \
+resmNNLLint.o
 
 QQHFILES = \
 qq_Hqq_g.o \
@@ -2178,7 +2190,7 @@ LIBFLAGS=-lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(
 # the files that do not go into the library                                                      
 NONLIB= \
 $(MAIN) \
-usercode_f77.o  
+usercode.o  
 
 # Check NTUPLES flag
 ifeq ($(NTUPLES),FROOT)
@@ -2287,7 +2299,7 @@ endif
 
 OMPTEST = $(PARTONFILES) testff.o
 
-OURCODE = $(LIBFILES) $(NEEDFILES)  $(PROCDEPFILES) $(SPINORFILES) \
+OURCODE = $(JetVHeto) $(LIBFILES) $(NEEDFILES)  $(PROCDEPFILES) $(SPINORFILES) \
           $(PHASEFILES) $(SINGLETOPFILES) \
           $(TOPHFILES) $(TOPZFILES) $(TOPWFILES) $(TOPDKFILES) \
           $(USERFILES) $(VOLFILES) $(WFILES) $(W2JETFILES) \
@@ -2426,3 +2438,11 @@ qqqqampl.o: consts_dp.o spinfns.o recurrence.o
 qqqqgampl.o: consts_dp.o spinfns.o recurrence.o
 qqb_wpwp_qqb.o: qqqqampl.o consts_dp.o
 qqb_wpwp_qqb_g.o: qqqqgampl.o consts_dp.o
+
+# f95 modules for resummation
+types_mod.o:
+consts_mod.o: types_mod.o
+qcd_mod.o: types_mod.o consts_mod.o 
+rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
+emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
+resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o

@@ -12,6 +12,7 @@ c--- upgraded 3/2016 to convert string to integer on first call, for speed
       include 'facscale.f'
       include 'dynamicscale.f'
       include 'frag.f'
+      include 'JetVHeto.f'
       include 'nlooprun.f'
       include 'qcdcouple.f'
       include 'couple.f'
@@ -43,6 +44,11 @@ c--- upgraded 3/2016 to convert string to integer on first call, for speed
         write(6,*)'*                                                  *'
         write(6,*)'*                  FRAGMENTATION                   *'
         write(6,45) ' mu_frag =',frag_scalestart,dynstring
+        endif
+        if (resum) then
+        write(6,*)'*                                                  *'
+        write(6,*)'*                   RESUMMATION                    *'
+        write(6,45) ' mu_resm =',Q_scalestart,dynstring
         endif
         write(6,*)'*                                                  *'
         write(6,*)'****************************************************'
@@ -141,14 +147,21 @@ c--- upgraded 3/2016 to convert string to integer on first call, for speed
       scale=rscalestart*mu0
       facscale=fscalestart*mu0
       frag_scale=frag_scalestart*mu0
-          
+      Q_scale=Q_scalestart*mu0
+
+! set boson invariant mass for resummation
+!      M_B = mu0
+!      M_B2 = mu0**2
+
 c--- catch absurdly large and small scales      
       if  (scale > 100000._dp) scale=60000._dp
       if  (facscale > 100000._dp) facscale=60000._dp
       if  (frag_scale > 990._dp) frag_scale=900._dp
+      if  (Q_scale > 100000._dp) scale=60000._dp
       if  (scale < 1._dp) scale=1._dp
       if  (facscale < 1._dp) facscale=1._dp
       if  (frag_scale < 1._dp) frag_scale=1._dp
+      if  (Q_scale < 1._dp) scale=1._dp
 
 c--- run alpha_s
       as=alphas(scale,amz,nlooprun)

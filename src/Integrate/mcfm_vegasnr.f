@@ -64,10 +64,12 @@
       common/bin/bin
       common/xreal/xreal,xreal2
       real(dp):: lowint,virtint,realint,fragint,scetint
+      real(dp):: resmLLint,resmNLLint,resmNNLLint
       real(dp):: region(2*mxdim),lord_bypart(-1:1,-1:1)
       logical:: first,myreadin
       common/bypart/lord_bypart
       external lowint,virtint,realint,fragint,scetint
+      external resmLLint,resmNLLint,resmNNLLint
       data first/.true./
       save first,sigips,sdips
  
@@ -264,6 +266,30 @@ c--- Basic lowest-order integration
        call boundregion(ndim,region)
        call vegasnr(region,ndim,lowint,myinit,myncall,myitmx,
      &               nprn,sig,sd,chi)
+      endif
+
+c---  LL integration
+      if (kpart==kll) then
+         call boundregion(ndim,region)
+         call vegasnr(region,ndim,resmLLint,myinit,myncall,myitmx,
+     &        nprn,sig,sd,chi)
+      endif
+
+c---  NLL integration
+      if (kpart==knll) then
+         call boundregion(ndim,region)
+         call vegasnr(region,ndim,resmNLLint,myinit,myncall,myitmx,
+     &        nprn,sig,sd,chi)
+      endif
+
+c---  NNLL integration should have one extra dimensions
+c---  (added and then taken away)
+      if (kpart==knnll) then
+         ndim=ndim+1
+         call boundregion(ndim,region)
+         call vegasnr(region,ndim,resmNNLLint,myinit,myncall,myitmx,
+     &        nprn,sig,sd,chi)
+         ndim=ndim-1
       endif
 
 c--- If we're doing the tota integration, then set up the grid info

@@ -31,8 +31,10 @@
 
 ***************************** Quark-Quark *****************************
       function ii_qq(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod
       implicit none
-      include 'types.f'
       real(dp):: ii_qq
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
@@ -44,6 +46,13 @@
       include 'epinv2.f'
       include 'scheme.f'
       include 'alfacut.f'
+
+      include 'kpart.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-gluon antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -63,18 +72,19 @@ c  * ( 1/2*L^2 - 1/6*pisq - epinv*L + epinv^2 )
 c 
 c + [1/(1-x)_(0)]
 c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
- 
+
+
       if (vorz == 1) then
-        ii_qq=epinv*(epinv2-L)+0.5_dp*L**2-pisqo6
-        if (scheme == 'tH-V') then
-          return
-        elseif (scheme == 'dred') then
-          ii_qq=ii_qq-half
-          return
-      else
-        write(6,*) 'Value of scheme not implemented properly ',scheme
-        stop
-        endif
+         ii_qq=-pisq/12d0/(1-2*as*beta0*L_tilde)
+         if (scheme == 'tH-V') then
+            return
+         elseif (scheme == 'dred') then
+            ii_qq=ii_qq-half
+            return
+         else
+            write(6,*) 'Value of scheme not implemented properly ',scheme
+            stop
+         endif
       endif
       
       omx=one-x
@@ -82,20 +92,48 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-        ii_qq=omx-(one+x)*(two*lomx+L-epinv)-(one+x**2)/omx*lx
-        if (omx > aii) ii_qq=ii_qq+(one+x**2)/omx*log(aii/omx)
-        return
+         ii_qq=omx/(1-2*as*beta0*L_tilde)
+         return
       endif
-      
-      ii_qq=two/omx*(two*lomx+L-epinv)
-      
+
+      ii_qq=(1+x**2)/omx * 2d0* log(Q_scale/scale)
+     &     /(1-2*as*beta0*L_tilde)
       return
       end
+c$$$      if (vorz == 1) then
+c$$$        ii_qq=epinv*(epinv2-L)+0.5_dp*L**2-pisqo6
+c$$$        if (scheme == 'tH-V') then
+c$$$          return
+c$$$        elseif (scheme == 'dred') then
+c$$$          ii_qq=ii_qq-half
+c$$$          return
+c$$$      else
+c$$$        write(6,*) 'Value of scheme not implemented properly ',scheme
+c$$$        stop
+c$$$        endif
+c$$$      endif
+c$$$      
+c$$$      omx=one-x
+c$$$      lomx=log(omx)
+c$$$      lx=log(x)
+c$$$      
+c$$$      if (vorz == 2) then
+c$$$        ii_qq=omx-(one+x)*(two*lomx+L-epinv)-(one+x**2)/omx*lx
+c$$$        if (omx > aii) ii_qq=ii_qq+(one+x**2)/omx*log(aii/omx)
+c$$$        return
+c$$$      endif
+c$$$      
+c$$$      ii_qq=two/omx*(two*lomx+L-epinv)
+c$$$      
+c$$$      return
+c$$$      end
 
 ***************************** Quark-Gluon *****************************
       function ii_qg(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod
       implicit none
-      include 'types.f'
       real(dp):: ii_qg
       
       integer:: vorz
@@ -106,6 +144,13 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       include 'cplx.h'
       include 'epinv.f'
       include 'alfacut.f'
+
+      include 'kpart.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-quark antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -117,7 +162,6 @@ c  + 2*x - 2*x^2 - [ln(x)]*[x^2+(1-x)^2] + [ln(al(x))]*
 c [x^2+(1-x)^2] + [x^2+(1-x)^2]*L + 2*[x^2+(1-x)^2]*[ln(1-x)]
 c  - [x^2+(1-x)^2]*epinv
  
-
       ii_qg=0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
       
@@ -126,11 +170,24 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-        ii_qg=(one-two*x*omx)*(two*lomx-lx+L-epinv)+two*x*omx
-        if (omx > aii) ii_qg=ii_qg+(one-two*x*omx)*log(aii/omx)
+         ii_qg=(2*x*omx + (x**2 + omx**2)*
+     &        log(Q_scale**2/musq))/(1-2*as*beta0*L_tilde)
       endif
       return
       end
+c$$$      ii_qg=0._dp
+c$$$      if ((vorz == 1) .or. (vorz == 3)) return
+c$$$      
+c$$$      omx=one-x
+c$$$      lomx=log(omx)
+c$$$      lx=log(x)
+c$$$      
+c$$$      if (vorz == 2) then
+c$$$        ii_qg=(one-two*x*omx)*(two*lomx-lx+L-epinv)+two*x*omx
+c$$$        if (omx > aii) ii_qg=ii_qg+(one-two*x*omx)*log(aii/omx)
+c$$$      endif
+c$$$      return
+c$$$      end
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)
