@@ -17,4 +17,4 @@
       common/resminputs/Q_scalestart,R_scalestart
       common/resmscale/Q_scale,R_scale
       common/resmparams/resm_opts
-!$omp threadprivate(/resmscale)
+!$omp threadprivate(/resmscale/)

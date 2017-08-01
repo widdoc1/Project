@@ -45,7 +45,7 @@ PVDIR		= $(TENSORREDDIR)/pv
 RECURDIR	= $(TENSORREDDIR)/recur
 OVDIR		= $(TENSORREDDIR)/ov
 HELASDIR        = .
-OLODIR          = /Users/johnmc/Research/OneLOop-3.3.1
+OLODIR          = .
 
 # Set this to YES to link against OneLOop library to
 # allow alternative calculation of scalar integrals
@@ -55,7 +55,6 @@ LINKONELOOP     = NO
 #   NATIVE -- internal routines
 #   PDFLIB -- PDFLIB v8.04
 #   LHAPDF -- Les Houches library
-#PDFROUTINES = LHAPDF
 PDFROUTINES = NATIVE
 
 # Set this to NO/YES/FROOT
@@ -84,7 +83,7 @@ endif
 
 
 # Flags for compilation
-FFLAGS 	= -Wunused-variable -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
+FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
 # note: -static may be required if read/write libraries not found
 #FFLAGS += -static
 # -fimplicit-none
@@ -151,11 +150,19 @@ DIRS	=	$(MCFMHOME):\
 		$(SOURCEDIR)/UTools:$(SOURCEDIR)/WBFZZ\
                 $(SOURCEDIR)/WBFWW:$(SOURCEDIR)/WBFWpWp:$(SOURCEDIR)/WBFWZ\
                 $(SOURCEDIR)/WH1jet:$(SOURCEDIR)/ZH1jet:$(SOURCEDIR)/QT:$(SOURCEDIR)/Mad\
-                $(SOURCEDIR)/QLFF
+                $(SOURCEDIR)/QLFF:$(SOURCEDIR)/JetVHeto
 
 
 # -----------------------------------------------------------------------------
 # Specify the object files. 
+
+JetVHeto = \
+consts_mod.o \
+emsn_tools_mod.o \
+qcd_mod.o \
+rad_tools_mod.o \
+resummation_mod.o \
+types_mod.o
 
 WH1JETFILES = \
 WHqqbgg.o \
@@ -230,7 +237,6 @@ ampgggppp.o \
 assemblejet.o \
 averageoverW.o \
 averageoverZ.o \
-checkfjp.o \
 computeIijm.o \
 gg_hgbis.o \
 gg_hg_vbis.o \
@@ -1070,6 +1076,7 @@ transform_mass.o \
 writeinfo.o \
 writeinput.o \
 writeout.o \
+writereference.o \
 dips_mass.o \
 zeromsq.o
 
@@ -1489,13 +1496,13 @@ fill_stdhep.o \
 filterW_bjet.o \
 filterWbbmas.o \
 frix.o \
+FBhisto.o \
 genclust2.o \
 genclust_kt.o \
 genclust_cone.o \
 genclustphotons.o \
 gencuts.o \
 gencuts_input.o \
-gencuts_ATLAS_gaga.o \
 gencuts_ATLAS_gaga2.o \
 gencuts_Zt.o \
 gencuts_WZjj.o \
@@ -2257,6 +2264,7 @@ ifeq ($(PDFROUTINES),NATIVE)
    mrst2004f3.o \
    mrst2004f4.o \
    mstwpdf.o \
+   MMHTmstwpdf.o \
    mt.o \
    NNPDFDriver.o \
    eks98r.o \
@@ -2426,3 +2434,11 @@ qqqqampl.o: consts_dp.o spinfns.o recurrence.o
 qqqqgampl.o: consts_dp.o spinfns.o recurrence.o
 qqb_wpwp_qqb.o: qqqqampl.o consts_dp.o
 qqb_wpwp_qqb_g.o: qqqqgampl.o consts_dp.o
+
+# f95 modules for resummation
+types_mod.o:
+consts_mod.o: types_mod.o
+qcd_mod.o: types_mod.o consts_mod.o 
+rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
+emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
+resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o

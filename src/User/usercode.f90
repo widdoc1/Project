@@ -17,11 +17,13 @@
 !
 ! (this could be worked around - but is it wise to?)
 logical function userincludedipole(nd, ppart, mcfm_result)
+  use types_mod
   implicit none
   include 'constants.f'
+  include 'mxpart.f'
   include 'npart.f'
   integer,          intent(in) :: nd
-  double precision, intent(in) :: ppart(mxpart,4)
+  real(dp), intent(in) :: ppart(mxpart,4)
   logical,          intent(in) :: mcfm_result
   !------------
   logical    bin
@@ -32,7 +34,7 @@ logical function userincludedipole(nd, ppart, mcfm_result)
   userincludedipole = mcfm_result
 
   ! an example of placing a cut on HT
-  ht = sum(sqrt(sum(ppart(3:2+npart,1:2)**2,dim=2)))
+  !ht = sum(sqrt(sum(ppart(3:2+npart,1:2)**2,dim=2)))
   !if (ht < 100d0) userincludedipole = .false.
   !if (bin) write(0,*) nd, ht, userincludedipole
 
@@ -55,8 +57,10 @@ end function userincludedipole
 !          (if applicable), otherwise equal to zero
 
 subroutine userplotter(pjet, wt,wt2, nd)
+  use types_mod
   implicit none
   include 'constants.f'
+  include 'mxpart.f'
   include 'ptilde.f'
   include 'npart.f'
   include 'nplot.f'
@@ -92,6 +96,7 @@ end subroutine userplotter
 !----------------------------------------------------------------------
 ! user code to write info 
 subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
+  use types_mod
   implicit none
   integer,          intent(in) :: unitno
   character*2,      intent(in) :: comment_string
@@ -103,7 +108,14 @@ subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
   call mcfmfwrite(unitno, comment_string//"any additional user comments")
 end subroutine userwriteinfo
 
-
+subroutine userhistofin(xsec,xsec_err,itno,itmx)
+  !	This function allows for extra user-defined operations 
+  !	at the end of each iteration (itno>0) and at the end of 
+  !	the run of the program (itno=0).
+	implicit none
+	integer itno,itmx
+	double precision xsec,xsec_err
+end subroutine userhistofin
 
 ! subroutine userscale(event_momenta, muR, muF)
 !   double precision, intent(out) :: muR, muF

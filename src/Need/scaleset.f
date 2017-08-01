@@ -1,6 +1,7 @@
       subroutine scaleset(rscalestart,fscalestart,p)
+      use types_mod
+      use rad_tools_mod
       implicit none
-      include 'types.f'
 c--- wrapper routine to set a dynamic scale; please refer to individual
 c--- routines for exact definitions of the scales;
 c--- upgraded 3/2016 to convert string to integer on first call, for speed
