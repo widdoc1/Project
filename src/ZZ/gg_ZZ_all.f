@@ -16,6 +16,7 @@ c--- The effect of massive bottom and top quark loops is included
       include 'noglue.f'
       include 'qlfirst.f'
       include 'interference.f'
+      include 'kappa.f'
       integer:: h1,h2,h34,h56
       real(dp):: p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac,
      & pswap(mxpart,4),oprat
@@ -24,9 +25,9 @@ c--- The effect of massive bottom and top quark loops is included
      & Mloop_bquark(2,2,2,2),Mloop_tquark(2,2,2,2),
      & Sloop_uptype(2,2,2,2),Sloop_dntype(2,2,2,2),
      & Sloop_bquark(2,2,2,2),Sloop_tquark(2,2,2,2),
-     & ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),Acont,Ahiggs,
-     & ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),Ahiggs_swap,
-     & Acont_swap,Mamp,Samp
+     & ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),ggH_6(2,2,2,2),
+     & Acont,Ahiggs,ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),
+     & ggH_6_swap(2,2,2,2),Ahiggs_swap,Acont_swap,Mamp,Samp
       logical:: includegens1and2,includebottom,includetop
 
 c--- set this to true to include generations 1 and 2 of (light) quarks
@@ -61,7 +62,7 @@ c      if (pttwo(3,4,p) < 7._dp) return ! Kauer gg2VV cut on |H+C|^2
       call getggZZamps(p,includegens1and2,includebottom,includetop,
      & Mloop_uptype,Mloop_dntype,Mloop_bquark,Mloop_tquark)
 
-      call getggHZZamps(p,ggH_bquark,ggH_tquark)
+      call getggHZZamps(p,ggH_bquark,ggH_tquark,ggH_6)
       
       if (interference) then
 c--- for interference, compute amplitudes after 4<->6 swap
@@ -73,7 +74,8 @@ c--- for interference, compute amplitudes after 4<->6 swap
        pswap(6,:)=p(4,:)
        call getggZZamps(pswap,includegens1and2,includebottom,includetop,
      &  Sloop_uptype,Sloop_dntype,Sloop_bquark,Sloop_tquark)
-       call getggHZZamps(pswap,ggH_bquark_swap,ggH_tquark_swap)
+       call getggHZZamps(pswap,ggH_bquark_swap,ggH_tquark_swap,
+     &  ggH_6_swap)
       endif
       
       msqgg=0._dp
@@ -90,8 +92,9 @@ c--- compute total continuum amplitude
      &      +Mloop_tquark(h1,h2,h34,h56)
 c--- compute total Higgs amplitude   
       AHiggs=
-     &  +ggH_bquark(h1,h2,h34,h56)   
-     &  +ggH_tquark(h1,h2,h34,h56)   
+     &  +k_b*ggH_bquark(h1,h2,h34,h56)   
+     &  +k_t*ggH_tquark(h1,h2,h34,h56)   
+     &  +k_g*ggH_6(h1,h2,h34,h56)
 
 c---- This accumulates all contributions
       Mamp=Acont+AHiggs
@@ -107,8 +110,9 @@ c--- with interference
      &      +Sloop_bquark(h1,h2,h34,h56)
      &      +Sloop_tquark(h1,h2,h34,h56)
         AHiggs_swap=
-     &  +ggH_bquark_swap(h1,h2,h34,h56)
-     &  +ggH_tquark_swap(h1,h2,h34,h56)
+     &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
+     &  +k_t*ggH_tquark_swap(h1,h2,h34,h56)
+     &  +k_g*ggH_6_swap(h1,h2,h34,h56)
         Samp=Acont_swap+AHiggs_swap
         if (h34 == h56) then
           oprat=1._dp-two*real(conjg(Mamp)*Samp)

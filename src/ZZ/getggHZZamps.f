@@ -1,10 +1,11 @@
-      subroutine getggHZZamps(p,Mloop_bquark,Mloop_tquark)
+      subroutine getggHZZamps(p,Mloop_bquark,Mloop_tquark,eftV_6)
       implicit none
       include 'types.f'
 c--- Returns a series of arrays representing the dressed amp[itudes
 c--- for the process gg->Higgs->ZZ; there are:
 c---        Mloop_bquark(h1,h2,h34,h56)   top quark mass=mt
 c---        Mloop_tquark(h1,h2,h34,h56)   bottom quark mass=mb
+c---        eftV_6(h1,h2,h34,h56)   dimension 6 ggH operator
 c---
 c--- The overall factor on the amplitude is:
 c---
@@ -25,7 +26,8 @@ c---
       integer:: h1,h34,h56
       real(dp):: p(mxpart,4),mb2,mt2
       complex(dp):: Mloop_bquark(2,2,2,2),Mloop_tquark(2,2,2,2),
-     & ggHmt(2,2),ggHmb(2,2),qlI3,C0mt,C0mb,prop12,prop34,prop56,
+     & eftV_6(2,2,2,2),ggHmt(2,2),ggHmb(2,2),ggH6(2,2),
+     & qlI3,C0mt,C0mb,prop12,prop34,prop56,
      & H4l(2,2),sinthw,higgsprop
       real(dp):: rescale 
 
@@ -38,6 +40,7 @@ c---
 
       Mloop_bquark(:,:,:,:)=czip
       Mloop_tquark(:,:,:,:)=czip
+      eftV_6(:,:,:,:)=czip
      
       call spinoru(6,p,za,zb)
 
@@ -68,6 +71,12 @@ c------ bottom quark in the loop
       ggHmb(1,1)=ggHmb(2,2)*za(1,2)/zb(1,2)
       ggHmb(2,2)=ggHmb(2,2)*zb(1,2)/za(1,2)
 
+c------EFT dim 6 vertex
+      ggH6(2,2)=s(1,2)/3._dp
+     & /(2d0*wmass*sinthw)
+      ggH6(1,1)=ggH6(2,2)*za(1,2)/zb(1,2)
+      ggH6(2,2)=ggH6(2,2)*zb(1,2)/za(1,2)
+
 c--- Amplitudes for decay
       H4l(1,1)=za(3,5)*zb(4,6)*l1*l2
      &        *wmass/(sinthw*(1._dp-xw))*prop34*prop56
@@ -84,6 +93,7 @@ c--- Assemble: insert factor of (im) here
       do h56=1,2
       Mloop_bquark(h1,h1,h34,h56)=im*ggHmb(h1,h1)*H4l(h34,h56)*prop12
       Mloop_tquark(h1,h1,h34,h56)=im*ggHmt(h1,h1)*H4l(h34,h56)*prop12
+      eftV_6(h1,h1,h34,h56)=im*ggH6(h1,h1)*H4l(h34,h56)*prop12
       enddo
       enddo
       enddo
@@ -95,6 +105,7 @@ c--- Rescale for width study
       do h56=1,2
       Mloop_bquark(h1,h1,h34,h56)=rescale*Mloop_bquark(h1,h1,h34,h56)
       Mloop_tquark(h1,h1,h34,h56)=rescale*Mloop_tquark(h1,h1,h34,h56)
+      eftV_6(h1,h1,h34,h56)=rescale*eftV_6(h1,h1,h34,h56)
       enddo
       enddo
       enddo
