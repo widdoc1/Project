@@ -24,6 +24,7 @@ c--- Triangle (axial) pieces cancel for massless isodoublets
       include 'kprocess.f'
       include 'docheck.f'
       include 'first.f'
+      include 'kappa.f'
       integer:: h1,h2,nu,i,j,k,om,del1,del2,k12h,k34h,k56h11,k34h11,e
       real(dp):: p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac
       real(dp):: mfsq,tau,tauinv,rt,pttwo,rescale
@@ -321,7 +322,7 @@ c      fachiggs=real(fachiggs)
          f=czip
       endif
       e3De4=2._dp*za(3,5)*zb(6,4)/(s(3,4)*s(5,6))
-      amphiggs=mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
+      amphiggs=k_t*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
       Ahiggs(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
       Ahiggs(1,2)=czip
       Ahiggs(2,1)=czip
@@ -340,7 +341,7 @@ c--- fill amplitudes with contributions of Higgs: bottom loop
       else
          f=czip
       endif
-      amphiggs=mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
+      amphiggs=k_b*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
 
       Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
       Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
@@ -361,6 +362,12 @@ c--- numerical check includes top loops only
 c        pause
       endif
       
+c---  fill amplitudes with contributions of Higgs: bottom loop
+      amphiggs=k_g*(s(1,2)/6._dp)*im*e3De4
+
+      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
+
 c--- ensure numerical stability: set massive loops to zero
 c--- for pt(W) < "ptWsafetycut_massive" GeV
       if (pttwo(3,4,p) < ptWsafetycut_massive) then
