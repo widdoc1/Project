@@ -355,7 +355,7 @@ c--- jets and cuts options
       bbsqmin=mbbmin**2
       if (verbose) call writeinput(6,' * ',' ','m56min')
       read(20,*) mbbmax 
-      if (mbbmax > sqrts*0.9999_dp) Mbbmax=sqrts*09.999_dp ! physical cap on m56max
+      if (mbbmax > sqrts*0.9999_dp) Mbbmax=sqrts*0.9999_dp ! physical cap on m56max
       bbsqmax=mbbmax**2
       if (verbose) call writeinput(6,' * ',' ','m56max')
       read(20,*) m3456min 
