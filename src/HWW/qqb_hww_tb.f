@@ -15,6 +15,7 @@ c--- including both top and bottom quark loops
       include 'sprods_com.f'
       include 'zprods_decl.f'
       include 'anom_higgs.f' 
+      include 'kappa.f'
       integer:: h1,h2,j,k
       real(dp):: p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac
       real(dp):: mfsq,tau,tauinv,rt,rescale
@@ -48,7 +49,7 @@ c--- fill amplitudes with contributions of Higgs: top loop
          f=czip
       endif
       e3De4=2._dp*za(3,5)*zb(6,4)/(s(3,4)*s(5,6))
-      amphiggs=mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
+      amphiggs=k_t*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
       Ahiggs(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
       Ahiggs(1,2)=czip
       Ahiggs(2,1)=czip
@@ -67,7 +68,13 @@ c--- fill amplitudes with contributions of Higgs: bottom loop
       else
          f=czip
       endif
-      amphiggs=mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
+      amphiggs=k_b*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
+
+      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
+
+c---  fill amplitudes with contributions of Higgs: bottom loop
+      amphiggs=k_g*(s(1,2)/6._dp)*im*e3De4
 
       Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
       Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)

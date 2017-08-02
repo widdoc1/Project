@@ -99,6 +99,11 @@
 0.5d0		[epsilon_h, energy fraction for isolation]
 1d0		[n_pow, exponent for smooth-cone isolation]
 
+[Coupling rescaling in the kappa formalism]
+1d0       [kappa_t]
+1d0       [kappa_b]
+0d0       [kappa_g]
+
 [Anomalous couplings of the W and Z]
 0.0d0		[Delta_g1(Z)]
 0.0d0		[Delta_K(Z)]
