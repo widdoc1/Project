@@ -1,2 +1,2 @@
-      character*255 werkdir
+      character*72 werkdir
       common/werkdir/werkdir

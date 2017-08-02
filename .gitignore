@@ -34,6 +34,8 @@
 # Specific executables
 Bin/mcfm
 Bin/mcfm_omp
+Bin/mcfm_mpi
+QCDLoop/test
 
 # Input Cards
 *.DAT
@@ -57,7 +59,3 @@ Bin/mcfm_omp
 
 # latex output
 *.pdf
-
-# folders
-QCDLoop
-

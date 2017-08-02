@@ -16,31 +16,44 @@
 ! defined and stored.
 !
 ! (this could be worked around - but is it wise to?)
-logical function userincludedipole(nd, ppart, mcfm_result)
+function userincludedipole(nd, ppart, mcfm_result)
+  use types_mod
   implicit none
   include 'constants.f'
   include 'npart.f'
+  include 'mxpart.f'
   include 'jetlabel.f'
   include 'nproc.f'
-  integer,          intent(in) :: nd
-  double precision, intent(in) :: ppart(mxpart,4)
-  logical,          intent(in) :: mcfm_result
+  integer,  intent(in) :: nd
+  real(dp), intent(in) :: ppart(mxpart,4)
+  logical,  intent(in) :: mcfm_result
+  logical :: userincludedipole
    !------------
-  logical :: bin, ATLAS_hww2017
+  logical :: bin,makecuts,ATLAS_hww2017
   common/bin/bin
+  common/makecuts/makecuts
 
   ! take the MCFM result as the default choice
   userincludedipole = mcfm_result
   ! return
+
+  if (makecuts) then
 
   if ( (nproc .eq. 61) .or. (nproc .eq. 66) .or. (nproc .eq. 69) &
        & .or. (nproc .eq. 123) .or. (nproc .eq. 124) .or. (nproc .eq. 125) &
        & .or. (nproc .eq. 126) ) then
      if (ATLAS_hww2017(ppart)) then
         userincludedipole = mcfm_result
+        return
      else
         userincludedipole = .false.
+        return
      endif
+  endif
+
+  else
+    userincludedipole = mcfm_result
+    return
   endif
 
   return
@@ -60,31 +73,35 @@ end function userincludedipole
 !     nd:  an integer specifying the dipole number of this contribution
 !          (if applicable), otherwise equal to zero
 
-subroutine userplotter(ppart, wt,wt2, nd)
+subroutine userplotter(pjet, wt,wt2, nd)
+  use types_mod
   implicit none
   include 'constants.f'
+  include 'nf.f'
+  include 'mxpart.f'
   include 'ptilde.f'
   include 'npart.f'
   include 'nplot.f'
-  double precision, intent(in)  :: ppart(mxpart,4)
-  double precision, intent(in)  :: wt,wt2
-  integer,          intent(in)  :: nd
+  real(dp), intent(in) :: pjet(mxpart,4)
+  real(dp), intent(in) :: wt,wt2
+  integer,  intent(in) :: nd
+  integer, parameter :: tagbook=1, tagplot=2
   !---------------------------------------------
   integer :: i, iplot 
-  double precision :: m34, m45, m56, m3456
-  double precision :: MT1, MT2
-  double precision :: ptll, pt45(2), ptmiss, pt36(2), MTll, &
+  real(dp) :: m34, m45, m56, m3456
+  real(dp) :: MT1, MT2
+  real(dp) :: ptll, pt45(2), ptmiss, pt36(2), MTll, &
        & dphillmiss, pttwo
-  double precision :: ht, htjet
+  real(dp) :: ht, htjet
   logical, save :: first = .true.
-  character*4   :: tag
+  integer :: tag
+
   if (first) then
-    tag   = "book"
+    tag   = tagbook
     first = .false.
   else                
-    tag = "plot"
-  end if
-  
+    tag = tagplot
+  endif
   iplot = nextnplot
 
   !ht    = sum(sqrt(sum(ptilde   (nd,3:2+npart,1:2)**2,dim=2)))
@@ -97,33 +114,33 @@ subroutine userplotter(ppart, wt,wt2, nd)
   !iplot = iplot + 1
   
   !define quantities to plot
-	m45=(ppart(4,4)+ppart(5,4))**2 
+	m45=(pjet(4,4)+pjet(5,4))**2 
 	do i=1,3
-		m45=m45-(ppart(4,i)+ppart(5,i))**2
+		m45=m45-(pjet(4,i)+pjet(5,i))**2
 	enddo
 	m45=sqrt(m45)
-	m34=(ppart(3,4)+ppart(4,4))**2 
-	m3456=(ppart(3,4)+ppart(4,4)+ppart(5,4)+ppart(6,4))**2
+	m34=(pjet(3,4)+pjet(4,4))**2 
+	m3456=(pjet(3,4)+pjet(4,4)+pjet(5,4)+pjet(6,4))**2
 	do i=1,3
-		m34=m34-(ppart(3,i)+ppart(4,i))**2
-		m3456=m3456-(ppart(3,i)+ppart(4,i)+ppart(5,i)+ppart(6,i))**2
+		m34=m34-(pjet(3,i)+pjet(4,i))**2
+		m3456=m3456-(pjet(3,i)+pjet(4,i)+pjet(5,i)+pjet(6,i))**2
 	enddo
 	m34=sqrt(m34)
 	m3456=sqrt(m3456)
-	m56=(ppart(5,4)+ppart(6,4))**2 
+	m56=(pjet(5,4)+pjet(6,4))**2 
 	do i=1,3
-		m56=m56-(ppart(5,i)+ppart(6,i))**2
+		m56=m56-(pjet(5,i)+pjet(6,i))**2
 	enddo
   m56=sqrt(m56)
 
   ! transverse mass proxy for MWW
-	ptll = pttwo(4,5,ppart) 
-  pt45(1) = ppart(4,1)+ppart(5,1)
-  pt45(2) = ppart(4,2)+ppart(5,2)
+	ptll = pttwo(4,5,pjet) 
+  pt45(1) = pjet(4,1)+pjet(5,1)
+  pt45(2) = pjet(4,2)+pjet(5,2)
 
-  ptmiss = pttwo(3,6,ppart) 
-  pt36(1) = ppart(3,1)+ppart(6,1)
-	pt36(2) = ppart(3,2)+ppart(6,2)
+  ptmiss = pttwo(3,6,pjet) 
+  pt36(1) = pjet(3,1)+pjet(6,1)
+	pt36(2) = pjet(3,2)+pjet(6,2)
 
   MTll=sqrt(ptll**2+m45**2)
 
@@ -185,10 +202,11 @@ end subroutine userplotter
 !----------------------------------------------------------------------
 ! user code to write info 
 subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
+  use types_mod
   implicit none
   integer,          intent(in) :: unitno
   character*2,      intent(in) :: comment_string
-  double precision, intent(in) :: xsec, xsec_err
+  real(dp),         intent(in) :: xsec, xsec_err
   integer,          intent(in) :: itno
   
   !write(6,*) "have reached iteration number", itno
@@ -200,9 +218,10 @@ subroutine userhistofin(xsec,xsec_err,itno,itmx)
 !	This function allows for extra user-defined operations 
 !	at the end of each iteration (itno>0) and at the end of 
 !	the run of the program (itno=0).
+  use types_mod
 	implicit none
-	integer itno,itmx
-	double precision xsec,xsec_err
+  integer,  intent(in) :: itno,itmx
+	real(dp), intent(in) :: xsec,xsec_err
 end subroutine userhistofin
 
 ! subroutine userscale(event_momenta, muR, muF)
@@ -210,26 +229,28 @@ end subroutine userhistofin
 ! end subroutine userscale
 
 function ATLAS_hww2017(ppart) result(res)
+  use types_mod
   implicit none
   include 'constants.f'
   include 'npart.f'
+  include 'mxpart.f'
   include 'jetlabel.f'
   include 'energy.f'
-  include 'VVcut.f'
-  include 'ptveto.f'
+  include 'ptjveto.f'
 
-  double precision, intent(in) :: ppart(mxpart,4)
+  real(dp), intent(in) :: ppart(mxpart,4)
   logical :: res
 
-  double precision :: etarap,pt
-	double precision :: y4,y5,pt3,pt4,pt5,pt6
-	double precision :: pt34,pttwo
-	double precision :: pt45,pt56,m45,mt45,mtrans
-	double precision :: et_vec(4),etmiss,r2,delphi,m34,m56,m3456
+  real(dp) :: etarap,pt
+	real(dp) :: y4,y5,pt3,pt4,pt5,pt6
+	real(dp) :: pt34,pttwo
+	real(dp) :: pt45,pt56,m45,mt45,mtrans
+	real(dp) :: et_vec(4),etmiss,r2,delphi,m34,m56,m3456
 	integer :: i
+  integer, parameter :: VVcut=3 ! set cuts for e mu
 	logical :: passcuts, passveto
-	double precision etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
-	double precision dphi,ptrel,pt36(2) 
+	real(dp) etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
+	real(dp) dphi,ptrel,pt36(2) 
 
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
 
@@ -284,7 +305,7 @@ function ATLAS_hww2017(ppart) result(res)
 	dphi = min(dphi, &
      acos((ppart(5,1)*pt36(1)+ppart(5,2)*pt36(2))/pt5/ptmiss))
 
-	if (jets > 0.and.ptj > ptveto) then 
+	if (jets > 0.and.ptj > ptjveto) then 
 		dphi = min(dphi, &
         acos((ppart(7,1)*pt36(1)+ppart(7,2)*pt36(2))/pt(7,ppart)/ptmiss))
 	endif
@@ -328,7 +349,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if (pt(5,ppart) < 25d0) passcuts=.false. 
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5) &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5) &
            passveto = .false. 
 			endif
 
@@ -348,14 +369,14 @@ function ATLAS_hww2017(ppart) result(res)
 			if (pt(5,ppart) < 25d0) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5) &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5) &
            passveto = .false. 
 			endif
 
 !   only jet veto cuts
 		elseif (VVcut .eq. 5) then 
 			if (jets > 0) then 
-				if (ptj > ptveto) passcuts = .false. 
+				if (ptj > ptjveto) passcuts = .false. 
 			endif
 
 		else
@@ -378,7 +399,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5) &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5) &
  	       	 passveto = .false. 
 			endif
 			if (ptrel < 45d0) passcuts = .false.
@@ -400,7 +421,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5 .and. &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
               rjl1 > 0.3d0 .and. rjl2 > 0.3d0 ) passveto = .false. 
 			endif
 			if (ptrel < 45d0) passcuts = .false.
@@ -420,7 +441,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5 .and. &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
               rjl1 > 0.3d0) passveto = .false. 
 			endif
 			if (ptrel < 15d0) passcuts = .false.
@@ -440,7 +461,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5 .and. &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
               rjl2 > 0.3d0) passveto = .false. 
 			endif
 			if (ptrel < 15d0) passcuts = .false.
@@ -448,7 +469,7 @@ function ATLAS_hww2017(ppart) result(res)
 !   only jet veto cuts
 		elseif (VVcut .eq. 5) then 
 			if (jets > 0) then 
-				if (ptj > ptveto) passcuts = .false. 
+				if (ptj > ptjveto) passcuts = .false. 
 			endif
 
 		else
@@ -470,7 +491,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5) &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5) &
              passveto = .false. 
 			endif
 			if (ptrel < 45d0) passcuts = .false.
@@ -491,7 +512,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5 .and. &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
               rjl1 .gt. 0.3 .and. rjl2 .gt. 0.3 ) &
               passveto = .false. 
 			endif
@@ -511,7 +532,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-			if (ptj > ptveto .and. abs(etaj) < 4.5 .and. &
+			if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
               rjl1 > 0.3d0) passveto = .false. 
 			endif
 			if (ptrel < 25d0) passcuts = .false.
@@ -530,7 +551,7 @@ function ATLAS_hww2017(ppart) result(res)
 			if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
 			if (jets > 0) then 
-				if (ptj > ptveto .and. abs(etaj) < 4.5 .and. &
+				if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
               rjl2 > 0.3d0) passveto = .false. 
 			endif
 			if (ptrel < 25d0) passcuts = .false.
@@ -538,7 +559,7 @@ function ATLAS_hww2017(ppart) result(res)
 !   only jet veto cuts
 		elseif (VVcut .eq. 5) then 
 			if (jets > 0) then 
-				if (ptj > ptveto) passcuts = .false. 
+				if (ptj > ptjveto) passcuts = .false. 
 			endif
 
 		else
