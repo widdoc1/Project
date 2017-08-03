@@ -74,6 +74,9 @@ c + [1/(1-x)_(0)]
 c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
 
+      select case(kpart)
+      case(knnll)
+
       if (vorz == 1) then
          ii_qq=-pisq/12d0/(1-2*as*beta0*L_tilde)
          if (scheme == 'tH-V') then
@@ -99,34 +102,38 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       ii_qq=(1+x**2)/omx * 2d0* log(Q_scale/scale)
      &     /(1-2*as*beta0*L_tilde)
       return
+
+      case default
+
+      if (vorz == 1) then
+        ii_qq=epinv*(epinv2-L)+0.5_dp*L**2-pisqo6
+        if (scheme == 'tH-V') then
+          return
+        elseif (scheme == 'dred') then
+          ii_qq=ii_qq-half
+          return
+      else
+        write(6,*) 'Value of scheme not implemented properly ',scheme
+        stop
+        endif
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_qq=omx-(one+x)*(two*lomx+L-epinv)-(one+x**2)/omx*lx
+        if (omx > aii) ii_qq=ii_qq+(one+x**2)/omx*log(aii/omx)
+        return
+      endif
+      
+      ii_qq=two/omx*(two*lomx+L-epinv)
+      
+      return
+
+      end select
       end
-c$$$      if (vorz == 1) then
-c$$$        ii_qq=epinv*(epinv2-L)+0.5_dp*L**2-pisqo6
-c$$$        if (scheme == 'tH-V') then
-c$$$          return
-c$$$        elseif (scheme == 'dred') then
-c$$$          ii_qq=ii_qq-half
-c$$$          return
-c$$$      else
-c$$$        write(6,*) 'Value of scheme not implemented properly ',scheme
-c$$$        stop
-c$$$        endif
-c$$$      endif
-c$$$      
-c$$$      omx=one-x
-c$$$      lomx=log(omx)
-c$$$      lx=log(x)
-c$$$      
-c$$$      if (vorz == 2) then
-c$$$        ii_qq=omx-(one+x)*(two*lomx+L-epinv)-(one+x**2)/omx*lx
-c$$$        if (omx > aii) ii_qq=ii_qq+(one+x**2)/omx*log(aii/omx)
-c$$$        return
-c$$$      endif
-c$$$      
-c$$$      ii_qq=two/omx*(two*lomx+L-epinv)
-c$$$      
-c$$$      return
-c$$$      end
 
 ***************************** Quark-Gluon *****************************
       function ii_qg(x,L,vorz)
@@ -162,6 +169,9 @@ c  + 2*x - 2*x^2 - [ln(x)]*[x^2+(1-x)^2] + [ln(al(x))]*
 c [x^2+(1-x)^2] + [x^2+(1-x)^2]*L + 2*[x^2+(1-x)^2]*[ln(1-x)]
 c  - [x^2+(1-x)^2]*epinv
  
+      select case(kpart)
+      case(knnll)
+
       ii_qg=0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
       
@@ -174,20 +184,24 @@ c  - [x^2+(1-x)^2]*epinv
      &        log(Q_scale**2/musq))/(1-2*as*beta0*L_tilde)
       endif
       return
+
+      case default
+
+      ii_qg=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_qg=(one-two*x*omx)*(two*lomx-lx+L-epinv)+two*x*omx
+        if (omx > aii) ii_qg=ii_qg+(one-two*x*omx)*log(aii/omx)
+      endif
+      return
+
+      end select
       end
-c$$$      ii_qg=0._dp
-c$$$      if ((vorz == 1) .or. (vorz == 3)) return
-c$$$      
-c$$$      omx=one-x
-c$$$      lomx=log(omx)
-c$$$      lx=log(x)
-c$$$      
-c$$$      if (vorz == 2) then
-c$$$        ii_qg=(one-two*x*omx)*(two*lomx-lx+L-epinv)+two*x*omx
-c$$$        if (omx > aii) ii_qg=ii_qg+(one-two*x*omx)*log(aii/omx)
-c$$$      endif
-c$$$      return
-c$$$      end
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)

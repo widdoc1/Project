@@ -71,9 +71,9 @@ ifeq ($(origin FC),environment)
     $(info CXX = $(CXX))
 else
     ifeq ($(USEMPI),YES)
-      FC = /usr/local/openmpi/bin/mpifort
-      F90 = /usr/local/openmpi/bin/mpifort
-      CXX = /usr/local/openmpi/bin/mpic++
+      FC = mpifort
+      F90 = mpifort
+      CXX = mpic++
     else
       FC = gfortran
       F90 = gfortran
