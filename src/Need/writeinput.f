@@ -283,7 +283,7 @@ c--- catch special scale choices for stop+b process
      &        lstring//' [JetVHeto resummation options] )'
       endif
       if ((tag == 'Q_scale') .or. (writeall)) then
-         write(unitno,fmt=f99) Q_scale,'Q_scale'
+         write(unitno,fmt=f99) Q_scalestart,'Q_scale'  ! check if this should be Q_scale or Q_scalestart, possibly same for frag_scale?
       endif
       if ((tag == 'R_scale') .or. (writeall)) then
          write(unitno,fmt=f99) R_scale,'R_scale'

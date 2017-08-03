@@ -78,16 +78,16 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll)
 
       if (vorz == 1) then
-         ii_qq=-pisq/12d0/(1-2*as*beta0*L_tilde)
-         if (scheme == 'tH-V') then
-            return
-         elseif (scheme == 'dred') then
-            ii_qq=ii_qq-half
-            return
-         else
-            write(6,*) 'Value of scheme not implemented properly ',scheme
-            stop
-         endif
+        ii_qq=-pisq/12d0/(1-2*as*beta0*L_tilde)
+        if (scheme == 'tH-V') then
+          return
+        elseif (scheme == 'dred') then
+          ii_qq=ii_qq-half
+          return
+        else
+          write(6,*) 'Value of scheme not implemented properly ',scheme
+          stop
+        endif
       endif
       
       omx=one-x
@@ -95,8 +95,8 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qq=omx/(1-2*as*beta0*L_tilde)
-         return
+        ii_qq=omx/(1-2*as*beta0*L_tilde)
+        return
       endif
 
       ii_qq=(1+x**2)/omx * 2d0* log(Q_scale/scale)
