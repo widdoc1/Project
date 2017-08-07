@@ -80,7 +80,7 @@ c--- APPLgrid - end
 c---- SSbegin
       include 'reweight.f'
 !     it doesn't make sense to allow "purevirt" in resummation,
-!     the additional of the dipoles is necessary for the result
+!     the addition of the dipoles is necessary for the result
 !     to be meaningful
 c$$$      logical:: purevirt
 c$$$      common/useropt1/purevirt
@@ -2016,40 +2016,6 @@ c      endif
       endif
       val=resmNNLLint*wgt 
       val2=val**2 
-
-c$$$!     debug wgts
-c$$$      if (abs(val) > 10) then
-c$$$         write(*,*) "-------- event begin ----------"
-c$$$         write(*,*) "val (wgt)", val
-c$$$         write(*,*) "VEGAS wgt = ", wgt
-c$$$         write(*,*) "pswt = ", pswt
-c$$$         write(*,*) "xmsq = ", xmsq
-c$$$         write(*,*) "-------- j,k seq ----------"
-c$$$         do j=-nf,nf
-c$$$            do k=-nf,nf
-c$$$               if (msq(j,k) > 1E-9) then
-c$$$                  xl12=log(two*dot(p,1,2)/musq)
-c$$$                  write(*,*) j,k
-c$$$                  write(*,*) "msq = ", msq(j,k)
-c$$$                  write(*,*) "msqv = ", msqv(j,k)
-c$$$                  write(*,*) "xl12 = ", xl12
-c$$$               endif
-c$$$            enddo
-c$$$         enddo
-c$$$         write(*,*) "p1 = ", p(1,:)
-c$$$         write(*,*) "p2 = ", p(2,:)
-c$$$         write(*,*) "-(p1+p2) =", p(1,:) + p(2,:)
-c$$$         write(*,*) "s(1,2) =",  s(1,2)
-c$$$         write(*,*) "s(3,4) =", s(3,4)
-c$$$         write(*,*) "s(5,6) =", s(5,6)
-c$$$         write(*,*) "p34 =", p(3,:) + p(4,:)
-c$$$         write(*,*) "p56 =", p(5,:) + p(6,:)
-c$$$         write(*,*) "p34 + p56 =", p(3,:) + p(4,:) + p(5,:) + p(6,:)
-c$$$         !     write(*,*) "r = ", r
-c$$$         !write(*,*) "p = ", p
-c$$$         write(*,*) "--------  event end  ----------"
-c$$$         write(*,*)
-c$$$      endif
 
 c---  SSbegin
       resmNNLLint = resmNNLLint*reweight

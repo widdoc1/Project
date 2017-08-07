@@ -31,12 +31,6 @@ c     q(-p1)+qbar(-p2)-->q'(p5)+bar{q'}(p6)+n(p3)+ebar(p4)
       complex(dp):: AWWM,AWWP,BWWM,BWWP
       complex(dp):: prop12,prop34,prop56
       complex(dp):: a6treea,a6loopa,A6b_1,A6b_2,A6b_3
-
-c$$$      integer:: j1,j2,j3,j4,j5,j6,i1,i2,i3,i4
-c$$$      complex(dp):: z2
-c$$$      complex(dp):: fa,Lsm1_2mht,BigT,I3m,flipbit,L34_12,lnrat
-c$$$      real(dp):: t134,t234,del3,del12,del34,del56
-
       complex(dp):: propwp,propwm,propzg,cprop,Vpole,Vpole12,suppl
       complex(dp):: Fa123456,Fa213456,Fb123456_z,Fb213456_z
       complex(dp):: Fa126543,Fa216543,Fb126543_z,Fb216543_z
@@ -55,16 +49,6 @@ c$$$      real(dp):: t134,t234,del3,del12,del34,del56
 
 c---  omit loops for pt(W) < "ptWsafetycut" (for num. stability)
       ptWsafetycut=1E-1_dp
-
-c$$$C---  statement function  
-c$$$      z2(i1,i2,i3,i4)=za(i1,i2)*zb(i2,i4)+za(i1,i3)*zb(i3,i4)
-c$$$
-c$$$      j1=1
-c$$$      j2=2
-c$$$      j3=3
-c$$$      j4=4
-c$$$      j5=5
-c$$$      j6=6
 
       scheme='dred'
       FAC=gw**8*xn*aveqq
@@ -334,86 +318,6 @@ c---  for pt(W) < "ptWsafetycut" GeV
       if (pttwo(3,4,p) < ptWsafetycut) then
          msqv(j,k)=czip
       endif
-
-
-c$$$      if (abs(msqv(j,k)) > 1._dp) then
-c$$$         write(*,*) "----- from virtual ----"
-c$$$         write(*,*) "-------- j,k seq ----------"
-c$$$         write(*,*) j,k
-c$$$         write(*,*) "Vpole12 = ", Vpole12
-c$$$         write(*,*) "prop12 =", prop12
-c$$$         write(*,*) "prop34 =", prop34
-c$$$         write(*,*) "prop56 =", prop56
-c$$$         write(*,*) "propwm =", propwm
-c$$$         write(*,*) "propwp =", propwp
-c$$$         write(*,*) "propzg =", propzg
-c$$$         write(*,*) "cprop =", cprop
-c$$$
-c$$$         write(*,*) "AWWM = ", AWWM
-c$$$         write(*,*) "AWWP = ", AWWP
-c$$$         write(*,*) "BWWM = ", BWWM
-c$$$         write(*,*) "BWWP = ", BWWP
-c$$$         write(*,*) "suppl = ", suppl
-c$$$
-c$$$         write(*,*) "La126543", La126543
-c$$$         write(*,*) "La216543", La216543
-c$$$         write(*,*) "La123456", La123456
-c$$$         write(*,*) "La213456", La213456
-c$$$
-c$$$         t134=s(j1,j3)+s(j1,j4)+s(j3,j4)
-c$$$         t234=s(j2,j3)+s(j2,j4)+s(j3,j4)
-c$$$         del12=s(j1,j2)-s(j3,j4)-s(j5,j6)
-c$$$         del34=s(j3,j4)-s(j1,j2)-s(j5,j6)
-c$$$         del56=s(j5,j6)-s(j1,j2)-s(j3,j4)
-c$$$         Del3=s(j1,j2)**2+s(j3,j4)**2+s(j5,j6)**2
-c$$$     &        -2._dp*(s(1,2)*s(3,4)+s(1,2)*s(5,6)+s(3,4)*s(5,6))
-c$$$
-c$$$         write(*,*) "t134", t134
-c$$$         write(*,*) "t234", t234
-c$$$         write(*,*) "del12", del12
-c$$$         write(*,*) "del34", del34
-c$$$         write(*,*) "del56", del56
-c$$$         write(*,*) "del3", del3
-c$$$
-c$$$         write(*,*) "fa = ", fa(1,2,3,4,5,6,za,zb)
-c$$$         write(*,*) "flipbit = ", flipbit(1,2,3,4,5,6,za,zb)
-c$$$         write(*,*) "Lsm1_2mht = ",Lsm1_2mht(s(1,2),t134,s(3,4), s(5,6))
-c$$$
-c$$$         write(*,*) "L34_12 = ", L34_12(j1,j2,j3,j4,j5,j6,za,zb)
-c$$$         write(*,*) "lnrat = ", lnrat(-s(j1,j2),-s(j3,j4))
-c$$$
-c$$$         write(*,*) "BigT = ", BigT(1,2,3,4,5,6,za,zb)
-c$$$         write(*,*) "I3m = ", I3m(s(1,2),s(3,4),s(5,6))
-c$$$
-c$$$         write(*,*) "BigT fix..."
-c$$$
-c$$$         write(*,*) "<2|(5+6)|1>", z2(j2,j5,j6,j1)
-c$$$         write(*,*) "denom = ", (z2(j2,j5,j6,j1)*Del3**2)
-c$$$
-c$$$         write(*,*) "line 1 = ", 1.5_dp*s(j1,j2)*del12*(t134-t234)
-c$$$     &        *z2(j6,j1,j2,j5)*z2(j3,j1,j2,j4)/(z2(j2,j5,j6,j1)*Del3**2)
-c$$$
-c$$$         write(*,*) "line 2 = ",-0.5_dp
-c$$$     &        *(3._dp*s(j1,j2)+2._dp*t134)*z2(j6,j1,j2,j5)*
-c$$$     &        z2(j3,j1,j2,j4)/(z2(j2,j5,j6,j1)*Del3)
-c$$$
-c$$$         write(*,*) "line 3 = ", +t134/(z2(j2,j5,j6,j1)**2*Del3)
-c$$$     &        *(zb(j1,j4)*za(j2,j6)
-c$$$     &        *(za(j3,j6)*zb(j6,j5)*del56-za(j3,j4)*zb(j4,j5)*del34)
-c$$$     &        -zb(j1,j5)*za(j2,j3)
-c$$$     &        *(za(j6,j5)*zb(j5,j4)*del56-za(j6,j3)*zb(j3,j4)*del34))
-c$$$
-c$$$         write(*,*) "line 4 = ", +za(j3,j6)*zb(j4,j5)*s(j1,j2)*t134/
-c$$$     &    (z2(j2,j5,j6,j1)*Del3)
-c$$$     &        -za(j3,j4)*zb(j5,j6)*z2(j6,j1,j2,j4)**2
-c$$$     &        /(z2(j2,j5,j6,j1)*Del3)
-c$$$     &        +2._dp*za(j1,j6)*zb(j2,j4)
-c$$$     &        *(za(j6,j5)*zb(j5,j4)*del56-za(j6,j3)*zb(j3,j4)*del34)
-c$$$     &        /(zb(j3,j4)*za(j5,j6)*Del3)
-c$$$
-c$$$
-c$$$         write(*,*) "-----------------------"
-c$$$      endif
 
  20   continue
       enddo
