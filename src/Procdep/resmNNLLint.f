@@ -79,9 +79,9 @@ c--- APPLgrid - end
 
 c---- SSbegin
       include 'reweight.f'
-      logical:: purevirt
-      common/useropt1/purevirt
-      data purevirt/.false./
+c$$$      logical:: purevirt
+c$$$      common/useropt1/purevirt
+c$$$      data purevirt/.false./
 c---- SSend 
 
       integer:: ih1,ih2,j,k,m,n,cs,ics,csmax,nvec,is,iq,ia,ib,ic,ii
@@ -115,7 +115,7 @@ c      data p/56*0._dp/
       save nshot
       external gg_ZZ,qqb_w1jet_vbis
 !$omp threadprivate(/rvcolourchoice/)
-!$omp threadprivate(nshot,/useropt1/)
+!$omp threadprivate(nshot)
 
       QandGflag=.false.
       if (first) then
@@ -185,7 +185,7 @@ c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
 c$$$      epcorr=epinv+2._dp*log(scale/facscale)
       epcorr=epinv+2._dp*log(scale/facscale)
-     &     /(1-2*as*beta0*Ltilde(ptjveto/resm_opts%Q,resm_opts%p))
+     &     /(1-2*as*beta0*L_tilde)
 
 c--- for the case of virtual correction in the top quark decay,
 c--- ('tdecay','ttdkay','Wtdkay') there are no extra initial-state
@@ -1891,7 +1891,8 @@ c--- the comparison with C. Oleari's e+e- --> QQbg calculation
 c      if ((kcase==kWcs_ms) .or. (runstring(1:5) == 'carlo')) then
 c--- (MCFM_original)  if (kcase==kWcs_ms) then                                                                                          
 c---  SSbegin                                                                                                                      
-      if ((kcase==kWcs_ms) .or. (purevirt)) then
+      ! if ((kcase==kWcs_ms) .or. (purevirt)) then
+      if (kcase==kWcs_ms) then
 c---  SSend                                                                                                                        
         xmsq=xmsq-msq(j,k)*fx1(j)*fx2(k)
       endif  
@@ -1928,6 +1929,7 @@ c---  SSend
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*xjac*pswt*xmsq/BrnRat*wgt/itmx
+     &        *resummed_sigma(ptjveto,resm_opts,order_NNLL)
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -1975,13 +1977,17 @@ c          pause
       
 c      if (creatent) then
         wt_gg=xmsq_bypart(0,0)*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
+     &     *resummed_sigma(ptjveto,resm_opts,order_NNLL)
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
+     &       *resummed_sigma(ptjveto,resm_opts,order_NNLL)
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
+     &       *resummed_sigma(ptjveto,resm_opts,order_NNLL)
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
+     &       *resummed_sigma(ptjveto,resm_opts,order_NNLL)
 c      endif
 
       call getptildejet(0,pjet)
@@ -1989,6 +1995,7 @@ c      endif
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*xjac*pswt/BrnRat
+     &     *resummed_sigma(ptjveto,resm_opts,order_NNLL)
       do j=-1,1
       do k=-1,1
 !$omp atomic
