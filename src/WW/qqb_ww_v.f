@@ -45,6 +45,10 @@ c     q(-p1)+qbar(-p2)-->q'(p5)+bar{q'}(p6)+n(p3)+ebar(p4)
       real(dp):: FAC,xfac
       integer:: j,k,jk
       real(dp), parameter :: mp(nf)=(/-1._dp,+1._dp,-1._dp,+1._dp,-1._dp/)
+      real(dp):: pttwo,ptWsafetycut
+
+c---  omit loops for pt(W) < "ptWsafetycut" (for num. stability)
+      ptWsafetycut=1E-1_dp
 
       scheme='dred'
       FAC=gw**8*xn*aveqq
@@ -308,6 +312,12 @@ C-- Inclusion of width for W's a la Baur and Zeppenfeld
       BWWP=cprop*BWWP
       
       msqv(j,k)=facnlo*fac*two*real(conjg(AWWM)*BWWM+conjg(AWWP)*BWWP)
+
+c---  ensure numerical stability: set loops to zero
+c---  for pt(W) < "ptWsafetycut" GeV
+      if (pttwo(3,4,p) < ptWsafetycut) then
+         msqv(j,k)=czip
+      endif
 
  20   continue
       enddo

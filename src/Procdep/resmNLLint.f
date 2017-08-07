@@ -833,6 +833,7 @@ c--- DEFAULT
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*pswt*xmsq/BrnRat*wgt/itmx
+     &        *resummed_sigma(ptjveto,resm_opts,order_NLL)
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -841,19 +842,24 @@ c--- loop over all PDF error sets, if necessary
       endif    
 
         wt_gg=xmsq_bypart(0,0)*wgt*flux*pswt/BrnRat/real(itmx,dp)
+     &     *resummed_sigma(ptjveto,resm_opts,order_NLL)
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
+     &       *resummed_sigma(ptjveto,resm_opts,order_NLL)
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
+     &       *resummed_sigma(ptjveto,resm_opts,order_NLL)
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
+     &       *resummed_sigma(ptjveto,resm_opts,order_NLL)
 
       call getptildejet(0,pjet)
       
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*pswt/BrnRat
+     &     *resummed_sigma(ptjveto,resm_opts,order_NLL)
       do j=-1,1
          do k=-1,1
 !$omp atomic            
