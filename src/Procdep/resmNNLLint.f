@@ -79,6 +79,9 @@ c--- APPLgrid - end
 
 c---- SSbegin
       include 'reweight.f'
+!     it doesn't make sense to allow "purevirt" in resummation,
+!     the additional of the dipoles is necessary for the result
+!     to be meaningful
 c$$$      logical:: purevirt
 c$$$      common/useropt1/purevirt
 c$$$      data purevirt/.false./
