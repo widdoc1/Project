@@ -3,4 +3,4 @@
       real(dp) :: L_tilde, facscaleLtilde
 
       common/resmparams/resm_opts,L_tilde,facscaleLtilde
-!     $omp threadprivate(/resmparams/)
+!$omp threadprivate(/resmparams/)
