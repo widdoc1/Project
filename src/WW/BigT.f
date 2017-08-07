@@ -26,8 +26,8 @@ c----first line
       BigT=1.5_dp*s(j1,j2)*del12*(t134-t234)
      & *z2(j6,j1,j2,j5)*z2(j3,j1,j2,j4)/(z2(j2,j5,j6,j1)*Del3**2)
 c----second line
-      BigT=BigT
-     & -0.5_dp*(3._dp*s(j1,j2)+2._dp*t134)*z2(j6,j1,j2,j5)*z2(j3,j1,j2,j4)
+      BigT=BigT-0.5_dp
+     & *(3._dp*s(j1,j2)+2._dp*t134)*z2(j6,j1,j2,j5)*z2(j3,j1,j2,j4)
      & /(z2(j2,j5,j6,j1)*Del3)
 
 c----third line
@@ -58,8 +58,8 @@ c---"third" line from the bottom
      & /(zb(j3,j4)*za(j5,j6)*z2(j2,j5,j6,j1)**2)
 
 c---penultimate two lines
-      BigT=BigT+0.5_dp*(
-     .+3._dp*za(j6,j2)*zb(j2,j4)*za(j6,j1)*zb(j1,j4)/(zb(j3,j4)*za(j5,j6))
+      BigT=BigT+0.5_dp*( +3._dp*
+     &     za(j6,j2)*zb(j2,j4)*za(j6,j1)*zb(j1,j4)/(zb(j3,j4)*za(j5,j6))
      &    +za(j3,j2)*zb(j2,j5)*za(j3,j1)*zb(j1,j5)/(za(j3,j4)*zb(j5,j6))
      &    +zb(j1,j4)*za(j1,j6)*zb(j4,j5)/zb(j3,j4)
      &    -zb(j2,j4)*za(j2,j6)*za(j3,j6)/za(j5,j6)
