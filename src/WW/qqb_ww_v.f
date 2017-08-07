@@ -51,7 +51,10 @@ c$$$      real(dp):: t134,t234,del3,del12,del34,del56
       real(dp):: FAC,xfac
       integer:: j,k,jk
       real(dp), parameter :: mp(nf)=(/-1._dp,+1._dp,-1._dp,+1._dp,-1._dp/)
+      real(dp):: pttwo,ptWsafetycut
 
+c---  omit loops for pt(W) < "ptWsafetycut" (for num. stability)
+      ptWsafetycut=1E-1_dp
 
 c$$$C---  statement function  
 c$$$      z2(i1,i2,i3,i4)=za(i1,i2)*zb(i2,i4)+za(i1,i3)*zb(i3,i4)
@@ -326,6 +329,13 @@ C-- Inclusion of width for W's a la Baur and Zeppenfeld
       
       msqv(j,k)=facnlo*fac*two*real(conjg(AWWM)*BWWM+conjg(AWWP)*BWWP)
 
+c---  ensure numerical stability: set loops to zero
+c---  for pt(W) < "ptWsafetycut" GeV
+      if (pttwo(3,4,p) < ptWsafetycut) then
+         msqv(j,k)=czip
+      endif
+
+
 c$$$      if (abs(msqv(j,k)) > 1._dp) then
 c$$$         write(*,*) "----- from virtual ----"
 c$$$         write(*,*) "-------- j,k seq ----------"
@@ -403,7 +413,7 @@ c$$$     &        /(zb(j3,j4)*za(j5,j6)*Del3)
 c$$$
 c$$$
 c$$$         write(*,*) "-----------------------"
-      endif
+c$$$      endif
 
  20   continue
       enddo
