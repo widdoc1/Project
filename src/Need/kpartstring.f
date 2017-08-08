@@ -22,11 +22,11 @@ c--- converts integer kpart to corresponding 4-character string
       elseif (k == knnlo) then
         kpartstring='nnlo'
       elseif (k == kll) then
-        kpartstring='LL'
+        kpartstring='ll'
       elseif (k == knll) then
-        kpartstring='NLL'
+        kpartstring='nll'
       elseif (k == knnll) then
-        kpartstring='NNLL'
+        kpartstring='nnll'
       else
         write(6,*) 'Unexpected kpart in kpartstring: ',k
         stop
