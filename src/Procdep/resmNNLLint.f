@@ -187,7 +187,7 @@ c--- point to restart from when checking epsilon poles
 c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
 c$$$      epcorr=epinv+2._dp*log(scale/facscale)
-      epcorr=epinv+2._dp*log(scale/facscale)
+      epcorr=2._dp*log(scale/facscale)
      &     /(1-2*as*beta0*L_tilde)
 
 c--- for the case of virtual correction in the top quark decay,
@@ -208,18 +208,32 @@ c--- for stop+b, splittings on light quark line produce a quark
         epcorr=epinv+2._dp*log(renscale_L/facscale_L)
       endif
 
-      AP(q,q,1)=+ason2pi*Cf*1.5_dp*epcorr
-      AP(q,q,2)=+ason2pi*Cf*(-1._dp-z)*epcorr
-      AP(q,q,3)=+ason2pi*Cf*2._dp/omz*epcorr
-      AP(a,a,1)=+ason2pi*Cf*1.5_dp*epcorr
-      AP(a,a,2)=+ason2pi*Cf*(-1._dp-z)*epcorr
-      AP(a,a,3)=+ason2pi*Cf*2._dp/omz*epcorr
+c$$$      AP(q,q,1)=+ason2pi*Cf*1.5_dp*epcorr
+c$$$      AP(q,q,2)=+ason2pi*Cf*(-1._dp-z)*epcorr
+c$$$      AP(q,q,3)=+ason2pi*Cf*2._dp/omz*epcorr
+c$$$      AP(a,a,1)=+ason2pi*Cf*1.5_dp*epcorr
+c$$$      AP(a,a,2)=+ason2pi*Cf*(-1._dp-z)*epcorr
+c$$$      AP(a,a,3)=+ason2pi*Cf*2._dp/omz*epcorr
+c$$$
+c$$$      AP(q,g,1)=0._dp
+c$$$      AP(q,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+c$$$      AP(q,g,3)=0._dp
+c$$$      AP(a,g,1)=0._dp
+c$$$      AP(a,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+c$$$      AP(a,g,3)=0._dp
+
+      AP(q,q,1)=0._dp
+      AP(q,q,2)=0._dp
+      AP(q,q,3)=0._dp
+      AP(a,a,1)=0._dp
+      AP(a,a,2)=0._dp
+      AP(a,a,3)=0._dp
 
       AP(q,g,1)=0._dp
-      AP(q,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+      AP(q,g,2)=0._dp
       AP(q,g,3)=0._dp
       AP(a,g,1)=0._dp
-      AP(a,g,2)=ason2pi*Tr*(z**2+omz**2)*epcorr
+      AP(a,g,2)=0._dp
       AP(a,g,3)=0._dp
 
 c--- modifications for running with mb>0
@@ -241,16 +255,27 @@ c--- for stop+b, splittings on heavy quark line produce a gluon
         epcorr=epinv+2._dp*log(renscale_H/facscale_H)
       endif
 
+c$$$      AP(g,q,1)=0._dp
+c$$$      AP(g,q,2)=ason2pi*Cf*(1._dp+omz**2)/z*epcorr
+c$$$      AP(g,q,3)=0._dp
+c$$$      AP(g,a,1)=0._dp
+c$$$      AP(g,a,2)=ason2pi*Cf*(1._dp+omz**2)/z*epcorr
+c$$$      AP(g,a,3)=0._dp
+c$$$
+c$$$      AP(g,g,1)=+ason2pi*b0*epcorr
+c$$$      AP(g,g,2)=+ason2pi*xn*2._dp*(1._dp/z+z*omz-2._dp)*epcorr
+c$$$      AP(g,g,3)=+ason2pi*xn*2._dp/omz*epcorr
+
       AP(g,q,1)=0._dp
-      AP(g,q,2)=ason2pi*Cf*(1._dp+omz**2)/z*epcorr
+      AP(g,q,2)=0._dp
       AP(g,q,3)=0._dp
       AP(g,a,1)=0._dp
-      AP(g,a,2)=ason2pi*Cf*(1._dp+omz**2)/z*epcorr
+      AP(g,a,2)=0._dp
       AP(g,a,3)=0._dp
 
-      AP(g,g,1)=+ason2pi*b0*epcorr
-      AP(g,g,2)=+ason2pi*xn*2._dp*(1._dp/z+z*omz-2._dp)*epcorr
-      AP(g,g,3)=+ason2pi*xn*2._dp/omz*epcorr
+      AP(g,g,1)=0._dp
+      AP(g,g,2)=0._dp
+      AP(g,g,3)=0._dp
 
 c--- for single top+b, make sure factors of alphas are correct
       if ( (kcase==kqg_tbq) .or. (kcase==k4ftwdk)

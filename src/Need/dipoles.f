@@ -99,7 +99,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
         return
       endif
 
-      ii_qq=(1+x**2)/omx * 2d0* log(Q_scale/scale)
+      ii_qq=(1+x**2)/omx * 2d0* log(Q_scale/facscale)
      &     /(1-2*as*beta0*L_tilde)
       return
 
@@ -181,7 +181,7 @@ c  - [x^2+(1-x)^2]*epinv
       
       if (vorz == 2) then
          ii_qg=(2*x*omx + (x**2 + omx**2)*
-     &        log(Q_scale**2/musq))/(1-2*as*beta0*L_tilde)
+     &        2*log(Q_scale/facscale))/(1-2*as*beta0*L_tilde)
       endif
       return
 
