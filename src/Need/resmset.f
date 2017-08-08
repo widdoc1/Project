@@ -64,11 +64,9 @@
         facscaleLtilde = facscale
         return
       elseif (kpart==knll) then
-        facscaleLtilde = facscale * exp(-Ltilde(ptjveto/resm_opts%Q,
-     &                                 resm_opts%p))
+        facscaleLtilde = facscale * exp(-L_tilde)
       elseif (kpart==knnll) then
-        facscaleLtilde = facscale * exp(-Ltilde(ptjveto/resm_opts%Q,
-     &                                 resm_opts%p))
+        facscaleLtilde = facscale * exp(-L_tilde)
       elseif ((kpart==knllexpd) .or. (kpart==knnllexpd)) then
       else
         write(*,*) 'something wrong...'

@@ -13,7 +13,7 @@
 
 ! observable
       character(len=10) :: robs
-      character(len=1) :: match_scheme
+      character(len=1) :: match_scheme  ! multiplicative or additive?
 
       common/resminputs/Q_scalestart,R_scalestart,resum,robs,
      &     match_scheme
