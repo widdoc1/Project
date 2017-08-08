@@ -25,6 +25,7 @@ module rad_tools_mod
      real(dp) :: ln_muR2_M2
      real(dp) :: ln_Q2_M2
      real(dp) :: ln_Q2_muR2
+     real(dp) :: ln_Q2_muF2
      real(dp) :: ln_muF2_M2
      real(dp) :: M2_rts2
      real(dp) :: jet_radius
@@ -128,6 +129,7 @@ contains
     cs%ln_muR2_M2 = 2*log(muR/M)
     cs%ln_Q2_M2   = 2*log(Q/M)
     cs%ln_Q2_muR2 = 2*log(Q/muR)
+    cs%ln_Q2_muF2 = 2*log(Q/muF)
     cs%ln_muF2_M2 = 2*log(muF/M)
     cs%jet_radius = jet_radius
   end subroutine set_process_and_parameters

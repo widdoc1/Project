@@ -106,11 +106,14 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       case(knnllexpd)
 
+c$$$         ii_qq=0._dp
+c$$$         return
+
       if (vorz == 1) then
-         ii_qq=-pisq/12._dp + three/two * (two*log(Q_scale/facscale))    ! resummed coefficient
+         ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
      &        +three/two * two * L_tilde       ! coefficient of P_qq
      &        +(-two*coeff_Rad_A(1)*L_tilde**2
-     &        +(-two*coeff_Rad_A(1)*(two*log(Q_scale/facscale))
+     &        +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
      &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
@@ -128,12 +131,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qq=omx-(one+x)*(two*log(Q_scale/facscale))              ! resummed coefficient
+         ii_qq=omx-(one+x)*resm_opts%ln_Q2_muF2       ! resummed coefficient
      &        -(one+x) * two * L_tilde          ! coefficient of P_qq
          return
       endif
 
-      ii_qq=two/omx * (two*log(Q_scale/facscale)) ! resummed coefficient
+      ii_qq=two/omx * resm_opts%ln_Q2_muF2 ! resummed coefficient
      &     +two/omx * two * L_tilde    ! coefficient of P_qq
       return
 
@@ -223,9 +226,12 @@ c  - [x^2+(1-x)^2]*epinv
 
       case(knnllexpd)
 
+c$$$         ii_qg=0._dp
+c$$$         return
+
          if (vorz == 1) then
             ii_qg=+(-two*coeff_Rad_A(1)*L_tilde**2
-     &           +(-two*coeff_Rad_A(1)*(two*log(Q_scale/facscale))
+     &           +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
      &           -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
 
            return
@@ -237,8 +243,8 @@ c  - [x^2+(1-x)^2]*epinv
          
          if (vorz == 2) then
            ii_qg=two*x*omx+(one-two*x*omx)*
-     &           (two*log(Q_scale/facscale)) ! resummation coefficient
-     &           -two*(one-two*x*omx)*(two*log(Q_scale/facscale)) ! P_qg coefficient
+     &           (resm_opts%ln_Q2_muF2) ! resummation coefficient
+     &           -two*(one-two*x*omx)*L_tilde ! P_qg coefficient
            return   
          endif
 
