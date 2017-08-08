@@ -114,7 +114,7 @@ c$$$         return
      &        +three/two * two * L_tilde       ! coefficient of P_qq
      &        +(-two*coeff_Rad_A(1)*L_tilde**2
      &        +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &        -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
          elseif (scheme == 'dred') then
@@ -232,7 +232,7 @@ c$$$         return
          if (vorz == 1) then
             ii_qg=+(-two*coeff_Rad_A(1)*L_tilde**2
      &           +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &           -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &           -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
 
            return
          endif
