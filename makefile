@@ -1194,7 +1194,8 @@ virtint.o \
 scetint.o \
 resmLLint.o \
 resmNLLint.o \
-resmNNLLint.o
+resmNNLLint.o \
+expdNNLLint.o
 
 QQHFILES = \
 qq_Hqq_g.o \

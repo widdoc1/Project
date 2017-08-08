@@ -35,6 +35,7 @@ module rad_tools_mod
   public :: process_and_parameters, set_process_and_parameters, get_lambda
   public  :: init_proc, Ltilde, Rad, Rad_p, Rad_pNNLL, Rad_s, g1, g2, g3
   real(dp), public :: Rad_A(3), Rad_B(2) 
+  real(dp), public :: coeff_Rad_A(3), coeff_Rad_B(2) 
   real(dp), public :: CC, BB ! colour factor & our B
   real(dp), public :: as_pow
 
@@ -86,6 +87,9 @@ contains
        Rad_B(1) = -two*twopi*beta0     
        Rad_B(2) = -two*(ca_def**2*(8._dp/3._dp+three*zeta3)-cf_def*tf_def-four/three*ca_def*tf_def) &
             & +twopi_beta0*zeta2*ca_def !! Becher & Neubert arxiv:1205.3806v1 had additional: +8._dp*zeta3*ca_def**2
+
+       coeff_Rad_A(1) = two
+       coeff_Rad_B(1) = -two*twopi*beta0/ca_def ! check this
     case('DY')
        as_pow = zero
        Rad_A(1) = two*cf_def
@@ -98,6 +102,9 @@ contains
             & + cf_def*ca_def*(11._dp/18._dp*pisq+17._dp/24._dp-three*zeta3) &
             & + cf_def*tf_def*(-one/6._dp-two/9._dp*pisq)) &
             & + twopi_beta0*zeta2*cf_def 
+
+       coeff_Rad_A(1) = two
+       coeff_Rad_B(1) = -three
    end select
 
   end subroutine init_proc
