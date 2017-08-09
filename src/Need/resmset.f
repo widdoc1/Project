@@ -10,6 +10,7 @@
       include 'JetVHeto_opts.f'
       include 'dynamicscale.f'
       include 'qcdcouple.f'
+      include 'noglue.f'
       include 'kpart.f'
       include 'ptjveto.f'
 
@@ -37,7 +38,16 @@
       M_B = sqrt(M_B2)
 
       ! parameters for process
-      process    = 'DY'
+      ! set process based on in Born level is qqb or gg initiated
+      if (omitgg) then
+         process = 'DY'
+      else if (ggonly) then
+         process = 'H'
+      else
+         write(*,*) "you must set ggonly or omitgg to true to perform
+     &    a resummation"
+         stop
+      endif
       inv_mass   = M_B
       muR        = scale
       muF        = facscale
