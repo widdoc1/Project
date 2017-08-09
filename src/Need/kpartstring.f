@@ -27,6 +27,10 @@ c--- converts integer kpart to corresponding 4-character string
         kpartstring='nll'
       elseif (k == knnll) then
         kpartstring='nnll'
+      elseif (k == knllexpd) then
+         kpartstring='nllexpd'
+      elseif (k == knnllexpd) then
+         kpartstring='nnllexpd'
       else
         write(6,*) 'Unexpected kpart in kpartstring: ',k
         stop

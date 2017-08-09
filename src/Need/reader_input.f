@@ -200,6 +200,10 @@ c------ normal case
         kpart=knll
       elseif ((part == 'nnll') .or. (part =='NNLL')) then
          kpart=knnll
+      elseif (part == 'nllexpd') then
+         kpart=knllexpd
+      elseif (part == 'nnllexpd') then
+         kpart=knnllexpd
       endif
       if (index(part,'coeff') > 0) then
         coeffonly=.true.
@@ -756,7 +760,8 @@ c--- this is an allowed combination
         elseif ((kpart==knnlo) .or. (kpart==ksnlo)) then 
 c--- this is an allowed combination
         elseif ((kpart==kll) .or. (kpart==knll) .or.
-     &         (kpart==knnll)) then
+     &          (kpart==knnll) .or. (kpart==knllexpd) .or.
+     &          (kpart==knnllexpd)) then
 c--- temporarily allow all resummation processes
         else 
           write(6,*) 'part=',part,' is not a valid option'

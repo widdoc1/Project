@@ -65,11 +65,13 @@
       common/xreal/xreal,xreal2
       real(dp):: lowint,virtint,realint,fragint,scetint
       real(dp):: resmLLint,resmNLLint,resmNNLLint
+      real(dp):: expdNLLint,expdNNLLint
       real(dp):: region(2*mxdim),lord_bypart(-1:1,-1:1)
       logical:: first,myreadin
       common/bypart/lord_bypart
       external lowint,virtint,realint,fragint,scetint
       external resmLLint,resmNLLint,resmNNLLint
+      external expdNLLint, expdNNLLint
       data first/.true./
       save first,sigips,sdips
  
@@ -282,6 +284,13 @@ c---  NLL integration
      &        nprn,sig,sd,chi)
       endif
 
+c$$$c---  expanded NLL integration
+c$$$      if (kpart==kexpdnll) then
+c$$$         call boundregion(ndim,region)
+c$$$         call vegasnr(region,ndim,expdNLLint,myinit,myncall,myitmx,
+c$$$     &        nprn,sig,sd,chi)
+c$$$      endif
+
 c---  NNLL integration should have one extra dimensions
 c---  (added and then taken away)
       if (kpart==knnll) then
@@ -291,6 +300,17 @@ c---  (added and then taken away)
      &        nprn,sig,sd,chi)
          ndim=ndim-1
       endif
+
+c---  expanded NNLL integration should have one extra dimensions
+c---  (added and then taken away)
+      if (kpart==knnllexpd) then
+         ndim=ndim+1
+         call boundregion(ndim,region)
+         call vegasnr(region,ndim,expdNNLLint,myinit,myncall,myitmx,
+     &        nprn,sig,sd,chi)
+         ndim=ndim-1
+      endif
+
 
 c--- If we're doing the tota integration, then set up the grid info
       if ((mykpart==ktota) .or. (mykpart==ktodk)

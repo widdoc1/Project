@@ -78,7 +78,8 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll)
 
       if (vorz == 1) then
-        ii_qq=-pisq/12d0/(1-2*as*beta0*L_tilde)
+         ii_qq=(-pisq/12._dp + three/two*resm_opts%ln_Q2_muF2)
+     &    /(1-2*as*beta0*L_tilde)
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -95,13 +96,52 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-        ii_qq=omx/(1-2*as*beta0*L_tilde)
+        ii_qq=(omx-(one+x)*resm_opts%ln_Q2_muF2)
+     &        /(1-2*as*beta0*L_tilde)
         return
       endif
 
-      ii_qq=(1+x**2)/omx * 2d0* log(Q_scale/facscale)
+      ii_qq=two/omx * resm_opts%ln_Q2_muF2
      &     /(1-2*as*beta0*L_tilde)
       return
+
+
+      case(knnllexpd)
+
+c$$$         ii_qq=0._dp
+c$$$         return
+
+      if (vorz == 1) then
+         ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
+     &        +three/two * two * L_tilde       ! coefficient of P_qq
+     &        +(-two*coeff_Rad_A(1)*L_tilde**2
+     &        +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &        -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+         if (scheme == 'tH-V') then
+            return
+         elseif (scheme == 'dred') then
+            ii_qq=ii_qq-half
+            return
+         else
+           write(6,*) 'Value of scheme not implemented properly ',scheme
+           stop
+         endif
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+         ii_qq=omx-(one+x)*resm_opts%ln_Q2_muF2       ! resummed coefficient
+     &        -(one+x) * two * L_tilde          ! coefficient of P_qq
+         return
+      endif
+
+      ii_qq=two/omx * resm_opts%ln_Q2_muF2 ! resummed coefficient
+     &     +two/omx * two * L_tilde    ! coefficient of P_qq
+      return
+
 
       case default
 
@@ -180,10 +220,38 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qg=(2*x*omx + (x**2 + omx**2)*
-     &        2*log(Q_scale/facscale))/(1-2*as*beta0*L_tilde)
+         ii_qg=two*x*omx+(one-two*x*omx)*
+     &        (resm_opts%ln_Q2_muF2)/(1-2*as*beta0*L_tilde)
       endif
       return
+
+
+      case(knnllexpd)
+
+c$$$         ii_qg=0._dp
+c$$$         return
+
+         if (vorz == 1) then
+            ii_qg=+(-two*coeff_Rad_A(1)*L_tilde**2
+     &           +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &           -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+
+           return
+         endif
+
+         omx=one-x
+         lomx=log(omx)
+         lx=log(x)
+         
+         if (vorz == 2) then
+           ii_qg=two*x*omx+(one-two*x*omx)*
+     &           (resm_opts%ln_Q2_muF2) ! resummation coefficient
+     &           -two*(one-two*x*omx)*L_tilde ! P_qg coefficient
+           return   
+         endif
+
+         ii_qg=0._dp
+         return
 
       case default
 
