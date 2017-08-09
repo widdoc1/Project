@@ -113,7 +113,7 @@ c$$$         return
 
       if (vorz == 1) then
          ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
-     &        +three/two * two * L_tilde       ! coefficient of P_qq
+     &        -three/two * two * L_tilde       ! coefficient of P_qq
      &        +(-two*coeff_Rad_A(1)*L_tilde**2
      &        +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
      &        -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
@@ -134,12 +134,12 @@ c$$$         return
       
       if (vorz == 2) then
          ii_qq=omx-(one+x)*resm_opts%ln_Q2_muF2       ! resummed coefficient
-     &        -(one+x) * two * L_tilde          ! coefficient of P_qq
+     &        +(one+x) * two * L_tilde          ! coefficient of P_qq
          return
       endif
 
       ii_qq=two/omx * resm_opts%ln_Q2_muF2 ! resummed coefficient
-     &     +two/omx * two * L_tilde    ! coefficient of P_qq
+     &     -two/omx * two * L_tilde    ! coefficient of P_qq
       return
 
 
