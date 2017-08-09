@@ -114,9 +114,9 @@ c$$$         return
       if (vorz == 1) then
          ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
      &        -three/two * two * L_tilde       ! coefficient of P_qq
-     &        +(-two*coeff_Rad_A(1)*L_tilde**2
-     &        +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &        +(-coeff_Rad_A(1)*L_tilde**2
+     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
          elseif (scheme == 'dred') then
@@ -232,9 +232,9 @@ c$$$         ii_qg=0._dp
 c$$$         return
 
          if (vorz == 1) then
-            ii_qg=+(-two*coeff_Rad_A(1)*L_tilde**2
-     &           +(-two*coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &           -two*coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+            ii_qg=+(-coeff_Rad_A(1)*L_tilde**2
+     &           +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &           -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
 
            return
          endif
