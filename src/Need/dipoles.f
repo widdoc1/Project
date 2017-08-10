@@ -113,7 +113,7 @@ c$$$         return
 
       if (vorz == 1) then
          ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
-     &        -three/two * two * L_tilde       ! coefficient of P_qq
+     &        -two*three/two*L_tilde       ! coefficient of P_qq
      &        +(-coeff_Rad_A(1)*L_tilde**2
      &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
      &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
@@ -134,12 +134,12 @@ c$$$         return
       
       if (vorz == 2) then
          ii_qq=omx-(one+x)*resm_opts%ln_Q2_muF2       ! resummed coefficient
-     &        +(one+x) * two * L_tilde          ! coefficient of P_qq
+     &        +two*(one+x)*L_tilde          ! coefficient of P_qq
          return
       endif
 
-      ii_qq=two/omx * resm_opts%ln_Q2_muF2 ! resummed coefficient
-     &     -two/omx * two * L_tilde    ! coefficient of P_qq
+      ii_qq=two/omx*resm_opts%ln_Q2_muF2 ! resummed coefficient
+     &     -two*two/omx*L_tilde    ! coefficient of P_qq
       return
 
 
@@ -228,30 +228,20 @@ c  - [x^2+(1-x)^2]*epinv
 
       case(knnllexpd)
 
-c$$$         ii_qg=0._dp
-c$$$         return
-
-         if (vorz == 1) then
-            ii_qg=+(-coeff_Rad_A(1)*L_tilde**2
-     &           +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &           -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
-
-           return
-         endif
-
-         omx=one-x
-         lomx=log(omx)
-         lx=log(x)
+      ii_qg=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
          
-         if (vorz == 2) then
-           ii_qg=two*x*omx+(one-two*x*omx)*
-     &           (resm_opts%ln_Q2_muF2) ! resummation coefficient
-     &           -two*(one-two*x*omx)*L_tilde ! P_qg coefficient
-           return   
-         endif
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+         
+      if (vorz == 2) then
+        ii_qg=two*x*omx+(one-two*x*omx)*
+     &        (resm_opts%ln_Q2_muF2) ! resummation coefficient
+     &        -two*(one-two*x*omx)*L_tilde ! P_qg coefficient
+      endif
+      return
 
-         ii_qg=0._dp
-         return
 
       case default
 
