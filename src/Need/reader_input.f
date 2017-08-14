@@ -194,6 +194,7 @@ c------ normal case
         kpart=ksnlo
       elseif ((part == 'nnlo') .or. (part == 'nnlocoeff')) then
         kpart=knnlo
+        ! add coefficients here 
       elseif ((part == 'll') .or. (part == 'LL')) then
         kpart=kll
       elseif ((part == 'nll') .or. (part =='NLL')) then
@@ -343,6 +344,8 @@ c---  JetVHeto resummation options
       if (verbose) call writeinput(6,' * ',' ','ptjveto')
       read(20,*) mscheme
       if (verbose) call writeinput(6,' * ',' ','matching scheme')
+      read(20,*) pure_lumi
+      if (verbose) call writeinput(6,' * ',' ','pure_lumi')
 
       if (verbose) write(6,*)
       read(20,99) line

@@ -1,9 +1,7 @@
       function resmNNLLint(r,wgt)
       use types_mod
-      use qcd_mod, only: beta0  ! just beta0 from running
       use rad_tools_mod
       use virtfin_mod
-      use resummation_mod
       implicit none
       real(dp):: resmNNLLint
       
@@ -187,9 +185,7 @@ c--- point to restart from when checking epsilon poles
 
 c--- correction to epinv from AP subtraction when mu_FAC != mu_REN,
 c--- corresponding to subtracting -1/epinv*Pab*log(musq_REN/musq_FAC)
-c$$$      epcorr=epinv+2._dp*log(scale/facscale)
-      epcorr=2._dp*log(scale/facscale)
-     &     /(1-2*as*beta0*L_tilde)
+      epcorr=epinv+2._dp*log(scale/facscale)
 
 c--- for the case of virtual correction in the top quark decay,
 c--- ('tdecay','ttdkay','Wtdkay') there are no extra initial-state
@@ -898,6 +894,10 @@ c--- massive subtraction term only
          
       endif
       
+!     extract the finite part of the virtual and modify for resummation
+!     must come before subtraction to get coefficient correct in checks
+      call virtfin(p, msq, msqv, resm_opts)
+
 c--- explicitly remove factor of LO if we are only interested in coefficient
       if (coeffonly) then
         msqv(:,:)=msqv(:,:)-msq(:,:)
@@ -909,56 +909,6 @@ C---initialize to zero
       xmsq_bypart(j,k)=0._dp
       enddo
       enddo
-
-!     modify virtual
-
-      call virtfin(p, msq, msqv, resm_opts)
-
-c$$$c---  modify virtual
-c$$$      do j=-nf,nf
-c$$$      do k=-nf,nf
-c$$$
-c$$$         if (abs(msqv(j,k)) .lt. 1d-9) then
-c$$$            msqv(j,k) = 0d0
-c$$$         else
-c$$$         xl12=log(two*dot(p,1,2)/musq)
-c$$$         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
-c$$$
-c$$$         ! get H(1) finite
-c$$$         ! need to make this more general, this is the form of a
-c$$$         ! dipole for qq, qg or gq, but not gg!
-c$$$         msqv(j,k)=msqv(j,k)-
-c$$$     &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
-c$$$     &        -3d0*(epinv-xl12))
-c$$$
-c$$$c$$$         write(*,*) "msqv = ",msqv(j,k)
-c$$$
-c$$$         ! additional pi**2/6 due to coupling mismatch
-c$$$         msqv(j,k)=msqv(j,k)+pisqo6
-c$$$
-c$$$         ! restore casimirs
-c$$$         msqv(j,k)=msqv(j,k)*half*rad_A(1)
-c$$$
-c$$$         ! change into form for resummation
-c$$$         msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
-c$$$     &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
-c$$$     &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
-c$$$
-c$$$         ! restore prefactors
-c$$$         msqv(j,k)=msqv(j,k)*ason2pi*msq(j,k)
-c$$$
-c$$$c$$$         msqv(j,k)=msqv(j,k)*
-c$$$c$$$         write(*,*) "msq =", msq(j,k)
-c$$$c$$$         write(*,*) "musq = ",musq
-c$$$c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
-c$$$c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
-c$$$c$$$         write(*,*) "msqv =", msqv(j,k)
-c$$$
-c$$$         endif
-c$$$
-c$$$      enddo
-c$$$      enddo
-c$$$
 
       currentPDF=0
             
@@ -1959,13 +1909,13 @@ c---  SSend
 
       if (currentPDF == 0) then
         resmNNLLint=flux*xjac*pswt*xmsq/BrnRat
-     &        *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &        *sudakov
       endif
             
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*xjac*pswt*xmsq/BrnRat*wgt/itmx
-     &        *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &        *sudakov
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -2013,17 +1963,17 @@ c          pause
       
 c      if (creatent) then
         wt_gg=xmsq_bypart(0,0)*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &     *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &     *sudakov
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &       *sudakov
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &       *sudakov
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &       *sudakov
 c      endif
 
       call getptildejet(0,pjet)
@@ -2031,7 +1981,7 @@ c      endif
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*xjac*pswt/BrnRat
-     &     *resummed_sigma(ptjveto,resm_opts,order_NNLL)
+     &     *sudakov
       do j=-1,1
       do k=-1,1
 !$omp atomic

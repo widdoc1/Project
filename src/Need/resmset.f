@@ -1,6 +1,7 @@
       subroutine resmset(p)
       use types_mod
       use rad_tools_mod
+      use resummation_mod
       implicit none
       include 'constants.f'
       include 'scale.f'
@@ -26,28 +27,17 @@
       real(dp) :: inv_mass
       real(dp) :: coupling, pow_sup, jet_radius
       real(dp) :: p(mxpart,4), mu0
-      real(dp) :: pb(4)
+      real(dp) :: pBorn(4)
       integer :: j
       
       ! calculate invariant mass of bosons
       ! resummation lives in born phase space
       do j=1,4
-        pb(j) = sum(p(3:ilomomenta,j))
+        pBorn(j) = sum(p(3:ilomomenta,j))
       enddo
-      M_B2 = abs(pb(4)**2 - pb(1)**2 - pb(2)**2 - pb(3)**2)
+      M_B2 = abs(pBorn(4)**2 - pBorn(1)**2 - pBorn(2)**2 - pBorn(3)**2)
       M_B = sqrt(M_B2)
 
-      ! parameters for process
-      ! set process based on in Born level is qqb or gg initiated
-c$$$      if (omitgg) then
-c$$$         process = 'DY'
-c$$$      else if (ggonly) then
-c$$$         process = 'H'
-c$$$      else
-c$$$         write(*,*) "you must set ggonly or omitgg to true to perform
-c$$$     &    a resummation"
-c$$$         stop
-c$$$      endif
       process    = trim(Bconf)
       inv_mass   = M_B
       muR        = scale
@@ -65,24 +55,33 @@ c$$$      endif
       ! initialise parameters needed in the radiator
       call init_proc(resm_opts)
 
+      ! compute the sudakov (1+dF)e**-R
+      if (pure_lumi) then
+        sudakov = one
+      else
+        if ((kpart == knnll) .or. (kpart == knnllexpd)) then
+          sudakov = resummed_sigma(ptjveto,resm_opts,order_NNLL)
+        elseif ((kpart == knll) .or. (kpart == knllexpd)) then
+          sudakov = resummed_sigma(ptjveto,resm_opts,order_NLL)
+        elseif (kpart == kll) then
+          sudakov = resummed_sigma(ptjveto,resm_opts,order_LL)
+        endif
+      endif
+
 !     rescale factorisation scale for PDFs
-!     maybe add in scales for facscale_L/H for
-!     stops?
+!     maybe add in scales for facscale_L/H for stops?
 
       L_tilde = Ltilde(ptjveto/resm_opts%Q,resm_opts%p)
 
       if (kpart==kll) then
         facscaleLtilde = facscale
-        return
-      elseif (kpart==knll) then
-        facscaleLtilde = facscale * exp(-L_tilde)
-      elseif (kpart==knnll) then
+      elseif ((kpart == knll) .or. (kpart == knnll)) then
         facscaleLtilde = facscale * exp(-L_tilde)
       elseif ((kpart==knllexpd) .or. (kpart==knnllexpd)) then
+        facscaleLtilde = facscale
       else
         write(*,*) 'something wrong...'
         stop
       endif
 
       end
-      

@@ -16,7 +16,9 @@
       character(len=2) :: Bconf ! Born level configuration qq or gg initiated
       character(len=1) :: mscheme  ! multiplicative or additive?
 
-      common/resminputs/Q_scalestart,R_scalestart,resum,kobs,mscheme
-      common/resminputs/Bconf
+      logical :: pure_lumi
+
+      common/resminputs/Q_scalestart,R_scalestart,resum,pure_lumi,kobs
+      common/resminputs/Bconf,mscheme
       common/resmscale/Q_scale,R_scale
 !$omp threadprivate(/resmscale/)
