@@ -314,6 +314,23 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
 
       return
 
+      case(knnllexpd)
+
+      ii_gq=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+     &        -two*(one+omx**2)/x*L_tilde
+        return
+      endif
+
+      return
+
       case default
 
       ii_gq=0._dp
@@ -413,6 +430,40 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
      &     /(1-2*as*beta0*L_tilde)
       
       return   
+
+      case(knnllexpd)
+
+      if (vorz == 1) then
+        ii_gg=-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2
+     &        -two*b0/ca*L_tilde
+     &        +(-coeff_Rad_A(1)*L_tilde**2
+     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+
+        if (scheme == 'tH-V') then
+          return
+        elseif (scheme == 'dred') then
+          ii_gg=ii_gg-1._dp/6._dp
+          return
+        else
+          write(6,*) 'Value of scheme not implemented properly ',scheme
+          stop
+        endif
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      
+      if (vorz == 2) then
+         lx=log(x)
+         ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+     &         -two*(two*(omx/x+x*omx-one))*L_tilde
+         return
+      endif
+      
+      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+     &      -two*(two/omx)*L_tilde
+      return
 
       case default
 
