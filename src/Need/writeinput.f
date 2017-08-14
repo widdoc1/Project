@@ -289,7 +289,7 @@ c--- catch special scale choices for stop+b process
          write(unitno,fmt=f99) R_scale,'R_scale'
       endif
       if ((tag == 'observable') .or. (writeall)) then
-         write(unitno,fmt=f96) robs,'observable'
+         write(unitno,fmt=f96) kobs,'observable'
       endif
       if ((tag == 'ptjveto') .or. (writeall)) then
          write(unitno,fmt=f99) ptjveto,'ptjveto'
@@ -559,6 +559,9 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'omitgg') .or. (writeall)) then
       write(unitno,fmt=f98) omitgg,'omitgg'
       endif
+!      if ((tag == 'omitqq') .or. (writeall)) then
+!      write(unitno,fmt=f98) omitqq,'omitqq'
+!      endif
       if ((tag == 'vanillafiles') .or. (writeall)) then
       write(unitno,fmt=f98) vanillafiles,'vanillafiles'
       endif

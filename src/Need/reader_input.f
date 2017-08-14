@@ -335,7 +335,7 @@ c---  JetVHeto resummation options
       read(20,*) R_scale
       R_scalestart=R_scale
       if (verbose) call writeinput(6,' * ',' ','R_scale')
-      read(20,*) robs
+      read(20,*) kobs
       if (verbose) call writeinput(6,' * ',' ','observable')
       read(20,*) ptjveto
       if (verbose) call writeinput(6,' * ',' ','ptjveto')
@@ -572,6 +572,8 @@ c---- read in the technical parameters
       if (verbose) call writeinput(6,' * ',' ','gqonly')
       read(20,*) omitgg
       if (verbose) call writeinput(6,' * ',' ','omitgg')
+!      read(20,*) omitqq
+!      if (verbose) call writeinput(6,' * ',' ','omitqq')
       read(20,*) vanillafiles
       if (verbose) call writeinput(6,' * ',' ','vanillafiles')
 ! 4/28/16: removed nmin, nmax from input file (no longer used)

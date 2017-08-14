@@ -12,10 +12,10 @@
       real(dp) :: R_scalestart
 
 ! observable
-      character(len=10) :: robs
+      character(len=10) :: kobs
       character(len=1) :: match_scheme  ! multiplicative or additive?
 
-      common/resminputs/Q_scalestart,R_scalestart,resum,robs,
+      common/resminputs/Q_scalestart,R_scalestart,resum,kobs,
      &     match_scheme
       common/resmscale/Q_scale,R_scale
 !$omp threadprivate(/resmscale/)

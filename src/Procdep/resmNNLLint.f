@@ -1117,6 +1117,10 @@ c          endif
       if ((j==0) .and. (k==0)) goto 20
       endif
 
+!      if (omitqq) then
+!      if ((j.ne.0) .and. (k.ne.0)) goto 20
+!      endif
+
       if ((kcase==kWcsbar).and.(j .ne. 4).and.(k .ne. 4)) goto 20
 
       tmp=xmsq
