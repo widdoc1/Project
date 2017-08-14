@@ -295,7 +295,7 @@ c--- catch special scale choices for stop+b process
          write(unitno,fmt=f99) ptjveto,'ptjveto'
       endif
       if ((tag == 'matching scheme') .or. (writeall)) then
-         write(unitno,fmt=f96) match_scheme,'matching scheme'
+         write(unitno,fmt=f96) mscheme,'matching scheme'
       endif
 
       if (writeall) then

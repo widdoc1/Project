@@ -339,7 +339,7 @@ c---  JetVHeto resummation options
       if (verbose) call writeinput(6,' * ',' ','observable')
       read(20,*) ptjveto
       if (verbose) call writeinput(6,' * ',' ','ptjveto')
-      read(20,*) match_scheme
+      read(20,*) mscheme
       if (verbose) call writeinput(6,' * ',' ','matching scheme')
 
       if (verbose) write(6,*)
