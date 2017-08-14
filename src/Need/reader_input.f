@@ -337,6 +337,8 @@ c---  JetVHeto resummation options
       if (verbose) call writeinput(6,' * ',' ','R_scale')
       read(20,*) kobs
       if (verbose) call writeinput(6,' * ',' ','observable')
+      read(20,*) Bconf
+      if (verbose) call writeinput(6,' * ',' ','Born configuration')
       read(20,*) ptjveto
       if (verbose) call writeinput(6,' * ',' ','ptjveto')
       read(20,*) mscheme

@@ -39,15 +39,16 @@
 
       ! parameters for process
       ! set process based on in Born level is qqb or gg initiated
-      if (omitgg) then
-         process = 'DY'
-      else if (ggonly) then
-         process = 'H'
-      else
-         write(*,*) "you must set ggonly or omitgg to true to perform
-     &    a resummation"
-         stop
-      endif
+c$$$      if (omitgg) then
+c$$$         process = 'DY'
+c$$$      else if (ggonly) then
+c$$$         process = 'H'
+c$$$      else
+c$$$         write(*,*) "you must set ggonly or omitgg to true to perform
+c$$$     &    a resummation"
+c$$$         stop
+c$$$      endif
+      process    = trim(Bconf)
       inv_mass   = M_B
       muR        = scale
       muF        = facscale

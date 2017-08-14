@@ -13,8 +13,10 @@
 
 ! observable
       character(len=10) :: kobs
+      character(len=2) :: Bconf ! Born level configuration qq or gg initiated
       character(len=1) :: mscheme  ! multiplicative or additive?
 
       common/resminputs/Q_scalestart,R_scalestart,resum,kobs,mscheme
+      common/resminputs/Bconf
       common/resmscale/Q_scale,R_scale
 !$omp threadprivate(/resmscale/)

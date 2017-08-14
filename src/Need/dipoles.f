@@ -299,8 +299,20 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
 
       case(knnll)
 
-         ii_gq = 0._dp
-         return
+      ii_gq=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+     &        /(1-2*as*beta0*L_tilde)
+        return
+      endif
+
+      return
 
       case default
 
@@ -346,6 +358,7 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       include 'scale.f'
       include 'facscale.f'
       include 'qcdcouple.f'
+      include 'b0.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-gluon antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -372,8 +385,34 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       case(knnll)
 
-         ii_gg = 0._dp
-         return
+      if (vorz == 1) then
+        ii_gg=(-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2)
+     &        /(1-2*as*beta0*L_tilde)
+        if (scheme == 'tH-V') then
+          return
+        elseif (scheme == 'dred') then
+          ii_gg=ii_gg-1._dp/6._dp
+          return
+        else
+          write(6,*) 'Value of scheme not implemented properly ',scheme
+          stop
+        endif
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      
+      if (vorz == 2) then
+        lx=log(x)
+        ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+     &       /(1-2*as*beta0*L_tilde)
+        return
+      endif
+      
+      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+     &     /(1-2*as*beta0*L_tilde)
+      
+      return   
 
       case default
 

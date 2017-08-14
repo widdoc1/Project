@@ -291,6 +291,9 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'observable') .or. (writeall)) then
          write(unitno,fmt=f96) kobs,'observable'
       endif
+      if ((tag == 'Born configuration') .or. (writeall)) then
+         write(unitno,fmt=f96) Bconf,'Born configuration'
+      endif
       if ((tag == 'ptjveto') .or. (writeall)) then
          write(unitno,fmt=f99) ptjveto,'ptjveto'
       endif
