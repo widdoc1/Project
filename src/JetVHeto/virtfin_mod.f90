@@ -49,6 +49,8 @@ contains
           ! additional C*pi**2/6 due to coupling mismatch
           msqv(j,k) = msqv(j,k) + ason2pi*msq(j,k)*(half*rad_A(1))*pisqo6
 
+          ! write(*,*) msqv(j,k)/msq(j,k)/ason2pi
+
           ! change into form for resummation
           msqv(j,k) = msqv(j,k)+ason2pi*msq(j,k)*(-half*rad_A(1) & 
                *cs%ln_Q2_M2+rad_B(1))*cs%ln_Q2_M2 &

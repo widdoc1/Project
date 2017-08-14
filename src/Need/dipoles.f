@@ -263,8 +263,10 @@ c  - [x^2+(1-x)^2]*epinv
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod
       implicit none
-      include 'types.f'
       real(dp):: ii_gq
       
       integer:: vorz
@@ -275,6 +277,13 @@ c  - [x^2+(1-x)^2]*epinv
       include 'cplx.h'
       include 'epinv.f'
       include 'alfacut.f'
+
+      include 'kpart.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-quark (--> gluon) antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -286,6 +295,15 @@ c IIgq =  + x - [ln(x)]*[(1+(1-x)^2)/x] + [ln(al(x))]*
 c  [(1+(1-x)^2)/x] + [(1+(1-x)^2)/x]*L + 2*[(1+(1-x)^2)/x]*
 c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
  
+      select case(kpart)
+
+      case(knnll)
+
+         ii_gq = 0._dp
+         return
+
+      case default
+
       ii_gq=0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
       
@@ -300,12 +318,15 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       endif
 
       return
+      end select
       end
 
 ***************************** Gluon-Gluon *****************************
       function ii_gg(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod
       implicit none
-      include 'types.f'
       real(dp):: ii_gg
       
       integer:: vorz
@@ -318,6 +339,13 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       include 'epinv2.f'
       include 'scheme.f'
       include 'alfacut.f'
+
+      include 'kpart.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-gluon antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -340,6 +368,15 @@ c
 c   + [1/(1-x)_(0)]
 c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
  
+      select case(kpart)
+
+      case(knnll)
+
+         ii_gg = 0._dp
+         return
+
+      case default
+
       if (vorz == 1) then
         ii_gg=epinv*(epinv2-L)+half*L**2-pisqo6
         if (scheme == 'tH-V') then
@@ -367,6 +404,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       ii_gg=two*(two*lomx+L-epinv)/omx
       
       return
+      end select
       end
 
 ***********************************************************************
