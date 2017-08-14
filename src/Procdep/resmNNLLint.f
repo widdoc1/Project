@@ -2,6 +2,7 @@
       use types_mod
       use qcd_mod, only: beta0  ! just beta0 from running
       use rad_tools_mod
+      use virtfin_mod
       use resummation_mod
       implicit none
       real(dp):: resmNNLLint
@@ -909,52 +910,55 @@ C---initialize to zero
       enddo
       enddo
 
+!     modify virtual
 
-c---  modify virtual
-      do j=-nf,nf
-      do k=-nf,nf
+      call virtfin(p, msq, msqv, resm_opts)
 
-         if (abs(msqv(j,k)) .lt. 1d-9) then
-            msqv(j,k) = 0d0
-         else
-         xl12=log(two*dot(p,1,2)/musq)
-         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
-
-         ! get H(1) finite
-         ! need to make this more general, this is the form of a
-         ! dipole for qq, qg or gq, but not gg!
-         msqv(j,k)=msqv(j,k)-
-     &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
-     &        -3d0*(epinv-xl12))
-
-c$$$         write(*,*) "msqv = ",msqv(j,k)
-
-         ! additional pi**2/6 due to coupling mismatch
-         msqv(j,k)=msqv(j,k)+pisqo6
-
-         ! restore casimirs
-         msqv(j,k)=msqv(j,k)*half*rad_A(1)
-
-         ! change into form for resummation
-         msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
-     &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
-     &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
-
-         ! restore prefactors
-         msqv(j,k)=msqv(j,k)*ason2pi*msq(j,k)
-
-c$$$         msqv(j,k)=msqv(j,k)*
-c$$$         write(*,*) "msq =", msq(j,k)
-c$$$         write(*,*) "musq = ",musq
-c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
-c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
-c$$$         write(*,*) "msqv =", msqv(j,k)
-
-         endif
-
-      enddo
-      enddo
-
+c$$$c---  modify virtual
+c$$$      do j=-nf,nf
+c$$$      do k=-nf,nf
+c$$$
+c$$$         if (abs(msqv(j,k)) .lt. 1d-9) then
+c$$$            msqv(j,k) = 0d0
+c$$$         else
+c$$$         xl12=log(two*dot(p,1,2)/musq)
+c$$$         msqv(j,k)=msqv(j,k)/msq(j,k)/ason2pi/(half*rad_A(1)) ! get the pure virtual with no casimirs
+c$$$
+c$$$         ! get H(1) finite
+c$$$         ! need to make this more general, this is the form of a
+c$$$         ! dipole for qq, qg or gq, but not gg!
+c$$$         msqv(j,k)=msqv(j,k)-
+c$$$     &                (-2d0*(epinv*epinv2-epinv*xl12+half*xl12**2)
+c$$$     &        -3d0*(epinv-xl12))
+c$$$
+c$$$c$$$         write(*,*) "msqv = ",msqv(j,k)
+c$$$
+c$$$         ! additional pi**2/6 due to coupling mismatch
+c$$$         msqv(j,k)=msqv(j,k)+pisqo6
+c$$$
+c$$$         ! restore casimirs
+c$$$         msqv(j,k)=msqv(j,k)*half*rad_A(1)
+c$$$
+c$$$         ! change into form for resummation
+c$$$         msqv(j,k)=msqv(j,k)+(-half*rad_A(1)
+c$$$     &        *resm_opts%ln_Q2_M2+rad_B(1))*resm_opts%ln_Q2_M2
+c$$$     &        + two*as_pow*pi*beta0*resm_opts%ln_muR2_M2
+c$$$
+c$$$         ! restore prefactors
+c$$$         msqv(j,k)=msqv(j,k)*ason2pi*msq(j,k)
+c$$$
+c$$$c$$$         msqv(j,k)=msqv(j,k)*
+c$$$c$$$         write(*,*) "msq =", msq(j,k)
+c$$$c$$$         write(*,*) "musq = ",musq
+c$$$c$$$         write(*,*) "2p1.p2 =", 2*dot(p,1,2)
+c$$$c$$$         write(*,*) "xl12 = ", log(2*dot(p,1,2)/musq)
+c$$$c$$$         write(*,*) "msqv =", msqv(j,k)
+c$$$
+c$$$         endif
+c$$$
+c$$$      enddo
+c$$$      enddo
+c$$$
 
       currentPDF=0
             

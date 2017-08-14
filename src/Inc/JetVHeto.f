@@ -13,9 +13,8 @@
 
 ! observable
       character(len=10) :: kobs
-      character(len=1) :: match_scheme  ! multiplicative or additive?
+      character(len=1) :: mscheme  ! multiplicative or additive?
 
-      common/resminputs/Q_scalestart,R_scalestart,resum,kobs,
-     &     match_scheme
+      common/resminputs/Q_scalestart,R_scalestart,resum,kobs,mscheme
       common/resmscale/Q_scale,R_scale
 !$omp threadprivate(/resmscale/)
