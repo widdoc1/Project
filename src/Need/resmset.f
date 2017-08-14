@@ -65,6 +65,8 @@
           sudakov = resummed_sigma(ptjveto,resm_opts,order_NLL)
         elseif (kpart == kll) then
           sudakov = resummed_sigma(ptjveto,resm_opts,order_LL)
+        else
+          sudakov = one
         endif
       endif
 

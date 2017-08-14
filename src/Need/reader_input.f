@@ -178,7 +178,7 @@ c------ normal case
       kpart=0
       if     ((part == 'lo') .or. (part == 'lord')) then
         kpart=klord
-      elseif (part == 'virt') then
+      elseif ((part == 'virt') .or. (part == 'virtcoeff')) then
         kpart=kvirt
       elseif (part == 'real') then
         kpart=kreal
@@ -195,15 +195,15 @@ c------ normal case
       elseif ((part == 'nnlo') .or. (part == 'nnlocoeff')) then
         kpart=knnlo
         ! add coefficients here 
-      elseif ((part == 'll') .or. (part == 'LL')) then
+      elseif (part == 'll') then
         kpart=kll
-      elseif ((part == 'nll') .or. (part =='NLL')) then
+      elseif (part == 'nll') then
         kpart=knll
-      elseif ((part == 'nnll') .or. (part =='NNLL')) then
+      elseif ((part == 'nnll') .or. (part == 'nnllcoeff')) then
          kpart=knnll
       elseif (part == 'nllexpd') then
          kpart=knllexpd
-      elseif (part == 'nnllexpd') then
+      elseif ((part == 'nnllexpd') .or. (part == 'nnllexpdcoeff')) then
          kpart=knnllexpd
       endif
       if (index(part,'coeff') > 0) then
