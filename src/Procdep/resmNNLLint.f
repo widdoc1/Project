@@ -898,9 +898,24 @@ c--- massive subtraction term only
 !     must come before subtraction to get coefficient correct in checks
       call virtfin(p, msq, msqv, resm_opts)
 
-c--- explicitly remove factor of LO if we are only interested in coefficient
-      if (coeffonly) then
-        msqv(:,:)=msqv(:,:)-msq(:,:)
+c$$$c--- explicitly remove factor of LO if we are only interested in coefficient
+c$$$      if (coeffonly) then
+c$$$        msqv(:,:)=msqv(:,:)-msq(:,:)
+c$$$      endif
+c$$$
+c$$$!     for the expansion of the NLL resummation we don't have the
+c$$$!     finite part of the virtual, so this needs to be set to 0
+c$$$!     (this is an inefficient way of computing this, can it be done better?)
+c$$$      if (kpart == knllexpd) then
+c$$$        msqv(:,:) = 0._dp
+c$$$      endif
+
+      if (coeffonly .and. (kpart==knllexpd)) then
+        msqv(:,:) = -msq(:,:)
+      elseif (coeffonly) then
+        msqv(:,:) = msqv(:,:) - msq(:,:)
+      elseif (kpart==knllexpd) then
+        msqv(:,:) = 0._dp
       endif
 
 C---initialize to zero

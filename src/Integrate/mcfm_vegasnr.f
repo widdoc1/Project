@@ -270,7 +270,7 @@ c--- Basic lowest-order integration
       endif
 
 !     LL, NLL, NLLexpd integration
-      if ((kpart==kll) .or. (kpart==knll) .or. (kpart==knllexpd)) then
+      if ((kpart==kll) .or. (kpart==knll)) then
          call boundregion(ndim,region)
          call vegasnr(region,ndim,resmNLLint,myinit,myncall,myitmx,
      &        nprn,sig,sd,chi)
@@ -278,7 +278,8 @@ c--- Basic lowest-order integration
 
 c---  NNLL integration should have one extra dimensions
 c---  (added and then taken away)
-      if ((kpart==knnll) .or. (kpart==knnllexpd)) then
+      if ((kpart==knnll) .or. (kpart==knnllexpd)
+     &     .or. (kpart==knllexpd)) then
          ndim=ndim+1
          call boundregion(ndim,region)
          call vegasnr(region,ndim,resmNNLLint,myinit,myncall,myitmx,

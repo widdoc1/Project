@@ -201,7 +201,7 @@ c------ normal case
         kpart=knll
       elseif ((part == 'nnll') .or. (part == 'nnllcoeff')) then
          kpart=knnll
-      elseif (part == 'nllexpd') then
+      elseif ((part == 'nllexpd') .or. (part == 'nllexpdcoeff')) then
          kpart=knllexpd
       elseif ((part == 'nnllexpd') .or. (part == 'nnllexpdcoeff')) then
          kpart=knnllexpd
