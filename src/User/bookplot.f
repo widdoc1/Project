@@ -42,7 +42,9 @@ c--- also book the errors now (in maxhisto+n); fill temp histos for real
      &   .or. (kpart==knnlo)
      &   .or. (kpart==kll)
      &   .or. (kpart==knll)
-     &   .or. (kpart==knnll)) then
+     &   .or. (kpart==knllexpd)
+     &   .or. (kpart==knnll)
+     &   .or. (kpart==knnllexpd)) then
             call mfill(n,var,wt)
             call mfill(maxhisto+n,var,wt2)
           else

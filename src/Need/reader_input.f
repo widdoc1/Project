@@ -694,7 +694,8 @@ c---  create logical:: variable dynamicscale for use in other routines
 
 !     set resum
       if ( (kpart == kll) .or. (kpart == knll) .or.
-     &     (kpart == knnll) ) then
+     &     (kpart == knllexpd) .or. (kpart == knnll) .or.
+     &     (kpart == knnllexpd) ) then
          resum=.true.
       else
          resum=.false.

@@ -1193,10 +1193,8 @@ lowint.o \
 realint.o \
 virtint.o \
 scetint.o \
-resmLLint.o \
 resmNLLint.o \
-resmNNLLint.o \
-expdNNLLint.o
+resmNNLLint.o
 
 QQHFILES = \
 qq_Hqq_g.o \
