@@ -12,10 +12,13 @@
       real(dp) :: R_scalestart
 
 ! observable
-      character(len=10) :: robs
-      character(len=1) :: match_scheme  ! multiplicative or additive?
+      character(len=10) :: kobs
+      character(len=2) :: Bconf ! Born level configuration qq or gg initiated
+      character(len=1) :: mscheme  ! multiplicative or additive?
 
-      common/resminputs/Q_scalestart,R_scalestart,resum,robs,
-     &     match_scheme
+      logical :: pure_lumi
+
+      common/resminputs/Q_scalestart,R_scalestart,resum,pure_lumi,kobs
+      common/resminputs/Bconf,mscheme
       common/resmscale/Q_scale,R_scale
 !$omp threadprivate(/resmscale/)

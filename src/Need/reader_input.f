@@ -178,7 +178,7 @@ c------ normal case
       kpart=0
       if     ((part == 'lo') .or. (part == 'lord')) then
         kpart=klord
-      elseif (part == 'virt') then
+      elseif ((part == 'virt') .or. (part == 'virtcoeff')) then
         kpart=kvirt
       elseif (part == 'real') then
         kpart=kreal
@@ -194,15 +194,16 @@ c------ normal case
         kpart=ksnlo
       elseif ((part == 'nnlo') .or. (part == 'nnlocoeff')) then
         kpart=knnlo
-      elseif ((part == 'll') .or. (part == 'LL')) then
+        ! add coefficients here 
+      elseif (part == 'll') then
         kpart=kll
-      elseif ((part == 'nll') .or. (part =='NLL')) then
+      elseif (part == 'nll') then
         kpart=knll
-      elseif ((part == 'nnll') .or. (part =='NNLL')) then
+      elseif ((part == 'nnll') .or. (part == 'nnllcoeff')) then
          kpart=knnll
-      elseif (part == 'nllexpd') then
+      elseif ((part == 'nllexpd') .or. (part == 'nllexpdcoeff')) then
          kpart=knllexpd
-      elseif (part == 'nnllexpd') then
+      elseif ((part == 'nnllexpd') .or. (part == 'nnllexpdcoeff')) then
          kpart=knnllexpd
       endif
       if (index(part,'coeff') > 0) then
@@ -335,12 +336,16 @@ c---  JetVHeto resummation options
       read(20,*) R_scale
       R_scalestart=R_scale
       if (verbose) call writeinput(6,' * ',' ','R_scale')
-      read(20,*) robs
+      read(20,*) kobs
       if (verbose) call writeinput(6,' * ',' ','observable')
+      read(20,*) Bconf
+      if (verbose) call writeinput(6,' * ',' ','Born configuration')
       read(20,*) ptjveto
       if (verbose) call writeinput(6,' * ',' ','ptjveto')
-      read(20,*) match_scheme
+      read(20,*) mscheme
       if (verbose) call writeinput(6,' * ',' ','matching scheme')
+      read(20,*) pure_lumi
+      if (verbose) call writeinput(6,' * ',' ','pure_lumi')
 
       if (verbose) write(6,*)
       read(20,99) line
@@ -572,6 +577,8 @@ c---- read in the technical parameters
       if (verbose) call writeinput(6,' * ',' ','gqonly')
       read(20,*) omitgg
       if (verbose) call writeinput(6,' * ',' ','omitgg')
+!      read(20,*) omitqq
+!      if (verbose) call writeinput(6,' * ',' ','omitqq')
       read(20,*) vanillafiles
       if (verbose) call writeinput(6,' * ',' ','vanillafiles')
 ! 4/28/16: removed nmin, nmax from input file (no longer used)

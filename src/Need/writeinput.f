@@ -289,13 +289,19 @@ c--- catch special scale choices for stop+b process
          write(unitno,fmt=f99) R_scale,'R_scale'
       endif
       if ((tag == 'observable') .or. (writeall)) then
-         write(unitno,fmt=f96) robs,'observable'
+         write(unitno,fmt=f96) kobs,'observable'
+      endif
+      if ((tag == 'Born configuration') .or. (writeall)) then
+         write(unitno,fmt=f96) Bconf,'Born configuration'
       endif
       if ((tag == 'ptjveto') .or. (writeall)) then
          write(unitno,fmt=f99) ptjveto,'ptjveto'
       endif
       if ((tag == 'matching scheme') .or. (writeall)) then
-         write(unitno,fmt=f96) match_scheme,'matching scheme'
+         write(unitno,fmt=f96) mscheme,'matching scheme'
+      endif
+      if ((tag == 'pure_lumi') .or. (writeall)) then
+         write(unitno,fmt=f98) pure_lumi,'pure luminosity'
       endif
 
       if (writeall) then
@@ -559,6 +565,9 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'omitgg') .or. (writeall)) then
       write(unitno,fmt=f98) omitgg,'omitgg'
       endif
+!      if ((tag == 'omitqq') .or. (writeall)) then
+!      write(unitno,fmt=f98) omitqq,'omitqq'
+!      endif
       if ((tag == 'vanillafiles') .or. (writeall)) then
       write(unitno,fmt=f98) vanillafiles,'vanillafiles'
       endif

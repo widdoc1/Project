@@ -108,9 +108,6 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       case(knnllexpd)
 
-c$$$         ii_qq=0._dp
-c$$$         return
-
       if (vorz == 1) then
          ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
      &        -two*three/two*L_tilde       ! coefficient of P_qq
@@ -142,6 +139,27 @@ c$$$         return
      &     -two*two/omx*L_tilde    ! coefficient of P_qq
       return
 
+      case(knllexpd)
+
+      if (vorz == 1) then
+        ii_qq=-two*three/two*L_tilde       ! coefficient of P_qq
+     &        +(-coeff_Rad_A(1)*L_tilde**2
+     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+        return
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_qq=two*(one+x)*L_tilde          ! coefficient of P_qq
+        return
+      endif
+
+      ii_qq=-two*two/omx*L_tilde    ! coefficient of P_qq
+      return
 
       case default
 
@@ -242,6 +260,19 @@ c  - [x^2+(1-x)^2]*epinv
       endif
       return
 
+      case(knllexpd)
+
+      ii_qg=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+         ii_qg=-two*(one-two*x*omx)*L_tilde ! P_qg coefficient
+      endif
+      return
 
       case default
 
@@ -263,8 +294,10 @@ c  - [x^2+(1-x)^2]*epinv
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod
       implicit none
-      include 'types.f'
       real(dp):: ii_gq
       
       integer:: vorz
@@ -275,6 +308,13 @@ c  - [x^2+(1-x)^2]*epinv
       include 'cplx.h'
       include 'epinv.f'
       include 'alfacut.f'
+
+      include 'kpart.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-quark (--> gluon) antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -286,6 +326,60 @@ c IIgq =  + x - [ln(x)]*[(1+(1-x)^2)/x] + [ln(al(x))]*
 c  [(1+(1-x)^2)/x] + [(1+(1-x)^2)/x]*L + 2*[(1+(1-x)^2)/x]*
 c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
  
+      select case(kpart)
+
+      case(knnll)
+
+      ii_gq=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+     &        /(1-2*as*beta0*L_tilde)
+        return
+      endif
+
+      return
+
+      case(knnllexpd)
+
+      ii_gq=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+     &        -two*(one+omx**2)/x*L_tilde
+        return
+      endif
+
+      return
+
+      case(knllexpd)
+
+      ii_gq=0._dp
+      if ((vorz == 1) .or. (vorz == 3)) return
+      
+      omx=one-x
+      lomx=log(omx)
+      lx=log(x)
+      
+      if (vorz == 2) then
+         ii_gq=-two*(one+omx**2)/x*L_tilde
+         return
+      endif
+
+      return
+
+      case default
+
       ii_gq=0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
       
@@ -300,12 +394,15 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       endif
 
       return
+      end select
       end
 
 ***************************** Gluon-Gluon *****************************
       function ii_gg(x,L,vorz)
+      use types_mod
+      use qcd_mod, only: beta0
+      use rad_tools_mod
       implicit none
-      include 'types.f'
       real(dp):: ii_gg
       
       integer:: vorz
@@ -318,6 +415,14 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       include 'epinv2.f'
       include 'scheme.f'
       include 'alfacut.f'
+
+      include 'kpart.f'
+      include 'JetVHeto.f'
+      include 'JetVHeto_opts.f'
+      include 'scale.f'
+      include 'facscale.f'
+      include 'qcdcouple.f'
+      include 'b0.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-gluon antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -340,6 +445,97 @@ c
 c   + [1/(1-x)_(0)]
 c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
  
+      select case(kpart)
+
+      case(knnll)
+
+      if (vorz == 1) then
+        ii_gg=(-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2)
+     &        /(1-2*as*beta0*L_tilde)
+        if (scheme == 'tH-V') then
+          return
+        elseif (scheme == 'dred') then
+          ii_gg=ii_gg-1._dp/6._dp
+          return
+        else
+          write(6,*) 'Value of scheme not implemented properly ',scheme
+          stop
+        endif
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      
+      if (vorz == 2) then
+        lx=log(x)
+        ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+     &       /(1-2*as*beta0*L_tilde)
+        return
+      endif
+      
+      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+     &     /(1-2*as*beta0*L_tilde)
+      
+      return   
+
+      case(knnllexpd)
+
+      if (vorz == 1) then
+        ii_gg=-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2
+     &        -two*b0/ca*L_tilde
+     &        +(-coeff_Rad_A(1)*L_tilde**2
+     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+
+        if (scheme == 'tH-V') then
+          return
+        elseif (scheme == 'dred') then
+          ii_gg=ii_gg-1._dp/6._dp
+          return
+        else
+          write(6,*) 'Value of scheme not implemented properly ',scheme
+          stop
+        endif
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      
+      if (vorz == 2) then
+         lx=log(x)
+         ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+     &         -two*(two*(omx/x+x*omx-one))*L_tilde
+         return
+      endif
+      
+      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+     &      -two*(two/omx)*L_tilde
+      return
+
+      case(knllexpd)
+
+      if (vorz == 1) then
+         ii_gg=-two*b0/ca*L_tilde
+     &        +(-coeff_Rad_A(1)*L_tilde**2
+     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
+     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+        return
+      endif
+      
+      omx=one-x
+      lomx=log(omx)
+      
+      if (vorz == 2) then
+         lx=log(x)
+         ii_gg=-two*(two*(omx/x+x*omx-one))*L_tilde
+         return
+      endif
+      
+      ii_gg=-two*(two/omx)*L_tilde
+      return
+
+      case default
+
       if (vorz == 1) then
         ii_gg=epinv*(epinv2-L)+half*L**2-pisqo6
         if (scheme == 'tH-V') then
@@ -367,6 +563,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       ii_gg=two*(two*lomx+L-epinv)/omx
       
       return
+      end select
       end
 
 ***********************************************************************
