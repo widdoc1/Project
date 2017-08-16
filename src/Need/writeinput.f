@@ -300,9 +300,9 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'matching scheme') .or. (writeall)) then
          write(unitno,fmt=f96) mscheme,'matching scheme'
       endif
-      if ((tag == 'pure_lumi') .or. (writeall)) then
-         write(unitno,fmt=f98) pure_lumi,'pure luminosity'
-      endif
+      ! if ((tag == 'pure_lumi') .or. (writeall)) then
+      !    write(unitno,fmt=f98) pure_lumi,'pure luminosity'
+      ! endif
 
       if (writeall) then
       write(unitno,*)

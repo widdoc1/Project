@@ -910,9 +910,9 @@ c$$$      if (kpart == knllexpd) then
 c$$$        msqv(:,:) = 0._dp
 c$$$      endif
 
-      if (coeffonly .and. (kpart==knllexpd)) then
+      if ( (coeffonly) .and. (kpart==knllexpd) ) then
         msqv(:,:) = -msq(:,:)
-      elseif (coeffonly) then
+      elseif ( (coeffonly) .or. (kpart==klumi1) ) then  ! is there a cleaner way to do this? put klumi1 as coeff?
         msqv(:,:) = msqv(:,:) - msq(:,:)
       elseif (kpart==knllexpd) then
         msqv(:,:) = 0._dp

@@ -59,9 +59,9 @@
       if (pure_lumi) then
         sudakov = one
       else
-        if ((kpart == knnll) .or. (kpart == knnllexpd)) then
+        if (kpart == knnll) then
           sudakov = resummed_sigma(ptjveto,resm_opts,order_NNLL)
-        elseif ((kpart == knll) .or. (kpart == knllexpd)) then
+        elseif (kpart == knll) then
           sudakov = resummed_sigma(ptjveto,resm_opts,order_NLL)
         elseif (kpart == kll) then
           sudakov = resummed_sigma(ptjveto,resm_opts,order_LL)
@@ -75,15 +75,12 @@
 
       L_tilde = Ltilde(ptjveto/resm_opts%Q,resm_opts%p)
 
-      if (kpart==kll) then
-        facscaleLtilde = facscale
-      elseif ((kpart == knll) .or. (kpart == knnll)) then
-        facscaleLtilde = facscale * exp(-L_tilde)
-      elseif ((kpart==knllexpd) .or. (kpart==knnllexpd)) then
-        facscaleLtilde = facscale
+      if ( (kpart==knll) .or. (kpart==knnll) .or.
+     &     (kpart==klumi0) .or. (kpart==klumi1) .or.
+     &     (kpart==klumi) ) then
+         facscaleLtilde = facscale * exp(-L_tilde)
       else
-        write(*,*) 'something wrong...'
-        stop
+         facscaleLtilde = facscale
       endif
 
       end

@@ -12,12 +12,13 @@
       include 'runstring.f'
       include 'dynamicscale.f'
       include 'taucut.f'
+      include 'JetVHeto.f'
       real(dp):: scalestart,fscalestart
       integer:: nlength,lenocc
       character*255 outlabel1,runname,outlabeltmp
       character*3 strmh,getstr,strpt
       character*5 strtaucut
-      character*9 strscale
+      character*14 strscale
       character*15 part,kpartstring
       character*6 case,kcasestring
       common/runname/runname
@@ -33,7 +34,11 @@ c      endif
       strscale=getstr(int(scalestart))//'__'
      &       //getstr(int(fscalestart))//'_'
 
-      if (dynamicscale) then
+
+      if ((dynamicscale) .and. (resum)) then
+        write(strscale,'(F4.2,"_",F4.2,"_",F4.2)') scalestart,
+     &        fscalestart,Q_scalestart
+      elseif (dynamicscale) then
         write(strscale,'(F4.2,"_",F4.2)') scalestart,fscalestart
       endif
 
@@ -61,24 +66,28 @@ c--- convert kpart and kcase to strings
      &    .or. (kcase==kggfus2)
      &    .or. (kcase==kggfus3) ) then
         strmh=getstr(int(hmass))
-        outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//strscale//
-     &   '_'//strmh
+        outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//
+     &       trim(strscale)//'_'//strmh
       elseif (  (kcase==kH_1jet) ) then
         strmh=getstr(int(hmass))
         strpt=getstr(int(ptjetmin))
-        outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//strscale//
-     &   '_'//strmh//'_pt'//strpt(1:2)      
+        outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//
+     &       trim(strscale)//'_'//strmh//'_pt'//strpt(1:2)      
       elseif ( (kcase==kW_2jet)
      &    .or. (kcase==kZ_2jet) ) then
         if     (Gflag .eqv. .false.) then
-          outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//strscale//'_qrk'
+          outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//
+     &       trim(strscale)//'_qrk'
         elseif (Qflag .eqv. .false.) then
-          outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//strscale//'_glu'
+          outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//
+     &       trim(strscale)//'_glu'
         else
-          outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//strscale
+          outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//
+     &       trim(strscale)
         endif
       else
-        outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//strscale
+        outlabel1=case//'_'//trim(part)//'_'//pdlabel//'_'//
+     &       trim(strscale)
       endif
       
       nlength=lenocc(outlabel1)

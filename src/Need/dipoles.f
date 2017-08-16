@@ -75,7 +75,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
 
       select case(kpart)
-      case(knnll)
+      case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
          ii_qq=(-pisq/12._dp + three/two*resm_opts%ln_Q2_muF2)
@@ -228,7 +228,7 @@ c [x^2+(1-x)^2] + [x^2+(1-x)^2]*L + 2*[x^2+(1-x)^2]*[ln(1-x)]
 c  - [x^2+(1-x)^2]*epinv
  
       select case(kpart)
-      case(knnll)
+      case(knnll, klumi, klumi1)
 
       ii_qg=0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
@@ -328,7 +328,7 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
  
       select case(kpart)
 
-      case(knnll)
+      case(knnll, klumi, klumi1)
 
       ii_gq=0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
@@ -447,7 +447,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
  
       select case(kpart)
 
-      case(knnll)
+      case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
         ii_gg=(-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2)

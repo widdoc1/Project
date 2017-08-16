@@ -31,6 +31,12 @@ c--- converts integer kpart to corresponding 4-character string
          kpartstring='nllexpd'
       elseif (k == knnllexpd) then
          kpartstring='nnllexpd'
+      elseif (k == klumi) then
+         kpartstring='lumi'
+      elseif (k == klumi0) then
+         kpartstring='lumi0'
+      elseif (k == klumi1) then
+         kpartstring='lumi1'
       else
         write(6,*) 'Unexpected kpart in kpartstring: ',k
         stop
