@@ -269,17 +269,19 @@ c--- Basic lowest-order integration
      &               nprn,sig,sd,chi)
       endif
 
-!     LL, NLL, NLLexpd integration
-      if ((kpart==kll) .or. (kpart==knll)) then
+!     LL, NLL, lumi0 integration
+      if ( (kpart==kll) .or. (kpart==knll) .or.
+     &     (kpart==klumi0) ) then
          call boundregion(ndim,region)
          call vegasnr(region,ndim,resmNLLint,myinit,myncall,myitmx,
      &        nprn,sig,sd,chi)
       endif
 
-c---  NNLL integration should have one extra dimensions
+c---  NNLL, nllexpd, nnllexpd, lumi, lumi1  integration should have one extra dimensions
 c---  (added and then taken away)
-      if ((kpart==knnll) .or. (kpart==knnllexpd)
-     &     .or. (kpart==knllexpd)) then
+      if ( (kpart==knnll) .or. (kpart==knnllexpd) .or.
+     &     (kpart==knllexpd) .or. (kpart==klumi) .or.
+     &     (kpart==klumi1) ) then
          ndim=ndim+1
          call boundregion(ndim,region)
          call vegasnr(region,ndim,resmNNLLint,myinit,myncall,myitmx,

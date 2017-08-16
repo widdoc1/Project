@@ -205,6 +205,12 @@ c------ normal case
          kpart=knllexpd
       elseif ((part == 'nnllexpd') .or. (part == 'nnllexpdcoeff')) then
          kpart=knnllexpd
+      elseif (part == 'lumi') then
+         kpart=klumi
+      elseif (part == 'lumi0') then
+         kpart=klumi0
+      elseif (part == 'lumi1') then
+         kpart=klumi1
       endif
       if (index(part,'coeff') > 0) then
         coeffonly=.true.
@@ -344,8 +350,8 @@ c---  JetVHeto resummation options
       if (verbose) call writeinput(6,' * ',' ','ptjveto')
       read(20,*) mscheme
       if (verbose) call writeinput(6,' * ',' ','matching scheme')
-      read(20,*) pure_lumi
-      if (verbose) call writeinput(6,' * ',' ','pure_lumi')
+      ! read(20,*) pure_lumi
+      ! if (verbose) call writeinput(6,' * ',' ','pure_lumi')
 
       if (verbose) write(6,*)
       read(20,99) line
@@ -695,10 +701,20 @@ c---  create logical:: variable dynamicscale for use in other routines
 !     set resum
       if ( (kpart == kll) .or. (kpart == knll) .or.
      &     (kpart == knllexpd) .or. (kpart == knnll) .or.
-     &     (kpart == knnllexpd) ) then
+     &     (kpart == knnllexpd) .or. (kpart == klumi) .or.
+     &     (kpart == klumi0) .or. (kpart == klumi1) ) then
          resum=.true.
       else
          resum=.false.
+      endif
+
+!     set up pure_lumi for use in other routines
+      if ( (kpart == knllexpd) .or. (kpart == knnllexpd) .or.
+     &     (kpart == klumi) .or. (kpart == klumi0) .or.
+     &     (kpart == klumi1) ) then
+         pure_lumi = .true.
+      else
+         pure_lumi = .false.
       endif
 
 c--- print warning messages if some parton fluxes are not included      
@@ -718,7 +734,11 @@ c--- print warning messages if some parton fluxes are not included
         write(6,*) 'WARNING: no gluon-gluon contribution included'
       write(6,*)
       endif
-      
+c$$$      if (omitqq) then
+c$$$         write(6,*) 'WARNING: no quark-quark contribution included'
+c$$$         write(6,*)
+c$$$      endif
+
 c--- assign squared masses for b- and c-quarks
       if (abs(mb) > 1.e-8_dp) then
         mbsq=mb**2
@@ -769,7 +789,8 @@ c--- this is an allowed combination
 c--- this is an allowed combination
         elseif ((kpart==kll) .or. (kpart==knll) .or.
      &          (kpart==knnll) .or. (kpart==knllexpd) .or.
-     &          (kpart==knnllexpd)) then
+     &          (kpart==knnllexpd) .or. (kpart==klumi) .or.
+     &          (kpart==klumi0) .or. (kpart==klumi1)) then
 c--- temporarily allow all resummation processes
         else 
           write(6,*) 'part=',part,' is not a valid option'
