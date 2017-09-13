@@ -33,6 +33,9 @@ function userincludedipole(nd, ppart, mcfm_result)
   common/bin/bin
   common/makecuts/makecuts
 
+  include 'ptjveto.f'
+  real(dp) :: ptj
+
   ! take the MCFM result as the default choice
   userincludedipole = mcfm_result
   ! return
@@ -45,6 +48,15 @@ function userincludedipole(nd, ppart, mcfm_result)
            userincludedipole = mcfm_result
            return
         else
+           userincludedipole = .false.
+           return
+        endif
+     endif
+
+     ! DY validation
+     if (nproc==31) then
+        ptj = sqrt(ppart(5,1)**2+ppart(5,2)**2)
+        if (ptj > ptjveto) then
            userincludedipole = .false.
            return
         endif
@@ -335,27 +347,36 @@ function ATLAS_hww2017(ppart) result(res)
 
   if (abs(sqrts - 13000._dp) < 1._dp) then 
 
+     ! ptminl = 25._dp
 
-     if (VVcut .eq. 3) then 
-      ! emu 
-        if (abs(eta5) > 2.4) passcuts=.false.
-        if (abs(eta4) > 2.47) passcuts=.false.
-        if (abs(eta4) > 1.37 .and. abs(eta4) < 1.52) &
-             passcuts=.false. 
-        if (m45 < 10.) passcuts = .false. 
+     ! etamaxmu = 2.4_dp
+     ! etamaxe = 2.47_dp
+     ! etaegapmin = 1.37_dp
+     ! etaegapmax = 1.52_dp
+
+     ! mllmin = 10._dp
+     ! metrelmin = 15._dp
+
+     if (VVcut .eq. 3) then
+        ! emu
+        if (abs(eta5) > 2.4_dp) passcuts=.false.
+        if (abs(eta4) > 2.47_dp) passcuts=.false.
+        if (abs(eta4) > 1.37_dp .and. abs(eta4) < 1.52_dp) &
+             passcuts=.false.
+        if (m45 < 10.) passcuts = .false.
         if (ptmiss < 20. ) passcuts = .false.
         if (ptrel < 15d0) passcuts = .false.
 
         if (pt(4,ppart) < 25d0) passcuts=.false.
-        if (pt(5,ppart) < 25d0) passcuts=.false. 
+        if (pt(5,ppart) < 25d0) passcuts=.false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < 4.5) &
                 passveto = .false.
         endif
 
      elseif (VVcut .eq. 4) then 
-     ! mue 
+        ! mue 
         if (abs(eta5) > 2.4) passcuts=.false.
         if (abs(eta4) > 2.47) passcuts=.false.
         if (abs(eta4) > 1.37 .and. abs(eta4) < 1.52) &
