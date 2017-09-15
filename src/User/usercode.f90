@@ -254,15 +254,16 @@ function ATLAS_hww2017(ppart) result(res)
   logical :: res
 
   real(dp) :: etarap,pt
-	real(dp) :: y4,y5,pt3,pt4,pt5,pt6
-	real(dp) :: pt34,pttwo
-	real(dp) :: pt45,pt56,m45,mt45,mtrans
-	real(dp) :: et_vec(4),etmiss,r2,delphi,m34,m56,m3456
-	integer :: i
+  real(dp) :: y4,y5,pt3,pt4,pt5,pt6
+  real(dp) :: pt34,pttwo
+  real(dp) :: pt45,pt56,m45,mt45,mtrans
+  real(dp) :: et_vec(4),etmiss,r2,delphi,m34,m56,m3456
+  integer :: i
   integer, parameter :: VVcut=3 ! set cuts for e mu
-	logical :: passcuts, passveto
-	real(dp) etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
-	real(dp) dphi,ptrel,pt36(2) 
+  logical :: passcuts, passveto
+  real(dp) etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
+  real(dp) dphi,ptrel,pt36(2) 
+
 
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
 
