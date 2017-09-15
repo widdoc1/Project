@@ -261,11 +261,14 @@ function ATLAS_hww2017(ppart) result(res)
   integer :: i
   integer, parameter :: VVcut=3 ! set cuts for e mu
   logical :: passcuts, passveto
-  real(dp) etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
-  real(dp) dphi,ptrel,pt36(2) 
-
+  real(dp) :: etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
+  real(dp) :: dphi,ptrel,pt36(2) 
+  real(dp) :: etajveto
 
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
+
+  ! for debug set etajveto to large
+  etajveto = 99._dp
 
   pt3 = pt(3,ppart)
   pt4 = pt(4,ppart) 
@@ -372,7 +375,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (pt(5,ppart) < 25d0) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < 4.5) &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
                 passveto = .false.
         endif
 
@@ -390,7 +393,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (pt(5,ppart) < 25d0) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5) &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
                 passveto = .false. 
         endif
 
@@ -422,7 +425,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5) &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
                 passveto = .false. 
         endif
         if (ptrel < 45d0) passcuts = .false.
@@ -443,7 +446,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
                 rjl1 > 0.3d0 .and. rjl2 > 0.3d0 ) passveto = .false. 
         endif
         if (ptrel < 45d0) passcuts = .false.
@@ -461,7 +464,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
                 rjl1 > 0.3d0) passveto = .false. 
         endif
         if (ptrel < 15d0) passcuts = .false.
@@ -479,7 +482,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
                 rjl2 > 0.3d0) passveto = .false. 
         endif
         if (ptrel < 15d0) passcuts = .false.
@@ -511,7 +514,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5) &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
                 passveto = .false. 
         endif
         if (ptrel < 45d0) passcuts = .false.
@@ -532,7 +535,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
                 rjl1 .gt. 0.3 .and. rjl2 .gt. 0.3 ) &
                 passveto = .false. 
         endif
@@ -551,7 +554,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
                 rjl1 > 0.3d0) passveto = .false. 
         endif
         if (ptrel < 25d0) passcuts = .false.
@@ -569,7 +572,7 @@ function ATLAS_hww2017(ppart) result(res)
         if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
 
         if (jets > 0) then 
-           if (ptj > ptjveto .and. abs(etaj) < 4.5 .and. &
+           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
                 rjl2 > 0.3d0) passveto = .false. 
         endif
         if (ptrel < 25d0) passcuts = .false.
