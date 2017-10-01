@@ -162,9 +162,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   enddo
   MT1 = sqrt(MT1)
 
-  dphillmiss = acos((pt36(1)*pt45(1)+pt36(2)*pt45(2))/ptmiss/ptll)
-
-  MT2 = sqrt(two*ptll*ptmiss*(1-cos(dphillmiss)))
+  MT2 = sqrt(two*(ptll*ptmiss - (pt36(1)*pt45(1)+pt36(2)*pt45(2))))
 
   ! m(45) dists
   call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,8000d0,80d0,'log')
