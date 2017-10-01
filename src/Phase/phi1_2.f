@@ -184,10 +184,13 @@ c      write(6,*) s3min,s3,s3max,m1,m2,sqrt(s1),sqrt(s2)
       do j=1,4
       p2(j)=p1(j)-p3(j)
       enddo
-      if (  (p1(4) < 0._dp) 
-     & .or. (p2(4) < 0._dp) 
-     & .or. (p3(4) < 0._dp)) then 
-c       if (case(1:5) .ne. 'vlchk') then 
+      if (  (p1(4) < 0._dp)
+     & .or. (p2(4) < 0._dp)
+     & .or. (p3(4) < 0._dp)
+     & .or. (p1(4) /= p1(4))
+     & .or. (p2(4) /= p2(4))
+     & .or. (p3(4) /= p3(4)) ) then
+c       if (case(1:5) .ne. 'vlchk') then
         write(6,*) '   m1=',m1
         write(6,*) 's2min=',s2min
         write(6,*) 's2max=',s2max
