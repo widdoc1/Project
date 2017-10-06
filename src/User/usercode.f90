@@ -99,10 +99,10 @@ subroutine userplotter(pjet, wt, wt2, nd)
   integer, parameter :: tagbook=1, tagplot=2
   !---------------------------------------------
   integer :: i, iplot 
-  real(dp) :: m34, m45, m56, m3456
-  real(dp) :: MT1, MT2
+  real(dp) :: m34, m36, m45, m56, m3456
+  real(dp) :: MT1, MT2, MT3
   real(dp) :: ptll, pt45(2), ptmiss, pt36(2), MTll, &
-       & dphillmiss, pttwo
+       dphillmiss, pttwo, MTmiss
   real(dp) :: ht, htjet
   logical, save :: first = .true.
   integer :: tag
@@ -130,6 +130,13 @@ subroutine userplotter(pjet, wt, wt2, nd)
      m45 = m45 - (pjet(4,i) + pjet(5,i))**2
   enddo
   m45 = sqrt(m45)
+
+  m36 = (pjet(3,4) + pjet(6,4))**2
+  do i = 1, 3
+     m36 = m36 - (pjet(3,i) + pjet(6,i))**2
+  enddo
+  m36 = sqrt(m36)
+
   m34 = (pjet(3,4) + pjet(4,4))**2 
   m3456 = (pjet(3,4) + pjet(4,4) + pjet(5,4) + pjet(6,4))**2
   do i = 1, 3
@@ -145,63 +152,87 @@ subroutine userplotter(pjet, wt, wt2, nd)
   m56 = sqrt(m56)
 
   ! transverse mass proxy for MWW
-  ptll = pttwo(4, 5, pjet) 
+  ptll = pttwo(4, 5, pjet)
   pt45(1) = pjet(4,1) + pjet(5,1)
   pt45(2) = pjet(4,2) + pjet(5,2)
 
-  ptmiss = pttwo(3,6,pjet) 
+  ptmiss = pttwo(3,6,pjet)
   pt36(1) = pjet(3,1) + pjet(6,1)
-
   pt36(2) = pjet(3,2) + pjet(6,2)
 
+  ! MT1
   MTll = sqrt(ptll**2 + m45**2)
-
   MT1 = (MTll + ptmiss)**2
   do i = 1, 2
      MT1 = MT1 - (pt45(i) + pt36(i))**2
   enddo
   MT1 = sqrt(MT1)
 
+  ! MT2
   MT2 = sqrt(two*(ptll*ptmiss - (pt36(1)*pt45(1)+pt36(2)*pt45(2))))
 
-  ! m(45) dists
+  ! MT3
+  MTmiss = sqrt(ptmiss**2 + MTll**2)
+  MT3 = (MTll + MTmiss)**2
+  do i = 1, 2
+     MT3 = MT3 - (pt36(i) + pt36(i))**2
+  enddo
+  MT3 = sqrt(MT3)
+
+  ! m(45), m_ll
+  call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
   call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,8000d0,80d0,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,1000d0,20d0,'log')
+  ! pt(45), pt_ll
+  call bookplot(iplot,tag,'ptll',ptll,wt,wt2,0d0,1000d0,20d0,'log')
   iplot = iplot + 1
-  
-  call bookplot(iplot,tag,'m(45)',m45,wt,wt2,100d0,1000d0,20d0,'log')
+
+  call bookplot(iplot,tag,'ptll',ptll,wt,wt2,0d0,8000d0,80d0,'log')
+  iplot = iplot + 1
+
+  ! m(36), m_nunu
+  call bookplot(iplot,tag,'m(36)',m36,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  call bookplot(iplot,tag,'m(36)',m36,wt,wt2,0d0,8000d0,80d0,'log')
+  iplot = iplot + 1
+
+  ! pt(36), pt_miss
+  call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,0d0,8000d0,80d0,'log')
   iplot = iplot + 1
 
   ! m(3456) dists
+  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
   call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
-  iplot = iplot + 1
-  
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,100d0,1000d0,20d0,'log')
-  iplot = iplot + 1
-
   ! MT1
-  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,8000d0,80d0,'log')
-  iplot = iplot + 1
-
   call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,1000d0,20d0,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,100d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,8000d0,80d0,'log')
   iplot = iplot + 1
 
   ! MT2
-  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,8000d0,80d0,'log')
-  iplot = iplot + 1
-
   call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,1000d0,20d0,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,100d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,8000d0,80d0,'log')
+  iplot = iplot + 1
+
+  ! MT3
+  call bookplot(iplot,tag,'MT3',MT3,wt,wt2,0d0,1000d0,20d0,'log')
+  iplot = iplot + 1
+
+  call bookplot(iplot,tag,'MT3',MT3,wt,wt2,0d0,8000d0,80d0,'log')
   iplot = iplot + 1
 
   ! update nextnplot so we get userplots and generic plots from nplotter routines
