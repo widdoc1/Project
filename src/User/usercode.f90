@@ -180,59 +180,59 @@ subroutine userplotter(pjet, wt, wt2, nd)
   MT3 = sqrt(MT3)
 
   ! m(45), m_ll
-  call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'mll',m45,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(45)',m45,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'mll_full',m45,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! pt(45), pt_ll
-  call bookplot(iplot,tag,'ptll',ptll,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'ptll',ptll,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'ptll',ptll,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'ptll_full',ptll,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! m(36), m_nunu
-  call bookplot(iplot,tag,'m(36)',m36,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'m_nunu',m36,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(36)',m36,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'m_nunu_full',m36,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! pt(36), pt_miss
-  call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'ptmiss_full',ptmiss,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! m(3456) dists
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'m_WW',m3456,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m(3456)',m3456,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'m_WW_full',m3456,wt,wt2,zip,8000._dp,80._dp,'log') 
   iplot = iplot + 1
 
   ! MT1
-  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'MT1_full',MT1,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! MT2
-  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'MT2_full',MT2,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! MT3
-  call bookplot(iplot,tag,'MT3',MT3,wt,wt2,0d0,1000d0,20d0,'log')
+  call bookplot(iplot,tag,'MT3',MT3,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'MT3',MT3,wt,wt2,0d0,8000d0,80d0,'log')
+  call bookplot(iplot,tag,'MT3_full',MT3,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! update nextnplot so we get userplots and generic plots from nplotter routines
