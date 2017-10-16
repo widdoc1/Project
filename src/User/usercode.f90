@@ -175,7 +175,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   MTmiss = sqrt(ptmiss**2 + MTll**2)
   MT3 = (MTll + MTmiss)**2
   do i = 1, 2
-     MT3 = MT3 - (pt36(i) + pt36(i))**2
+     MT3 = MT3 - (pt45(i) + pt36(i))**2
   enddo
   MT3 = sqrt(MT3)
 
