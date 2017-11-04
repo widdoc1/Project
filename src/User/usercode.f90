@@ -2,11 +2,11 @@
 ! !
 ! ! - plabel: particle labels
 ! ! - ptilde: particle (ptilde) and jet (ptildejet) momenta
-! ! - npart: number of particles 
+! ! - npart: number of particles
 ! ! - constants - things like pi, mxpart, etc.
-! ! - nplot.f 
+! ! - nplot.f
 ! subroutine usernplotter()
-!   
+!
 ! end subroutine usernplotter
 
 !----------------------------------------------------------------------
@@ -41,9 +41,9 @@ function userincludedipole(nd, ppart, mcfm_result)
   ! return
 
   if (makecuts) then
-     if ( (nproc .eq. 61) .or. (nproc .eq. 66) .or. (nproc .eq. 69) &
-          & .or. (nproc .eq. 123) .or. (nproc .eq. 124) .or. (nproc .eq. 125) &
-          & .or. (nproc .eq. 126) ) then
+     if ( (nproc == 61) .or. (nproc == 66) .or. (nproc == 69) &
+          & .or. (nproc == 123) .or. (nproc == 124) .or. (nproc == 125) &
+          & .or. (nproc == 126) ) then
         if (ATLAS_hww2017(ppart)) then
            userincludedipole = mcfm_result
            return
@@ -72,15 +72,15 @@ end function userincludedipole
 
 !----------------------------------------------------------------------
 ! Variables passed to this routine:
-! 
+!
 !      p:  4-momenta of jets in the format p(i,4)
 !          with the particles numbered according to the input file
 !          and components labelled by (px,py,pz,E).
-! 
+!
 !     wt:  weight of this event
-! 
+!
 !    wt2:  weight^2 of this event
-! 
+!
 !     nd:  an integer specifying the dipole number of this contribution
 !          (if applicable), otherwise equal to zero
 
@@ -98,7 +98,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   integer,  intent(in) :: nd
   integer, parameter :: tagbook=1, tagplot=2
   !---------------------------------------------
-  integer :: i, iplot 
+  integer :: i, iplot
   real(dp) :: m34, m36, m45, m56, m3456
   real(dp) :: MT1, MT2, MT3
   real(dp) :: ptll, pt45(2), ptmiss, pt36(2), MTll, &
@@ -118,14 +118,14 @@ subroutine userplotter(pjet, wt, wt2, nd)
   !ht    = sum(sqrt(sum(ptilde   (nd,3:2+npart,1:2)**2,dim=2)))
   !htjet = sum(sqrt(sum(ptildejet(nd,3:2+npart,1:2)**2,dim=2)))
 
-  !call bookplot(iplot,tag,'UserHT',ht,wt,wt2,0d0,500d0,20d0,'lin') 
+  !call bookplot(iplot,tag,'UserHT',ht,wt,wt2,0d0,500d0,20d0,'lin')
   !iplot = iplot + 1
 
   !call bookplot(iplot,tag,'UserHTJet',htjet,wt,wt2,0d0,500d0,20d0,'lin')
   !iplot = iplot + 1
 
   !define quantities to plot
-  m45 = (pjet(4,4) + pjet(5,4))**2 
+  m45 = (pjet(4,4) + pjet(5,4))**2
   do i = 1, 3
      m45 = m45 - (pjet(4,i) + pjet(5,i))**2
   enddo
@@ -137,7 +137,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   enddo
   m36 = sqrt(m36)
 
-  m34 = (pjet(3,4) + pjet(4,4))**2 
+  m34 = (pjet(3,4) + pjet(4,4))**2
   m3456 = (pjet(3,4) + pjet(4,4) + pjet(5,4) + pjet(6,4))**2
   do i = 1, 3
      m34 = m34 - (pjet(3,i) + pjet(4,i))**2
@@ -145,7 +145,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   enddo
   m34 = sqrt(m34)
   m3456 = sqrt(m3456)
-  m56 = (pjet(5,4) + pjet(6,4))**2 
+  m56 = (pjet(5,4) + pjet(6,4))**2
   do i = 1,3
      m56 = m56 - (pjet(5,i) + pjet(6,i))**2
   enddo
@@ -211,7 +211,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   call bookplot(iplot,tag,'m_WW',m3456,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
 
-  call bookplot(iplot,tag,'m_WW_full',m3456,wt,wt2,zip,8000._dp,80._dp,'log') 
+  call bookplot(iplot,tag,'m_WW_full',m3456,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! MT1
@@ -241,7 +241,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
 end subroutine userplotter
 
 !----------------------------------------------------------------------
-! user code to write info 
+! user code to write info
 subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
   use types_mod
   implicit none
@@ -249,20 +249,20 @@ subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
   character*2,      intent(in) :: comment_string
   real(dp),         intent(in) :: xsec, xsec_err
   integer,          intent(in) :: itno
-  
+
   !write(6,*) "have reached iteration number", itno
   !write(unitno,"(a,a)") comment_string, "any additional user comments"
   !call mcfmfwrite(unitno, comment_string//"any additional user comments")
 end subroutine userwriteinfo
 
 subroutine userhistofin(xsec,xsec_err,itno,itmx)
-!	This function allows for extra user-defined operations 
-!	at the end of each iteration (itno>0) and at the end of 
+!	This function allows for extra user-defined operations
+!	at the end of each iteration (itno>0) and at the end of
 !	the run of the program (itno=0).
   use types_mod
-	implicit none
+  implicit none
   integer,  intent(in) :: itno,itmx
-	real(dp), intent(in) :: xsec,xsec_err
+  real(dp), intent(in) :: xsec,xsec_err
 end subroutine userhistofin
 
 ! subroutine userscale(event_momenta, muR, muF)
@@ -291,7 +291,7 @@ function ATLAS_hww2017(ppart) result(res)
   integer, parameter :: VVcut=3 ! set cuts for e mu
   logical :: passcuts, passveto
   real(dp) :: etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
-  real(dp) :: dphi,ptrel,pt36(2) 
+  real(dp) :: dphi,ptrel,pt36(2)
   real(dp) :: etajveto
 
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
@@ -300,13 +300,13 @@ function ATLAS_hww2017(ppart) result(res)
   etajveto = 99._dp
 
   pt3 = pt(3,ppart)
-  pt4 = pt(4,ppart) 
+  pt4 = pt(4,ppart)
   pt5 = pt(5,ppart)
-  pt6 = pt(6,ppart) 
+  pt6 = pt(6,ppart)
   y4 = etarap(4,ppart)
-  y5 = etarap(5,ppart) 
+  y5 = etarap(5,ppart)
   pt45 = pttwo(4,5,ppart)
-  pt34 = pttwo(3,4,ppart) 
+  pt34 = pttwo(3,4,ppart)
   pt56 = pttwo(5,6,ppart)
   r2 = (ppart(4,1)*ppart(5,1)+ppart(4,2)*ppart(5,2)) &
        /sqrt((ppart(4,1)**2+ppart(4,2)**2)*(ppart(5,1)**2+ppart(5,2)**2))
@@ -327,58 +327,58 @@ function ATLAS_hww2017(ppart) result(res)
   enddo
   m34 = sqrt(m34)
   m3456 = sqrt(m3456)
-  m56 = (ppart(5,4) + ppart(6,4))**2 
+  m56 = (ppart(5,4) + ppart(6,4))**2
   do i = 1, 3
      m56 = m56 - (ppart(5,i) + ppart(6,i))**2
   enddo
   m56 = sqrt(m56)
 
-  mt45 = zero 
+  mt45 = zero
   mt45 = (sqrt(sqrt(pttwo(4,5,ppart)**2 + m45**2) + etmiss(ppart,et_vec))**2)
 
 !     PFM & GZ place cuts for WW
-  passcuts = .true. 
+  passcuts = .true.
   passveto = .true.
 
-! define ptmiss 
-  ptmiss = pttwo(3,6,ppart) 
+! define ptmiss
+  ptmiss = pttwo(3,6,ppart)
 
-! define ptrel 
+! define ptrel
   pt36(1) = ppart(3,1) + ppart(6,1)
   pt36(2) = ppart(3,2) + ppart(6,2)
   dphi = acos((ppart(4,1) * pt36(1) + ppart(4,2)*pt36(2))/pt4/ptmiss)
   dphi = min(dphi, &
        acos((ppart(5,1)*pt36(1) + ppart(5,2)*pt36(2))/pt5/ptmiss))
 
-  if (jets > 0 .and. ptj > ptjveto) then 
+  if (jets > 0 .and. ptj > ptjveto) then
      dphi = min(dphi, &
           acos((ppart(7,1)*pt36(1)+ppart(7,2)*pt36(2))/pt(7,ppart)/ptmiss))
   endif
-  if (dphi > pi/two) then 
-     ptrel = ptmiss 
+  if (dphi > pi/two) then
+     ptrel = ptmiss
   else
-     ptrel = ptmiss * sin(dphi) 
+     ptrel = ptmiss * sin(dphi)
   endif
 
 ! define ptj, etaj, rjl1, rjl2
-  if (jets > 0) then 
+  if (jets > 0) then
      ptj = sqrt(ppart(7,1)**2+ppart(7,2)**2)
      etaj = etarap(7,ppart)
      rjl1 = r(ppart,4,7)
      rjl2 = r(ppart,5,7)
   endif
 
-! rapidities of leptons      
+! rapidities of leptons
   eta4 = etarap(4,ppart)
   eta5 = etarap(5,ppart)
 
-! pt of leptons     
-  ptll = pttwo(4,5,ppart) 
-	
+! pt of leptons
+  ptll = pttwo(4,5,ppart)
+
 !==========================================
 !     13 TeV cuts ATLAS CONF 016-090
 
-  if (abs(sqrts - 13000._dp) < 1._dp) then 
+  if (abs(sqrts - 13000._dp) < 1._dp) then
 
      ! ptminl = 25._dp
 
@@ -390,239 +390,235 @@ function ATLAS_hww2017(ppart) result(res)
      ! mllmin = 10._dp
      ! metrelmin = 15._dp
 
-     if (VVcut .eq. 3) then
+     if (VVcut == 3) then
         ! emu
-        if (abs(eta5) > 2.4_dp) passcuts=.false.
-        if (abs(eta4) > 2.47_dp) passcuts=.false.
-        if (abs(eta4) > 1.37_dp .and. abs(eta4) < 1.52_dp) &
-             passcuts=.false.
-        if (m45 < 10.) passcuts = .false.
-        if (ptmiss < 20. ) passcuts = .false.
-        if (ptrel < 15d0) passcuts = .false.
+        if (abs(eta5) > 2.5_dp) passcuts = .false.
+        if (abs(eta4) > 2.5_dp) passcuts = .false.
+        if (m45 < 10._dp) passcuts = .false.
+        if (ptmiss < 20._dp) passcuts = .false.
+        if (ptrel < 15._dp) passcuts = .false.
 
-        if (pt(4,ppart) < 25d0) passcuts=.false.
-        if (pt(5,ppart) < 25d0) passcuts=.false.
+        if (pt(4,ppart) < 25._dp) passcuts=.false.
+        if (pt(5,ppart) < 25._dp) passcuts=.false.
 
         if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto) &
                 passveto = .false.
         endif
 
-     elseif (VVcut .eq. 4) then 
-        ! mue 
-        if (abs(eta5) > 2.4) passcuts=.false.
-        if (abs(eta4) > 2.47) passcuts=.false.
-        if (abs(eta4) > 1.37 .and. abs(eta4) < 1.52) &
-             passcuts=.false. 
-        if (m45 < 10) passcuts = .false. 
-        if (ptmiss < 20 ) passcuts = .false.
-        if (ptrel < 15d0) passcuts = .false. 
+     elseif (VVcut == 4) then
+        ! mue
+        if (abs(eta5) > 2.5_dp) passcuts = .false.
+        if (abs(eta4) > 2.5_dp) passcuts = .false.
+        if (m45 < 10._dp) passcuts = .false.
+        if (ptmiss < 20._dp) passcuts = .false.
+        if (ptrel < 15._dp) passcuts = .false.
 
-        if (pt(4,ppart) < 25d0) passcuts=.false.
-        if (pt(5,ppart) < 25d0) passcuts=.false.
+        if (pt(4,ppart) < 25._dp) passcuts=.false.
+        if (pt(5,ppart) < 25._dp) passcuts=.false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto) &
-                passveto = .false. 
+                passveto = .false.
         endif
 
-     elseif (VVcut .eq. 5) then 
+     elseif (VVcut == 5) then
         ! only jet veto cuts
-        if (jets > 0) then 
-           if (ptj > ptjveto) passcuts = .false. 
+        if (jets > 0) then
+           if (ptj > ptjveto) passcuts = .false.
         endif
 
      else
-        stop 'VVcuts not set' 
+        stop 'VVcuts not set'
      endif
 
 !==========================================
 !     8 TeV cuts ATLAS CONF 014-033
 
-  elseif (abs(sqrts-8000.d0) < 1d0) then 
+  elseif (abs(sqrts-8000._dp) < 1._dp) then
 
 
-     if (VVcut .eq. 1) then 
-        ! mumu 
-        if (abs(eta4).gt.2.4) passcuts=.false.
-        if (abs(eta5).gt.2.4) passcuts=.false.
-        if (m45 .lt. 15) passcuts = .false. 
-        if (abs(m45-91.188d0) < 15) passcuts = .false. 
-        if (ptmiss < 45 ) passcuts = .false. 
+     if (VVcut == 1) then
+        ! mumu
+        if (abs(eta4) > 2.4_dp) passcuts = .false.
+        if (abs(eta5) > 2.4_dp) passcuts = .false.
+        if (m45 < 15._dp) passcuts = .false.
+        if (abs(m45-91.188_dp) < 15._dp) passcuts = .false.
+        if (ptmiss < 45._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto) &
-                passveto = .false. 
+                passveto = .false.
         endif
-        if (ptrel < 45d0) passcuts = .false.
+        if (ptrel < 45._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 2) then 
-        ! ee 
-        if (abs(eta4).gt.2.47) passcuts=.false.
-        if (abs(eta5).gt.2.47) passcuts=.false.
-        if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) &
-             passcuts=.false. 
-        if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) &
-             passcuts=.false. 
-        if (m45 .lt. 15) passcuts = .false. 
-        if (abs(m45-91.188d0) < 15) passcuts = .false. 
-        if (ptmiss < 45 ) passcuts = .false. 
+     elseif (VVcut == 2) then
+        ! ee
+        if (abs(eta4) > 2.47_dp) passcuts = .false.
+        if (abs(eta5) > 2.47_dp) passcuts = .false.
+        if (abs(eta4) > 1.37_dp .and. abs(eta4) < 1.52_dp) &
+             passcuts = .false.
+        if (abs(eta5) > 1.37_dp .and. abs(eta5) < 1.52_dp) &
+             passcuts = .false.
+        if (m45 < 15._dp) passcuts = .false.
+        if (abs(m45-91.188_dp) < 15._dp) passcuts = .false.
+        if (ptmiss < 45._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
-                rjl1 > 0.3d0 .and. rjl2 > 0.3d0 ) passveto = .false. 
+                rjl1 > 0.3_dp .and. rjl2 > 0.3_dp) passveto = .false.
         endif
-        if (ptrel < 45d0) passcuts = .false.
+        if (ptrel < 45._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 3) then 
-        ! emu 
-        if (abs(eta5).gt.2.4) passcuts=.false.
-        if (abs(eta4).gt.2.47) passcuts=.false.
-        if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) & 
-             passcuts=.false. 
-        if (m45 .lt. 10) passcuts = .false. 
-        if (ptmiss < 20 ) passcuts = .false. 
+     elseif (VVcut == 3) then
+        ! emu
+        if (abs(eta5) > 2.4_dp) passcuts = .false.
+        if (abs(eta4) > 2.47_dp) passcuts = .false.
+        if (abs(eta4) > 1.37_dp .and. abs(eta4) < 1.52_dp) &
+             passcuts = .false.
+        if (m45 < 10._dp) passcuts = .false.
+        if (ptmiss < 20._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
-                rjl1 > 0.3d0) passveto = .false. 
+                rjl1 > 0.3_dp) passveto = .false.
         endif
-        if (ptrel < 15d0) passcuts = .false.
+        if (ptrel < 15._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 4) then 
-        ! mue 
-        if (abs(eta4).gt.2.4) passcuts=.false.
-        if (abs(eta5).gt.2.47) passcuts=.false.
-        if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) &
-             passcuts=.false. 
-        if (m45 .lt. 10) passcuts = .false. 
-        if (ptmiss < 20 ) passcuts = .false. 
+     elseif (VVcut == 4) then
+        ! mue
+        if (abs(eta4) > 2.4_dp) passcuts = .false.
+        if (abs(eta5) > 2.47_dp) passcuts = .false.
+        if (abs(eta5) > 1.37_dp .and. abs(eta5) < 1.52_dp) &
+             passcuts = .false.
+        if (m45 < 10._dp) passcuts = .false.
+        if (ptmiss < 20._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
-                rjl2 > 0.3d0) passveto = .false. 
+                rjl2 > 0.3_dp) passveto = .false.
         endif
-        if (ptrel < 15d0) passcuts = .false.
+        if (ptrel < 15._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 5) then 
+     elseif (VVcut == 5) then
         ! only jet veto cuts
-        if (jets > 0) then 
-           if (ptj > ptjveto) passcuts = .false. 
+        if (jets > 0) then
+           if (ptj > ptjveto) passcuts = .false.
         endif
 
      else
-        stop 'VVcuts not set' 
+        stop 'VVcuts not set'
      endif
 !==========================================
-!     7 Tev cuts 1210.2979 
+!     7 Tev cuts 1210.2979
 
-  elseif (abs(sqrts-7000.d0) < 1d0) then 
+  elseif (abs(sqrts-7000._dp) < 1._dp) then
 
 
-     if (VVcut .eq. 1) then 
-        ! mumu 
-        if (abs(eta4).gt.2.4) passcuts=.false.
-        if (abs(eta5).gt.2.4) passcuts=.false.
-        if (m45 .lt. 15) passcuts = .false. 
-        if (abs(m45-91.188d0) < 15) passcuts = .false.
-        if (ptll < 30 ) passcuts = .false. 
+     if (VVcut == 1) then
+        ! mumu
+        if (abs(eta4) > 2.4_dp) passcuts = .false.
+        if (abs(eta5) > 2.4_dp) passcuts = .false.
+        if (m45 < 15._dp) passcuts = .false.
+        if (abs(m45-91.188_dp) < 15._dp) passcuts = .false.
+        if (ptll < 30._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto) &
-                passveto = .false. 
+                passveto = .false.
         endif
-        if (ptrel < 45d0) passcuts = .false.
+        if (ptrel < 45._dp) passcuts = .false.
 
-     elseif (VVcut .eq.2) then 
-        ! ee 
-        if (abs(eta4).gt.2.47) passcuts=.false.
-        if (abs(eta5).gt.2.47) passcuts=.false.
-        if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) &
-             passcuts=.false. 
-        if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) &
-             passcuts=.false. 
-        if (m45 .lt. 15) passcuts = .false.
-        if (abs(m45-91.188d0) < 15) passcuts = .false.
-        if (ptll < 30 ) passcuts = .false. 
+     elseif (VVcut == 2) then
+        ! ee
+        if (abs(eta4) > 2.47_dp) passcuts = .false.
+        if (abs(eta5) > 2.47_dp) passcuts = .false.
+        if (abs(eta4) > 1.37_dp .and. abs(eta4) < 1.52_dp) &
+             passcuts = .false.
+        if (abs(eta5) > 1.37_dp .and. abs(eta5) < 1.52_dp) &
+             passcuts = .false.
+        if (m45 < 15._dp) passcuts = .false.
+        if (abs(m45-91.188_dp) < 15._dp) passcuts = .false.
+        if (ptll < 30._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
-                rjl1 .gt. 0.3 .and. rjl2 .gt. 0.3 ) &
-                passveto = .false. 
+                rjl1 > 0.3_dp .and. rjl2 > 0.3_dp ) &
+                passveto = .false.
         endif
-        if (ptrel < 45d0) passcuts = .false.
+        if (ptrel < 45._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 3) then 
-        ! emu 
-        if (abs(eta5).gt.2.4) passcuts=.false.
-        if (abs(eta4).gt.2.47) passcuts=.false.
-        if (abs(eta4).gt.1.37 .and. abs(eta4).lt.1.52) &
-             passcuts=.false. 
-        if (m45 .lt. 10) passcuts = .false.
-        if (ptll < 30) passcuts = .false.  
+     elseif (VVcut == 3) then
+        ! emu
+        if (abs(eta5) > 2.4_dp) passcuts = .false.
+        if (abs(eta4) > 2.47_dp) passcuts = .false.
+        if (abs(eta4) > 1.37_dp .and. abs(eta4) < 1.52_dp) &
+             passcuts = .false.
+        if (m45 < 10._dp) passcuts = .false.
+        if (ptll < 30._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts = .false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
-                rjl1 > 0.3d0) passveto = .false. 
+                rjl1 > 0.3_dp) passveto = .false.
         endif
-        if (ptrel < 25d0) passcuts = .false.
+        if (ptrel < 25._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 4) then 
-        ! mue 
-        if (abs(eta4).gt.2.4) passcuts=.false.
-        if (abs(eta5).gt.2.47) passcuts=.false.
-        if (abs(eta5).gt.1.37 .and. abs(eta5).lt.1.52) &
-             passcuts=.false. 
-        if (m45 .lt. 10) passcuts = .false.
-        if (ptll < 30) passcuts = .false.  
+     elseif (VVcut == 4) then
+        ! mue
+        if (abs(eta4) > 2.4_dp) passcuts = .false.
+        if (abs(eta5) > 2.47_dp) passcuts = .false.
+        if (abs(eta5) > 1.37_dp .and. abs(eta5) < 1.52_dp) &
+             passcuts = .false.
+        if (m45 < 10._dp) passcuts = .false.
+        if (ptll < 30._dp) passcuts = .false.
 
-        if(max(pt(4,ppart),pt(5,ppart)).lt.25) passcuts=.false.
-        if(min(pt(4,ppart),pt(5,ppart)).lt.20) passcuts=.false.
+        if (max(pt(4,ppart), pt(5,ppart)) < 25._dp) passcuts=.false.
+        if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts=.false.
 
-        if (jets > 0) then 
+        if (jets > 0) then
            if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
-                rjl2 > 0.3d0) passveto = .false. 
+                rjl2 > 0.3_dp) passveto = .false.
         endif
-        if (ptrel < 25d0) passcuts = .false.
+        if (ptrel < 25._dp) passcuts = .false.
 
-     elseif (VVcut .eq. 5) then 
+     elseif (VVcut == 5) then
         ! only jet veto cuts
-        if (jets > 0) then 
-           if (ptj > ptjveto) passcuts = .false. 
+        if (jets > 0) then
+           if (ptj > ptjveto) passcuts = .false.
         endif
 
      else
-        stop 'VVcuts not set' 
+        stop 'VVcuts not set'
      endif
   else
-     stop 'Energy not OK for this study' 
+     stop 'Energy not OK for this study'
   endif
-	
+
   if (passveto .and. passcuts) then
      res = .true.
   else
-     res = .false. 
+     res = .false.
   endif
 
 end function
