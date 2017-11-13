@@ -269,6 +269,37 @@ end subroutine userhistofin
 !   double precision, intent(out) :: muR, muF
 ! end subroutine userscale
 
+function dr(p,q)
+  ! copy of r(p,i,j) function but works for two given
+  ! 4-momenta: p and q
+  use types_mod
+  implicit none
+  include 'constants.f'
+  include 'nf.f'
+  real(dp), intent(in) :: p(4),q(4)
+  real(dp) :: dr
+  real(dp) :: pt2,qt2,ep,eq,r1,r2,dely,delphi
+
+  pt2 = p(1)**2 + p(2)**2
+  qt2 = q(1)**2 + q(2)**2
+
+  ep = sqrt(pt2 + p(3)**2)
+  eq = sqrt(qt2 + q(3)**2)
+
+  r1 = (ep + p(3)) * (eq - q(3)) / &
+       ((eq + q(3)) * (ep - p(3)))
+  dely = log(r1)/two
+
+  r2 = (p(1)*q(1) + p(2)*q(2))/sqrt(pt2+qt2)
+  if (r2 > +0.9999999_dp) r2 = +1._dp
+  if (r2 < -0.9999999_dp) r2 = -1._dp
+  delphi = acos(r2)
+
+  dr = sqrt(dely**2+delphi**2)
+
+  return
+end function
+
 function ATLAS_hww2017(ppart) result(res)
   use types_mod
   implicit none
@@ -291,7 +322,7 @@ function ATLAS_hww2017(ppart) result(res)
   integer, parameter :: VVcut=3 ! set cuts for e mu
   logical :: passcuts, passveto
   real(dp) :: etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
-  real(dp) :: dphi,ptrel,pt36(2)
+  real(dp) :: dr,min_dr,cur_dr,dphi,ptrel,pt36(4)
   real(dp) :: etajveto
 
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
@@ -344,21 +375,35 @@ function ATLAS_hww2017(ppart) result(res)
   ptmiss = pttwo(3,6,ppart)
 
 ! define ptrel
-  pt36(1) = ppart(3,1) + ppart(6,1)
-  pt36(2) = ppart(3,2) + ppart(6,2)
-  dphi = acos((ppart(4,1) * pt36(1) + ppart(4,2)*pt36(2))/pt4/ptmiss)
-  dphi = min(dphi, &
-       acos((ppart(5,1)*pt36(1) + ppart(5,2)*pt36(2))/pt5/ptmiss))
+  pt36 = ppart(3, :) + ppart(6, :)
+
+  ptrel = ptmiss
+  dphi = pi
+  min_dr = 9999.
+
+  cur_dr = dr(pt36, ppart(4, :))
+  if (cur_dr < min_dr) then
+     dphi = acos((ppart(4,1)*pt36(1) + ppart(4,2)*pt36(2))/pt4/ptmiss)
+     min_dr = cur_dr
+  end if
+
+  cur_dr = dr(pt36, ppart(5, :))
+  if (cur_dr < min_dr) then
+     dphi = acos((ppart(5,1)*pt36(1) + ppart(5,2)*pt36(2))/pt5/ptmiss)
+     min_dr = cur_dr
+  end if
 
   if (jets > 0 .and. ptj > ptjveto) then
-     dphi = min(dphi, &
-          acos((ppart(7,1)*pt36(1)+ppart(7,2)*pt36(2))/pt(7,ppart)/ptmiss))
-  endif
-  if (dphi > pi/two) then
-     ptrel = ptmiss
-  else
-     ptrel = ptmiss * sin(dphi)
-  endif
+     cur_dr = dr(pt36, ppart(7, :))
+     if (cur_dr < min_dr) then
+        dphi = acos((ppart(7,1)*pt36(1) + ppart(7,2)*pt36(2))/pt(7,ppart)/ptmiss)
+        min_dr = cur_dr
+     end if
+  end if
+
+  if (dphi < pi/two) then
+     ptrel = ptrel * sin(dphi)
+  end if
 
 ! define ptj, etaj, rjl1, rjl2
   if (jets > 0) then
