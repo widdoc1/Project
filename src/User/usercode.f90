@@ -42,8 +42,8 @@ function userincludedipole(nd, ppart, mcfm_result)
 
   if (makecuts) then
      if ( (nproc == 61) .or. (nproc == 66) .or. (nproc == 69) &
-          & .or. (nproc == 123) .or. (nproc == 124) .or. (nproc == 125) &
-          & .or. (nproc == 126) ) then
+          & .or. (nproc == 113) .or. (nproc == 123) .or. (nproc == 124) & 
+          & .or. (nproc == 125) .or. (nproc == 126) ) then
         if (ATLAS_hww2017(ppart)) then
            userincludedipole = mcfm_result
            return
