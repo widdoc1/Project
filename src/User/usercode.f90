@@ -90,6 +90,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   include 'constants.f'
   include 'nf.f'
   include 'mxpart.f'
+  include 'jetlabel.f'
   include 'ptilde.f'
   include 'npart.f'
   include 'nplot.f'
@@ -99,11 +100,14 @@ subroutine userplotter(pjet, wt, wt2, nd)
   integer, parameter :: tagbook=1, tagplot=2
   !---------------------------------------------
   integer :: i, iplot
+  real(dp) :: pt, pttwo
+  real(dp) :: pt3, pt4, pt5, pt6, pt7
   real(dp) :: m34, m36, m45, m56, m3456
   real(dp) :: MT1, MT2, MT3
-  real(dp) :: ptll, pt45(2), ptmiss, pt36(2), MTll, &
-       dphillmiss, pttwo, MTmiss
-  real(dp) :: ht, htjet
+  real(dp) :: ptll, pt45(4), ptmiss, pt36(4), MTll, MTmiss
+  real(dp) :: r2, delphi
+  real(dp) :: dr, min_dr, cur_dr, dphi
+  real(dp) :: ptrel
   logical, save :: first = .true.
   integer :: tag
 
@@ -115,16 +119,53 @@ subroutine userplotter(pjet, wt, wt2, nd)
   endif
   iplot = nextnplot
 
-  !ht    = sum(sqrt(sum(ptilde   (nd,3:2+npart,1:2)**2,dim=2)))
-  !htjet = sum(sqrt(sum(ptildejet(nd,3:2+npart,1:2)**2,dim=2)))
-
-  !call bookplot(iplot,tag,'UserHT',ht,wt,wt2,0d0,500d0,20d0,'lin')
-  !iplot = iplot + 1
-
-  !call bookplot(iplot,tag,'UserHTJet',htjet,wt,wt2,0d0,500d0,20d0,'lin')
-  !iplot = iplot + 1
-
   !define quantities to plot
+  pt3=pt(3,pjet)
+  pt4=pt(4,pjet) 
+  pt5=pt(5,pjet)
+  pt6=pt(6,pjet) 
+  pt7=pt(7,pjet)
+
+  pt36 = pjet(3,:) + pjet(6,:)
+  pt45 = pjet(4,:) + pjet(5,:)
+
+  ptll = pttwo(4,5,pjet)
+  ptmiss = pttwo(3,6,pjet)
+
+  r2= (pjet(4,1)*pjet(5,1)+pjet(4,2)*pjet(5,2)) &
+       /sqrt((pjet(4,1)**2+pjet(4,2)**2)*(pjet(5,1)**2+pjet(5,2)**2))
+  if (r2 > +0.9999999_dp) r2=+1._dp
+  if (r2 < -0.9999999_dp) r2=-1._dp
+  delphi=acos(r2)
+
+  ptrel = ptmiss
+  dphi = pi
+  min_dr = 9999.
+
+  cur_dr = dr(pt36, pjet(4, :))
+  if (cur_dr < min_dr) then
+     dphi = acos((pjet(4,1)*pt36(1) + pjet(4,2)*pt36(2))/pt4/ptmiss)
+     min_dr = cur_dr
+  end if
+
+  cur_dr = dr(pt36, pjet(5, :))
+  if (cur_dr < min_dr) then
+     dphi = acos((pjet(5,1)*pt36(1) + pjet(5,2)*pt36(2))/pt5/ptmiss)
+     min_dr = cur_dr
+  end if
+
+  if (jets > 0) then
+     cur_dr = dr(pt36, pjet(7, :))
+     if (cur_dr < min_dr) then
+        dphi = acos((pjet(7,1)*pt36(1) + pjet(7,2)*pt36(2))/pt(7,pjet)/ptmiss)
+        min_dr = cur_dr
+     end if
+  end if
+
+  if (dphi < pi/two) then
+     ptrel = ptrel * sin(dphi)
+  end if
+
   m45 = (pjet(4,4) + pjet(5,4))**2
   do i = 1, 3
      m45 = m45 - (pjet(4,i) + pjet(5,i))**2
@@ -152,14 +193,6 @@ subroutine userplotter(pjet, wt, wt2, nd)
   m56 = sqrt(m56)
 
   ! transverse mass proxy for MWW
-  ptll = pttwo(4, 5, pjet)
-  pt45(1) = pjet(4,1) + pjet(5,1)
-  pt45(2) = pjet(4,2) + pjet(5,2)
-
-  ptmiss = pttwo(3,6,pjet)
-  pt36(1) = pjet(3,1) + pjet(6,1)
-  pt36(2) = pjet(3,2) + pjet(6,2)
-
   ! MT1
   MTll = sqrt(ptll**2 + m45**2)
   MT1 = (MTll + ptmiss)**2
@@ -182,57 +215,89 @@ subroutine userplotter(pjet, wt, wt2, nd)
   ! m(45), m_ll
   call bookplot(iplot,tag,'mll',m45,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'mll_full',m45,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! pt(45), pt_ll
   call bookplot(iplot,tag,'ptll',ptll,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'ptll_full',ptll,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! m(36), m_nunu
   call bookplot(iplot,tag,'m_nunu',m36,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'m_nunu_full',m36,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! pt(36), pt_miss
   call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'ptmiss_full',ptmiss,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! m(3456) dists
   call bookplot(iplot,tag,'m_WW',m3456,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'m_WW_full',m3456,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! MT1
   call bookplot(iplot,tag,'MT1',MT1,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'MT1_full',MT1,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! MT2
   call bookplot(iplot,tag,'MT2',MT2,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'MT2_full',MT2,wt,wt2,zip,8000._dp,80._dp,'log')
   iplot = iplot + 1
 
   ! MT3
   call bookplot(iplot,tag,'MT3',MT3,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-
   call bookplot(iplot,tag,'MT3_full',MT3,wt,wt2,zip,8000._dp,80._dp,'log')
+  iplot = iplot + 1
+
+  ! pt leading lepton
+  call bookplot(iplot,tag,'pt(leading lept)',max(pt4,pt5),wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! pt subleading lepton
+  call bookplot(iplot,tag,'pt(sub leading lept)',min(pt4,pt5),wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! pt lepton pair
+  call bookplot(iplot,tag,'pt(l+ l-)',ptll,wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! dphi(l+,l-)
+  call bookplot(iplot,tag,'delphi',delphi,wt,wt2,zip,3.14_dp,0.1_dp,'lin')
+  iplot = iplot + 1
+
+  ! pt leading neutrino
+  call bookplot(iplot,tag,'pt(leading nu)',max(pt3,pt6),wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! pt sub leading neutrino
+  call bookplot(iplot,tag,'pt(sub leading nu)',min(pt3,pt6),wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! ptmiss (pt neutrino pair)
+  call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! ptmissrel
+  call bookplot(iplot,tag,'ptmissrel',ptrel,wt,wt2,zip,500._dp,5._dp,'log')
+  iplot = iplot + 1
+
+  ! Njets
+  call bookplot(iplot,tag,'N(jets)',jets,wt,wt2,zip,5._dp,1._dp,'log')
+  iplot = iplot + 1
+
+  ! pt jets
+  call bookplot(iplot,tag,'pt(leading jet)',pt7,wt,wt2,zip,500._dp,5._dp,'log')
   iplot = iplot + 1
 
   ! update nextnplot so we get userplots and generic plots from nplotter routines
