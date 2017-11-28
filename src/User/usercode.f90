@@ -293,7 +293,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   iplot = iplot + 1
 
   ! Njets
-  call bookplot(iplot,tag,'N(jets)',jets,wt,wt2,zip,5._dp,1._dp,'log')
+  call bookplot(iplot,tag,'N(jets)',real(jets,dp),wt,wt2,zip,5._dp,1._dp,'log')
   iplot = iplot + 1
 
   ! pt jets
