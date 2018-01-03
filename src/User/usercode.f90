@@ -138,33 +138,26 @@ subroutine userplotter(pjet, wt, wt2, nd)
   if (r2 < -0.9999999_dp) r2=-1._dp
   delphi=acos(r2)
 
+  ! define ptrel
+  pt36 = pjet(3, :) + pjet(6, :)
   ptrel = ptmiss
   dphi = pi
-  min_dr = 9999.
 
-  cur_dr = dr(pt36, pjet(4, :))
-  if (cur_dr < min_dr) then
-     dphi = acos((pjet(4,1)*pt36(1) + pjet(4,2)*pt36(2))/pt4/ptmiss)
-     min_dr = cur_dr
-  end if
-
-  cur_dr = dr(pt36, pjet(5, :))
-  if (cur_dr < min_dr) then
-     dphi = acos((pjet(5,1)*pt36(1) + pjet(5,2)*pt36(2))/pt5/ptmiss)
-     min_dr = cur_dr
-  end if
-
-  if (jets > 0) then
-     cur_dr = dr(pt36, pjet(7, :))
-     if (cur_dr < min_dr) then
-        dphi = acos((pjet(7,1)*pt36(1) + pjet(7,2)*pt36(2))/pt(7,pjet)/ptmiss)
-        min_dr = cur_dr
-     end if
-  end if
+  ! lepton 1
+  dphi = min(dphi, &
+       acos((pjet(4,1)*pt36(1) + pjet(4,2)*pt36(2))/pt4/ptmiss))
+  ! lepton 2
+  dphi = min(dphi, &
+       acos((pjet(5,1)*pt36(1) + pjet(5,2)*pt36(2))/pt5/ptmiss))
+  ! jets
+  ! if (jets > 0) then
+  !    dphi = min(dphi, &
+  !         acos((pjet(7,1)*pt36(1) + pjet(7,2)*pt36(2))/pt(7,pjet)/ptmiss))
+  ! endif
 
   if (dphi < pi/two) then
      ptrel = ptrel * sin(dphi)
-  end if
+  endif
 
   m45 = (pjet(4,4) + pjet(5,4))**2
   do i = 1, 3
@@ -441,34 +434,24 @@ function ATLAS_hww2017(ppart) result(res)
 
 ! define ptrel
   pt36 = ppart(3, :) + ppart(6, :)
-
   ptrel = ptmiss
   dphi = pi
-  min_dr = 9999.
 
-  cur_dr = dr(pt36, ppart(4, :))
-  if (cur_dr < min_dr) then
-     dphi = acos((ppart(4,1)*pt36(1) + ppart(4,2)*pt36(2))/pt4/ptmiss)
-     min_dr = cur_dr
-  end if
-
-  cur_dr = dr(pt36, ppart(5, :))
-  if (cur_dr < min_dr) then
-     dphi = acos((ppart(5,1)*pt36(1) + ppart(5,2)*pt36(2))/pt5/ptmiss)
-     min_dr = cur_dr
-  end if
-
-  if (jets > 0 .and. ptj > ptjveto) then
-     cur_dr = dr(pt36, ppart(7, :))
-     if (cur_dr < min_dr) then
-        dphi = acos((ppart(7,1)*pt36(1) + ppart(7,2)*pt36(2))/pt(7,ppart)/ptmiss)
-        min_dr = cur_dr
-     end if
-  end if
+! lepton 1
+  dphi = min(dphi, &
+       acos((ppart(4,1)*pt36(1) + ppart(4,2)*pt36(2))/pt4/ptmiss))
+! lepton 2
+  dphi = min(dphi, &
+       acos((ppart(5,1)*pt36(1) + ppart(5,2)*pt36(2))/pt5/ptmiss))
+! jets
+  ! if (jets > 0) then
+  !    dphi = min(dphi, &
+  !         acos((ppart(7,1)*pt36(1) + ppart(7,2)*pt36(2))/pt(7,ppart)/ptmiss))
+  ! endif
 
   if (dphi < pi/two) then
      ptrel = ptrel * sin(dphi)
-  end if
+  endif
 
 ! define ptj, etaj, rjl1, rjl2
   if (jets > 0) then
@@ -512,7 +495,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (pt(5,ppart) < 25._dp) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
 
@@ -528,7 +511,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (pt(5,ppart) < 25._dp) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
 
