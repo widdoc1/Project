@@ -543,7 +543,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
         if (ptrel < 45._dp) passcuts = .false.
@@ -564,7 +564,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp .and. rjl2 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 45._dp) passcuts = .false.
@@ -582,7 +582,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 15._dp) passcuts = .false.
@@ -600,7 +600,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
                 rjl2 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 15._dp) passcuts = .false.
@@ -632,7 +632,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto) &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
         if (ptrel < 45._dp) passcuts = .false.
@@ -653,7 +653,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp .and. rjl2 > 0.3_dp ) &
                 passveto = .false.
         endif
@@ -672,7 +672,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 25._dp) passcuts = .false.
@@ -690,7 +690,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .and. abs(etaj) < etajveto .and. &
+           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
                 rjl2 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 25._dp) passcuts = .false.
