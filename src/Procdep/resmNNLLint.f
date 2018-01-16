@@ -1,6 +1,6 @@
       function resmNNLLint(r,wgt)
       use types_mod
-      use rad_tools_mod
+      use rad_tools_mod, only: process_and_parameters
       use virtfin_mod
       implicit none
       real(dp):: resmNNLLint

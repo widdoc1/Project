@@ -1,6 +1,6 @@
       function resmNLLint(r,wgt)
       use types_mod
-      use rad_tools_mod
+      use rad_tools_mod, only: process_and_parameters
       implicit none
       real(dp):: resmNLLint
       

@@ -111,9 +111,9 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       if (vorz == 1) then
          ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
      &        -two*three/two*L_tilde       ! coefficient of P_qq
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &        +(-A_coeff(1)*L_tilde**2
+     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
          elseif (scheme == 'dred') then
@@ -143,9 +143,9 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       if (vorz == 1) then
         ii_qq=-two*three/two*L_tilde       ! coefficient of P_qq
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &        +(-A_coeff(1)*L_tilde**2
+     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
         return
       endif
       
@@ -483,9 +483,9 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       if (vorz == 1) then
         ii_gg=-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2
      &        -two*b0/ca*L_tilde
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &        +(-A_coeff(1)*L_tilde**2
+     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
 
         if (scheme == 'tH-V') then
           return
@@ -516,9 +516,9 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       if (vorz == 1) then
          ii_gg=-two*b0/ca*L_tilde
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+     &        +(-A_coeff(1)*L_tilde**2
+     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
         return
       endif
       
