@@ -60,6 +60,7 @@ c---- total cross-section comes out correctly when the BR is removed
       include 'mpicommon.f'
       include 'noglue.f'
       include 'toploopgaga.f'
+      include 'born_config.f'
       real(dp):: wwbr,zzbr,tautaubr,gamgambr,zgambr,Rcut,Rbbmin,
      & alphas,cmass,bmass
       real(dp):: br,BrnRat,brwen,brzee,brznn,brtau,brtop,brcharm
@@ -184,6 +185,7 @@ c-----------------------------------------------------------------------
         n3=1
         ndim=4
         nqcdjets=0
+        born_config='DY'
 
         mcfmplotinfo= (/ 34, (0,j=1,49) /)
 
@@ -624,6 +626,7 @@ c-----------------------------------------------------------------------
       elseif ((nproc > 30) .and. (nproc <= 35)) then
         kcase=kZ_only
         nqcdjets=0
+        born_config='DY'
         nwz=0
         mass3=zmass
         width3=zwidth
@@ -724,6 +727,7 @@ c--  36 '  f(p1)+f(p2) -> Z -> t(-->nu(p3)+e^+(p4)+b(p5))+b~(p6))+e^-(p7)+nu~(p8
             plabel(7)='ig'
             plabel(8)='ig'
             nqcdjets=0
+            born_config='DY'
             bbproc=.false.
           endif
 
@@ -1044,6 +1048,7 @@ c-----------------------------------------------------------------------
         kcase=kWWqqbr
         call readcoup
         nqcdjets=0  
+        born_config='DY'
         plabel(7)='pp'
         nwz=1
         ndim=10
@@ -1308,6 +1313,7 @@ c--  78 '  f(p1)+f(p2) --> W^-(-->e^-(p3)+nu~(p4))+Z^0(-->b(p5)+b~(p6))'
           elseif (nproc == 79) then
 c--  79 '  f(p1)+f(p2) --> W^-(-->e^-(p3)+nu~(p4))+Z^0(-->3*(d(p5)+d~(p6))'
             nqcdjets=0
+            born_config='DY'
             plabel(3)='el'
             plabel(4)='na'
             plabel(5)='qj'
@@ -1319,6 +1325,7 @@ c--  79 '  f(p1)+f(p2) --> W^-(-->e^-(p3)+nu~(p4))+Z^0(-->3*(d(p5)+d~(p6))'
           elseif (nproc == 80) then
 c--  80 '  f(p1)+f(p2) --> W^-(-->e^-(p3)+nu~(p4))+Z^0(-->2*(u(p5)+u~(p6)))'
             nqcdjets=0
+            born_config='DY'
             plabel(3)='el'
             plabel(4)='na'
             plabel(5)='qj'
@@ -1343,6 +1350,7 @@ c-----------------------------------------------------------------------
         call readcoup
         plabel(7)='pp'
         nqcdjets=0
+        born_config='DY'
         nwz=0
         ndim=10
         n2=1
@@ -1429,6 +1437,7 @@ c--  88 '  f(p1)+f(p2) --> Z^0(-->e^-(p3)+e^+(p4)) + Z^0(-->b(p5)+b~(p6)) [no ga
           mb=0
           bbproc=.true.
           nqcdjets=2
+          ! what do I do about born_config for this...
           plabel(3)='el'
           plabel(4)='ea'
           plabel(5)='bq'
@@ -2111,6 +2120,7 @@ c--      '  f(p1)+f(p2) --> H (for total Xsect)' (removebr=.true.)
           plabel(3)='bq'
           plabel(4)='ba'
           nqcdjets=2
+          born_config='DY'
           if (removebr) then
             plabel(3)='ig'
             plabel(4)='ig'
@@ -2175,6 +2185,7 @@ c        if (abs(hmass-200._dp) < 1.e-4_dp) hwidth=1.426_dp
         plabel(6)='na'
         plabel(7)='pp'
         nqcdjets=0
+        born_config='H'
         ndim=10
         n2=1
         n3=1

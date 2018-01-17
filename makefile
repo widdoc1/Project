@@ -47,6 +47,9 @@ OVDIR		= $(TENSORREDDIR)/ov
 HELASDIR        = .
 OLODIR          = .
 
+# JetVHeto
+INCPATHJVH = $(SOURCEDIR)/JetVHeto/Inc
+
 # Set this to YES to link against OneLOop library to
 # allow alternative calculation of scalar integrals
 LINKONELOOP     = NO
@@ -83,11 +86,11 @@ endif
 
 
 # Flags for compilation
-FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
+FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(INCPATHJVH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
 # note: -static may be required if read/write libraries not found
 #FFLAGS += -static
 # -fimplicit-none
-F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(OBJNAME) -J$(OBJNAME)
+F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(INCPATHJVH) -I$(OBJNAME) -J$(OBJNAME)
 
 # If using FROOT package for ROOT ntuples, first specify C++ compiler:
 CXXFLAGS=$(CXXFLAGS0) -Wall $(DROOT) 
@@ -150,7 +153,7 @@ DIRS	=	$(MCFMHOME):\
 		$(SOURCEDIR)/UTools:$(SOURCEDIR)/WBFZZ\
                 $(SOURCEDIR)/WBFWW:$(SOURCEDIR)/WBFWpWp:$(SOURCEDIR)/WBFWZ\
                 $(SOURCEDIR)/WH1jet:$(SOURCEDIR)/ZH1jet:$(SOURCEDIR)/QT:$(SOURCEDIR)/Mad\
-                $(SOURCEDIR)/QLFF:$(SOURCEDIR)/JetVHeto
+                $(SOURCEDIR)/QLFF:$(SOURCEDIR)/JetVHeto:$(SOURCEDIR)/JetVHeto/Inc
 
 
 # -----------------------------------------------------------------------------
@@ -2397,7 +2400,7 @@ FORCHKPATH = /home/ellis/bin/
 
 # Specify the dependencies of the .o files and the rules to make them.
 
-FOROPTS = -include=$(INCPATH) -nonovice -nopretty -quiet
+FOROPTS = -include=$(INCPATH) -I$(INCPATHJVH) -nonovice -nopretty -quiet
 
 .SUFFIXES: .prj
 
@@ -2419,7 +2422,7 @@ check:      $(PRJS)
 PRJSF =      $(OURCODE:.o=.f) 
 
 checkf:      
-		$(FORCHKPATH)/forchk -allc -I $(INCPATH) $(PRJSF)
+		$(FORCHKPATH)/forchk -allc -I $(INCPATH) -I$(INCPATHJVH) $(PRJSF)
 
 clean:
 	- rm -f *.o obj/*.o obj/*.mod obj_omp/*.o obj_omp/*.mod Bin/mcfm QCDLoop/*/*.o *.s *.prj *~ core
