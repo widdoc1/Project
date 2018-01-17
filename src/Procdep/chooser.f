@@ -1,4 +1,5 @@
       subroutine chooser
+      use rad_tools_mod, only: init_proc
       implicit none
       include 'types.f'
 c---- Note added 4/21/03
@@ -61,6 +62,7 @@ c---- total cross-section comes out correctly when the BR is removed
       include 'noglue.f'
       include 'toploopgaga.f'
       include 'born_config.f'
+      include 'jetvheto.f'
       real(dp):: wwbr,zzbr,tautaubr,gamgambr,zgambr,Rcut,Rbbmin,
      & alphas,cmass,bmass
       real(dp):: br,BrnRat,brwen,brzee,brznn,brtau,brtop,brcharm
@@ -7962,6 +7964,9 @@ c--- initialize arrays that are used in is_functions
 
 c--- fill up CKM matrix
       call ckmfill(nwz)
+
+c---  if using jetvheto set up parameters
+      if (jetvheto) call init_proc(born_config)
 
 c--- set flags to true unless we're doing W+2 jet or Z+2 jet
       if ( ((kcase.ne.kW_2jet) .and. (kcase.ne.kZ_2jet))

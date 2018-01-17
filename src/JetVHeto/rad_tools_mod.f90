@@ -60,12 +60,13 @@ contains
   end function order_string
 
   !======================================================================
-  subroutine init_proc(cs)
+  subroutine init_proc(born_configuration)
     implicit none
-    type(process_and_parameters), intent(in) :: cs
+    ! type(process_and_parameters), intent(in) :: cs
+    character(len=2), intent(in) :: born_configuration
   !======================================================================
 
-    select case(trim(cs%proc))
+    select case(trim(born_configuration))
        !! the hard part of the coefficient function (form factor) is not part of B(2)
        !! -----------> the form factor (H function) MUST be evaluated at the hard scale.
        !!

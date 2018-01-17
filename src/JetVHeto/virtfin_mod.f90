@@ -36,7 +36,7 @@ contains
     ! set up insertion operator, the
     ! universal singular structure at the 1-loop level
     I = A(1)*(epinv*epinv2-epinv*xl12+half*xl12**2) &
-            +(-B(1))*(epinv-xl12)
+            -B(1)*(epinv-xl12)
 
     do j=-nf,nf
        do k=-nf,nf

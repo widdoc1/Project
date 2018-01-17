@@ -48,10 +48,9 @@
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-gluon antenna, either
@@ -78,12 +77,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
-         ii_qq=(-pisq/12._dp + three/two*resm_opts%ln_Q2_muF2)
+         ii_qq = (-pisq/12._dp + three/two * two*log(q_scale/facscale))
      &    /(1-2*as*beta0*L_tilde)
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
-          ii_qq=ii_qq-half
+          ii_qq = ii_qq-half
           return
         else
           write(6,*) 'Value of scheme not implemented properly ',scheme
@@ -96,12 +95,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-        ii_qq=(omx-(one+x)*resm_opts%ln_Q2_muF2)
+        ii_qq = (omx - (one+x)*two*log(q_scale/facscale))
      &        /(1-2*as*beta0*L_tilde)
         return
       endif
 
-      ii_qq=two/omx * resm_opts%ln_Q2_muF2
+      ii_qq = (two/omx * two*log(q_scale/facscale))
      &     /(1-2*as*beta0*L_tilde)
       return
 
@@ -109,10 +108,10 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnllexpd)
 
       if (vorz == 1) then
-         ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
+         ii_qq = -pisq/12._dp + three/two * two*log(q_scale/facscale) ! resummed coefficient
      &        -two*three/two*L_tilde       ! coefficient of P_qq
      &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        +(-A_coeff(1)*L
      &        -B_coeff(1))*L_tilde) ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
@@ -130,12 +129,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qq=omx-(one+x)*resm_opts%ln_Q2_muF2       ! resummed coefficient
+         ii_qq=omx-(one+x)* two*log(q_scale/facscale) ! resummed coefficient
      &        +two*(one+x)*L_tilde          ! coefficient of P_qq
          return
       endif
 
-      ii_qq=two/omx*resm_opts%ln_Q2_muF2 ! resummed coefficient
+      ii_qq=two/omx* two*log(q_scale/facscale) ! resummed coefficient
      &     -two*two/omx*L_tilde    ! coefficient of P_qq
       return
 
@@ -144,7 +143,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       if (vorz == 1) then
         ii_qq=-two*three/two*L_tilde       ! coefficient of P_qq
      &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        +(-A_coeff(1)*L
      &        -B_coeff(1))*L_tilde) ! expansion of the radiator
         return
       endif
@@ -211,10 +210,9 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-quark antenna, either
@@ -230,7 +228,7 @@ c  - [x^2+(1-x)^2]*epinv
       select case(kpart)
       case(knnll, klumi, klumi1)
 
-      ii_qg=0._dp
+      ii_qg = 0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
       
       omx=one-x
@@ -238,8 +236,8 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qg=two*x*omx+(one-two*x*omx)*
-     &        (resm_opts%ln_Q2_muF2)/(1-2*as*beta0*L_tilde)
+         ii_qg = (two*x*omx+(one-two*x*omx)*
+     &        two*log(q_scale/facscale))/(1-2*as*beta0*L_tilde)
       endif
       return
 
@@ -254,8 +252,8 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
          
       if (vorz == 2) then
-        ii_qg=two*x*omx+(one-two*x*omx)*
-     &        (resm_opts%ln_Q2_muF2) ! resummation coefficient
+        ii_qg = two*x*omx+(one-two*x*omx)*
+     &        two*log(q_scale/facscale) ! resummation coefficient
      &        -two*(one-two*x*omx)*L_tilde ! P_qg coefficient
       endif
       return
@@ -310,10 +308,9 @@ c  - [x^2+(1-x)^2]*epinv
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-quark (--> gluon) antenna, either
@@ -338,7 +335,7 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+        ii_gq = ((one+omx**2)/x * two*log(q_scale/facscale) + x)
      &        /(1-2*as*beta0*L_tilde)
         return
       endif
@@ -355,7 +352,7 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+        ii_gq = ((one+omx**2)/x * two*log(q_scale/facscale) +x)
      &        -two*(one+omx**2)/x*L_tilde
         return
       endif
