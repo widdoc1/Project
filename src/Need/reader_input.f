@@ -57,8 +57,7 @@
       include 'taucut.f'
       include 'iterat.f'
       include 'mpicommon.f'
-      include 'JetVHeto.f'
-      include 'ptjveto.f'
+      include 'jetvheto.f'
       include 'kappa.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
@@ -335,23 +334,12 @@ c--- pdf options
 c---  write-out comment line
       read(20,99) line
       if (verbose) write(6,*) '* ',line
-c---  JetVHeto resummation options
-      read(20,*) Q_scale
-      Q_scalestart=Q_scale
-      if (verbose) call writeinput(6,' * ',' ','Q_scale')
-      read(20,*) R_scale
-      R_scalestart=R_scale
-      if (verbose) call writeinput(6,' * ',' ','R_scale')
-      read(20,*) kobs
-      if (verbose) call writeinput(6,' * ',' ','observable')
-      read(20,*) Bconf
-      if (verbose) call writeinput(6,' * ',' ','Born configuration')
-      read(20,*) ptjveto
-      if (verbose) call writeinput(6,' * ',' ','ptjveto')
-      read(20,*) mscheme
-      if (verbose) call writeinput(6,' * ',' ','matching scheme')
-      ! read(20,*) pure_lumi
-      ! if (verbose) call writeinput(6,' * ',' ','pure_lumi')
+c---  jetvheto resummation options
+      read(20,*) q_scale
+      q_scalestart=q_scale
+      if (verbose) call writeinput(6,' * ',' ','q_scale')
+      read(20,*) ptj_veto
+      if (verbose) call writeinput(6,' * ',' ','ptj_veto')
 
       if (verbose) write(6,*)
       read(20,99) line
@@ -703,9 +691,9 @@ c---  create logical:: variable dynamicscale for use in other routines
      &     (kpart == knllexpd) .or. (kpart == knnll) .or.
      &     (kpart == knnllexpd) .or. (kpart == klumi) .or.
      &     (kpart == klumi0) .or. (kpart == klumi1) ) then
-         resum=.true.
+         jetvheto=.true.
       else
-         resum=.false.
+         jetvheto=.false.
       endif
 
 !     set up pure_lumi for use in other routines

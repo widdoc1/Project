@@ -1,6 +1,6 @@
       function resmNNLLint(r,wgt)
       use types_mod
-      use rad_tools_mod, only: process_and_parameters
+      use rad_tools_mod, only: Ltilde
       use virtfin_mod
       implicit none
       real(dp):: resmNNLLint
@@ -61,8 +61,7 @@
       include 'kpart.f'
       include 'hbbparams.f'
       include 'mpicommon.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
+      include 'jetvheto.f'
       include 'ptjveto.f'
 c--- APPLgrid - grid includes
 c      include 'ptilde.f'
@@ -136,8 +135,6 @@ c--- ensure isolation code does not think this is fragmentation piece
 
       call gen_lops(r,p,pswt,*999)
       
-      resum=.true.
-
       nvec=npart+2
       call dotem(nvec,p,s)
 
@@ -156,8 +153,8 @@ c--- bother calculating the matrix elements for it, instead bail out
       endif
       
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
-     
-      call resmset(p)
+
+      L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
 
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
@@ -896,7 +893,7 @@ c--- massive subtraction term only
       
 !     extract the finite part of the virtual and modify for resummation
 !     must come before subtraction to get coefficient correct in checks
-      call virtfin(p, msq, msqv, resm_opts)
+      call virtfin(p, msq, msqv)
 
 c$$$c--- explicitly remove factor of LO if we are only interested in coefficient
 c$$$      if (coeffonly) then
@@ -910,11 +907,11 @@ c$$$      if (kpart == knllexpd) then
 c$$$        msqv(:,:) = 0._dp
 c$$$      endif
 
-      if ( (coeffonly) .and. (kpart==knllexpd) ) then
+      if (coeffonly .and. (kpart==knllexpd)) then
         msqv(:,:) = -msq(:,:)
-      elseif ( (coeffonly) .or. (kpart==klumi1) ) then  ! is there a cleaner way to do this? put klumi1 as coeff?
+      else if (coeffonly .or. (kpart==klumi1)) then  ! is there a cleaner way to do this? put klumi1 as coeff?
         msqv(:,:) = msqv(:,:) - msq(:,:)
-      elseif (kpart==knllexpd) then
+      else if (kpart==knllexpd) then
         msqv(:,:) = 0._dp
       endif
 
@@ -977,12 +974,12 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,xx(1),facscaleLtilde,fx1)
-              call fdist(ih2,xx(2),facscaleLtilde,fx2)
+              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
+              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,xx(1),facscaleLtilde,fx1)
-              call fdist(ih2,xx(2),facscaleLtilde,fx2)
+              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
+              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
            endif
 c      endif
       endif
@@ -1018,10 +1015,10 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,x1onz,facscaleLtilde,fx1z)
+              call fdist(ih1,x1onz,facscale*exp(-L_tilde),fx1z)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,x1onz,facscaleLtilde,fx1z)
+              call fdist(ih1,x1onz,facscale*exp(-L_tilde),fx1z)
            endif
 c--- APPLgrid - set factor
 c            f_X1overZ = 1._dp
@@ -1055,10 +1052,10 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih2,x2onz,facscaleLtilde,fx2z)
+              call fdist(ih2,x2onz,facscale*exp(-L_tilde),fx2z)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih2,x2onz,facscaleLtilde,fx2z)
+              call fdist(ih2,x2onz,facscale*exp(-L_tilde),fx2z)
            endif
 c--- APPLgrid - set factor
 c            f_X2overZ = 1._dp
@@ -1924,13 +1921,11 @@ c---  SSend
 
       if (currentPDF == 0) then
         resmNNLLint=flux*xjac*pswt*xmsq/BrnRat
-     &        *sudakov
       endif
             
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*xjac*pswt*xmsq/BrnRat*wgt/itmx
-     &        *sudakov
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -1978,17 +1973,13 @@ c          pause
       
 c      if (creatent) then
         wt_gg=xmsq_bypart(0,0)*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &     *sudakov
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
 c      endif
 
       call getptildejet(0,pjet)
@@ -1996,7 +1987,6 @@ c      endif
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*xjac*pswt/BrnRat
-     &     *sudakov
       do j=-1,1
       do k=-1,1
 !$omp atomic

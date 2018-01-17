@@ -12,7 +12,7 @@
       include 'runstring.f'
       include 'dynamicscale.f'
       include 'taucut.f'
-      include 'JetVHeto.f'
+      include 'jetvheto.f'
       real(dp):: scalestart,fscalestart
       integer:: nlength,lenocc
       character*255 outlabel1,runname,outlabeltmp
@@ -35,9 +35,9 @@ c      endif
      &       //getstr(int(fscalestart))//'_'
 
 
-      if ((dynamicscale) .and. (resum)) then
+      if ((dynamicscale) .and. (jetvheto)) then
         write(strscale,'(F4.2,"_",F4.2,"_",F4.2)') scalestart,
-     &        fscalestart,Q_scalestart
+     &        fscalestart,q_scalestart
       elseif (dynamicscale) then
         write(strscale,'(F4.2,"_",F4.2)') scalestart,fscalestart
       endif

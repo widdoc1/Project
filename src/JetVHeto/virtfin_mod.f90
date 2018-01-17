@@ -15,24 +15,22 @@ module virtfin_mod
 
 contains
 
-  subroutine virtfin(p, msq, msqv, cs)
+  subroutine virtfin(p, msq, msqv)
     implicit none
     include 'constants.f'
     include 'nf.f'
     include 'mxpart.f'
     include 'scale.f'
     include 'facscale.f'
+    include 'jetvheto.f'
     include 'epinv.f'
     include 'epinv2.f'
     include 'qcdcouple.f'
-    include 'JetVHeto.f'
-    include 'JetVHeto_opts.f'
     integer :: j,k
     real(dp), intent(in) :: p(mxpart, 4)
     real(dp), intent(inout) :: msq(-nf:nf,-nf:nf), msqv(-nf:nf,-nf:nf)
     real(dp) :: dot, virt, xl12, I
-    type(process_and_parameters), intent(in) :: cs
-    
+
     xl12=log(two*dot(p,1,2)/musq)
 
     ! set up insertion operator, the
@@ -54,15 +52,10 @@ contains
           ! additional C*pi**2/6 due to coupling mismatch
           msqv(j,k) = msqv(j,k) + ason2pi*msq(j,k)*(half*A(1))*pisqo6
 
-          ! debug line for finite matrix elements H(1)
-          ! write(*,*) msqv(j,k)/msq(j,k)/ason2pi - two*as_pow*pi*beta0*cs%ln_muR2_M2
-
           ! change into form for resummation
-          msqv(j,k) = msqv(j,k)-ason2pi*msq(j,k)*(B(1) &
-               + half*A(1)*(-cs%ln_Q2_M2))*(-cs%ln_Q2_M2)
-
-          ! debug line
-          ! write(*,*) msqv(j,k)/msq(j,k)/ason2pi
+          msqv(j,k) = msqv(j,k) - ason2pi*msq(j,k)*(B(1) &
+               + half*A(1)*log(two*dot(p,1,2)/q_scale**2))&
+               * log(two*dot(p,1,2)/q_scale**2)
           endif
        enddo
     enddo

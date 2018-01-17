@@ -1,6 +1,6 @@
       function resmNLLint(r,wgt)
       use types_mod
-      use rad_tools_mod, only: process_and_parameters
+      use rad_tools_mod, only: Ltilde
       implicit none
       real(dp):: resmNLLint
       
@@ -45,9 +45,7 @@ c --- DSW.
       include 'bypart.f'
       integer:: pflav,pbarflav
 !     resummation
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
-      include 'ptjveto.f'
+      include 'jetvheto.f'
 c--- To use VEGAS random number sequence :
       real(dp):: ran2
       integer:: ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -87,8 +85,6 @@ c--- ensure isolation code does not think this is fragmentation piece
 
       call gen_lops(r,p,pswt,*999)
 
-      resum=.true.
-
       nvec=npart+2
       call dotem(nvec,p,s)
 
@@ -111,8 +107,18 @@ c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
-      call resmset(p)
+      L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
       
+c$$$      write(*,*) "jetvheto =", jetvheto
+c$$$      write(*,*) "q_scalestart= ", q_scalestart
+c$$$      write(*,*) "q_scale= ", q_scale
+c$$$      write(*,*) "ptj_veto= ", ptj_veto
+c$$$      write(*,*) "p_pow= ", p_pow
+c$$$      write(*,*) "L_tilde=", L_tilde
+c$$$
+c$$$      write(*,*) "scale= ", scale
+c$$$      write(*,*) "facscale= ", facscale
+
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
 
@@ -746,12 +752,12 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,xx(1),facscaleLtilde,fx1)
-              call fdist(ih2,xx(2),facscaleLtilde,fx2)
+              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
+              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,xx(1),facscaleLtilde,fx1)
-              call fdist(ih2,xx(2),facscaleLtilde,fx2)
+              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
+              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
            endif
         endif
       endif
@@ -826,13 +832,11 @@ c--- DEFAULT
 
       if (currentPDF == 0) then
         resmNLLint=flux*pswt*xmsq/BrnRat
-     &        *sudakov
       endif
             
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*pswt*xmsq/BrnRat*wgt/itmx
-     &        *sudakov
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -841,24 +845,19 @@ c--- loop over all PDF error sets, if necessary
       endif    
 
         wt_gg=xmsq_bypart(0,0)*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &     *sudakov
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
 
       call getptildejet(0,pjet)
       
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*pswt/BrnRat
-     &     *sudakov
       do j=-1,1
          do k=-1,1
 !$omp atomic            
