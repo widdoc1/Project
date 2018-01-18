@@ -156,12 +156,11 @@ c--- bother calculating the matrix elements for it, instead bail out
 
       L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
 ! hack for the moment to solve PDF scales
-      if ((kpart == klumi).or.(kpart == klumi0).or.(kpart == klumi1)
-     &     .or.(kpart == knnll)) then
-         facscaleLtilde = facscale * L_tilde
+      if (do_lumi) then
+         facscaleLtilde = facscale * exp(-L_tilde)
       else
          facscaleLtilde = facscale
-      endif
+      end if
 
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts

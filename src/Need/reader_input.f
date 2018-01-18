@@ -686,7 +686,8 @@ c---  create logical:: variable dynamicscale for use in other routines
          dynamicscale=.true. 
       endif
 
-!     set resum
+!     setup resummation flags
+!---  jetvheto
       if ( (kpart == kll) .or. (kpart == knll) .or.
      &     (kpart == knllexpd) .or. (kpart == knnll) .or.
      &     (kpart == knnllexpd) .or. (kpart == klumi) .or.
@@ -695,14 +696,20 @@ c---  create logical:: variable dynamicscale for use in other routines
       else
          jetvheto=.false.
       endif
-
-!     set up pure_lumi for use in other routines
-      if ( (kpart == knllexpd) .or. (kpart == knnllexpd) .or.
-     &     (kpart == klumi) .or. (kpart == klumi0) .or.
-     &     (kpart == klumi1) ) then
-         pure_lumi = .true.
+!---  do_suda
+      if ((kpart == kll) .or. (kpart == knll) .or.
+     &     (kpart == knnll)) then
+         do_suda=.true.
       else
-         pure_lumi = .false.
+         do_suda=.false.
+      end if
+!---  do_lumi
+      if ((kpart == knll) .or. (kpart == knnll) .or.
+     &     (kpart == klumi) .or. (kpart == klumi0) .or.
+     &     (kpart == klumi1)) then
+         do_lumi = .true.
+      else
+         do_lumi = .false.
       endif
 
 c--- print warning messages if some parton fluxes are not included      

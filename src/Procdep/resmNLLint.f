@@ -62,6 +62,7 @@ c--- To use VEGAS random number sequence :
       real(dp):: xmsq_bypart(-1:1,-1:1)
       logical:: bin,includedipole,checkpiDpjk
       real(dp):: b1scale,q2scale,q1scale,b2scale
+      real(dp) :: facscaleLtilde
       external qg_tbq,BSYqqb_QQbdk_gvec,qqb_QQbdk,qg_tbqdk,qg_tbqdk_gvec,
      & qqb_Waa,qqb_Waa_mad
      & qqb_Zbbmas,qqb_Zbbmas,qqb_totttZ,qqb_totttZ_mad
@@ -108,7 +109,12 @@ c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
       L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
-      
+      if (do_lumi) then
+         facscaleLtilde = facscale * exp(-L_tilde)
+      else
+         facscaleLtilde = facscale
+      end if
+
 c$$$      write(*,*) "jetvheto =", jetvheto
 c$$$      write(*,*) "q_scalestart= ", q_scalestart
 c$$$      write(*,*) "q_scale= ", q_scale
@@ -752,12 +758,12 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
-              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
-              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
            endif
         endif
       endif
