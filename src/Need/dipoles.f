@@ -106,13 +106,18 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
 
       case(knnllexpd)
+!---  expansion at order alpha_s
+!---  ason2pi * cf * (h12*L**2 + h11*L + h10)
+!---
+!---  h12 = -2 * delta(qq)
+!---  h11 = -2*P_qq + (-2 * log(M**2/Q**2) + 3) * delta(qq)
+!---  h10 = -pi**2/12 * delta(qq)
 
       if (vorz == 1) then
          ii_qq = -pisq/12._dp + three/two * two*log(q_scale/facscale) ! resummed coefficient
-     &        -two*three/two*L_tilde       ! coefficient of P_qq
-     &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)* (L + two*log(scale/q_scale))
-     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
+     &        -two*three/two*L_tilde ! coefficient of P_qq
+     &        -two*L_tilde**2
+     &        +(-two * (L + two*log(scale/q_scale)) + three)*L_tilde ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
          elseif (scheme == 'dred') then
@@ -142,9 +147,9 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       if (vorz == 1) then
         ii_qq = -two*three/two*L_tilde       ! coefficient of P_qq
-     &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)* (L + two*log(scale/q_scale))
-     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
+     &        -two*L_tilde**2
+     &        +(-two* (L + two*log(scale/q_scale))
+     &        +three)*L_tilde ! expansion of the radiator
         return
       endif
       
@@ -479,10 +484,8 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       if (vorz == 1) then
         ii_gg=-pisq/12._dp + b0/ca * two*log(q_scale/facscale)
      &        -two*b0/ca*L_tilde
-     &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)* (L * two*log(scale/q_scale))
-     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
-
+     &        -two*L_tilde**2
+     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/ca)*L_tilde ! expansion of the radiator
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -512,9 +515,8 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       if (vorz == 1) then
          ii_gg=-two*b0/ca*L_tilde
-     &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)* (L + two*log(scale/q_scale))
-     &        -B_coeff(1))*L_tilde) ! expansion of the radiator
+     &        -two*L_tilde**2
+     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/ca)*L_tilde ! expansion of the radiator
         return
       endif
       
