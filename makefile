@@ -166,7 +166,8 @@ emsn_tools_mod.o \
 qcd_mod.o \
 rad_tools_mod.o \
 resummation_mod.o \
-virtfin_mod.o
+virtfin_mod.o \
+jetvheto_interface.o
 
 WH1JETFILES = \
 WHqqbgg.o \
@@ -2450,3 +2451,4 @@ rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
 emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
 resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o
 virtfin_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
+jetvheto_interface.o: types_mod.o consts_mod.o resummation_mod.o

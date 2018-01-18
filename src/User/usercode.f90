@@ -86,8 +86,10 @@ end function userincludedipole
 
 subroutine userplotter(pjet, wt, wt2, nd)
   use types_mod
+  use jetvheto_interface, only: sudakov
   implicit none
   include 'constants.f'
+  include 'jetvheto.f'
   include 'nf.f'
   include 'mxpart.f'
   include 'jetlabel.f'
@@ -118,6 +120,12 @@ subroutine userplotter(pjet, wt, wt2, nd)
      tag = tagplot
   endif
   iplot = nextnplot
+
+  ! Sudakov
+  if (do_suda) then
+     wt = wt*sudakov(pjet)
+     wt2 = wt**2
+  end if
 
   !define quantities to plot
   pt3=pt(3,pjet)
