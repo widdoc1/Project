@@ -101,7 +101,7 @@ c---- SSend
       logical:: bin,includedipole,checkpiDpjk
       real(dp):: QandGint
       integer mykpart
-      real(dp) :: dot, xl12
+      real(dp) :: facscaleLtilde
 
       integer:: t
 
@@ -155,6 +155,13 @@ c--- bother calculating the matrix elements for it, instead bail out
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
       L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
+! hack for the moment to solve PDF scales
+      if ((kpart == klumi).or.(kpart == klumi0).or.(kpart == klumi1)
+     &     .or.(kpart == knnll)) then
+         facscaleLtilde = facscale * L_tilde
+      else
+         facscaleLtilde = facscale
+      endif
 
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
@@ -974,12 +981,12 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
-              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,xx(1),facscale*exp(-L_tilde),fx1)
-              call fdist(ih2,xx(2),facscale*exp(-L_tilde),fx2)
+              call fdist(ih1,xx(1),facscaleLtilde,fx1)
+              call fdist(ih2,xx(2),facscaleLtilde,fx2)
            endif
 c      endif
       endif
@@ -1015,10 +1022,10 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih1,x1onz,facscale*exp(-L_tilde),fx1z)
+              call fdist(ih1,x1onz,facscaleLtilde,fx1z)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih1,x1onz,facscale*exp(-L_tilde),fx1z)
+              call fdist(ih1,x1onz,facscaleLtilde,fx1z)
            endif
 c--- APPLgrid - set factor
 c            f_X1overZ = 1._dp
@@ -1052,10 +1059,10 @@ c--- usual case
            if (PDFerrors) then
 !$omp critical(PDFerrors)
               call InitPDF(currentPDF)
-              call fdist(ih2,x2onz,facscale*exp(-L_tilde),fx2z)
+              call fdist(ih2,x2onz,facscaleLtilde,fx2z)
 !$omp end critical(PDFerrors)
            else
-              call fdist(ih2,x2onz,facscale*exp(-L_tilde),fx2z)
+              call fdist(ih2,x2onz,facscaleLtilde,fx2z)
            endif
 c--- APPLgrid - set factor
 c            f_X2overZ = 1._dp

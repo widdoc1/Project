@@ -111,7 +111,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
          ii_qq = -pisq/12._dp + three/two * two*log(q_scale/facscale) ! resummed coefficient
      &        -two*three/two*L_tilde       ! coefficient of P_qq
      &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)*L
+     &        +(-A_coeff(1)* (L + two*log(scale/q_scale))
      &        -B_coeff(1))*L_tilde) ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
@@ -141,9 +141,9 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knllexpd)
 
       if (vorz == 1) then
-        ii_qq=-two*three/two*L_tilde       ! coefficient of P_qq
+        ii_qq = -two*three/two*L_tilde       ! coefficient of P_qq
      &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)*L
+     &        +(-A_coeff(1)* (L + two*log(scale/q_scale))
      &        -B_coeff(1))*L_tilde) ! expansion of the radiator
         return
       endif
@@ -414,10 +414,9 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
       include 'b0.f'
 c--- returns the integral of the subtraction term for an
@@ -447,7 +446,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
-        ii_gg=(-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2)
+        ii_gg=(-pisq/12._dp + b0/ca * two*log(q_scale/facscale))
      &        /(1-2*as*beta0*L_tilde)
         if (scheme == 'tH-V') then
           return
@@ -465,12 +464,12 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       
       if (vorz == 2) then
         lx=log(x)
-        ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+        ii_gg=two*(omx/x+x*omx-one) * two*log(q_scale/facscale)
      &       /(1-2*as*beta0*L_tilde)
         return
       endif
       
-      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+      ii_gg=two/omx* two*log(q_scale/facscale)
      &     /(1-2*as*beta0*L_tilde)
       
       return   
@@ -478,10 +477,10 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnllexpd)
 
       if (vorz == 1) then
-        ii_gg=-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2
+        ii_gg=-pisq/12._dp + b0/ca * two*log(q_scale/facscale)
      &        -two*b0/ca*L_tilde
      &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        +(-A_coeff(1)* (L * two*log(scale/q_scale))
      &        -B_coeff(1))*L_tilde) ! expansion of the radiator
 
         if (scheme == 'tH-V') then
@@ -500,12 +499,12 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       
       if (vorz == 2) then
          lx=log(x)
-         ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+         ii_gg=two*(omx/x+x*omx-one)* two*log(q_scale/facscale)
      &         -two*(two*(omx/x+x*omx-one))*L_tilde
          return
       endif
       
-      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+      ii_gg=two/omx* two*log(q_scale/facscale)
      &      -two*(two/omx)*L_tilde
       return
 
@@ -514,7 +513,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       if (vorz == 1) then
          ii_gg=-two*b0/ca*L_tilde
      &        +(-A_coeff(1)*L_tilde**2
-     &        +(-A_coeff(1)*(-resm_opts%ln_Q2_M2)
+     &        +(-A_coeff(1)* (L + two*log(scale/q_scale))
      &        -B_coeff(1))*L_tilde) ! expansion of the radiator
         return
       endif

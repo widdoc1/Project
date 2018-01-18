@@ -7,7 +7,7 @@
       real(dp) :: q_scalestart ! JetVHeto scale in input file
 
 !--- the follow are parameters that should not generally be changed
-      real(dp), parameter :: p_pow = 5._dp ! exponent for power supression of resummed terms
+      real(dp), parameter :: p_pow = -1._dp ! exponent for power supression of resummed terms
 
 !--- the following is used when computing JetVHeto processes
       real(dp) :: q_scale ! JetVHeto scale

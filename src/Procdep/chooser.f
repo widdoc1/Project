@@ -2122,7 +2122,7 @@ c--      '  f(p1)+f(p2) --> H (for total Xsect)' (removebr=.true.)
           plabel(3)='bq'
           plabel(4)='ba'
           nqcdjets=2
-          born_config='DY'
+          born_config='H'
           if (removebr) then
             plabel(3)='ig'
             plabel(4)='ig'
