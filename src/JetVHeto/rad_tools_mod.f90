@@ -80,26 +80,22 @@ contains
        !! material of BMSZ.
     case('H')
        as_pow = two
-       A_coeff(1) = two
        A(1) = two*ca_def
        CC   = ca_def
        A(2) = cmw_K*A(1)
        A(3) = cmw_K2*A(1)+pi*beta0*ca_def*(ca_def*(808._dp/27._dp-28._dp*zeta3)-224._dp/27._dp*tf_def)
        BB   = -beta0 * pi/ca_def
-       B_coeff(1) = -two*twopi*beta0/ca_def ! check this
        B(1) = -two*twopi*beta0
        B(2) = -two*(ca_def**2*(8._dp/3._dp+three*zeta3)-cf_def*tf_def-four/three*ca_def*tf_def) &
             & +twopi_beta0*zeta2*ca_def !! Becher & Neubert arxiv:1205.3806v1 had additional: +8._dp*zeta3*ca_def**2
 
     case('DY')
        as_pow = zero
-       A_coeff(1) = two
        A(1) = two*cf_def
        CC   = cf_def
        A(2) = cmw_K*A(1)
        A(3) = cmw_K2*A(1)+pi*beta0*cf_def*(ca_def*(808._dp/27._dp-28._dp*zeta3)-224._dp/27._dp*tf_def)
        BB   = -three/four
-       B_coeff(1) = -three
        B(1) = -three*cf_def
        B(2) =   -two*(cf_def**2*(-half*pisq+3._dp/8._dp+6._dp*zeta3)&
             & + cf_def*ca_def*(11._dp/18._dp*pisq+17._dp/24._dp-three*zeta3) &
@@ -126,11 +122,11 @@ contains
     cs%alphas_muR = as
     cs%as2pi      = cs%alphas_muR/twopi
     cs%p          = p
-    cs%ln_muR2_M2 = 2*log(muR/M)
-    cs%ln_Q2_M2   = 2*log(Q/M)
-    cs%ln_Q2_muR2 = 2*log(Q/muR)
-    cs%ln_Q2_muF2 = 2*log(Q/muF)
-    cs%ln_muF2_M2 = 2*log(muF/M)
+    cs%ln_muR2_M2 = two*log(muR/M)
+    cs%ln_Q2_M2   = two*log(Q/M)
+    cs%ln_Q2_muR2 = two*log(Q/muR)
+    cs%ln_Q2_muF2 = two*log(Q/muF)
+    cs%ln_muF2_M2 = two*log(muF/M)
     cs%jet_radius = jet_radius
   end subroutine set_process_and_parameters
 
