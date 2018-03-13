@@ -173,6 +173,7 @@ c------ normal case
       endif
       if (verbose) call writeinput(6,' * ',' ','nproc')
       read(20,*) part
+      jetvheto=.false.
       coeffonly=.false.
       kpart=0
       if     ((part == 'lo') .or. (part == 'lord')) then
@@ -198,7 +199,7 @@ c------ normal case
         kpart=kll
       elseif (part == 'nll') then
         kpart=knll
-      elseif ((part == 'nnll') .or. (part == 'nnllcoeff')) then
+      elseif (part == 'nnll') then
          kpart=knnll
       elseif ((part == 'nllexpd') .or. (part == 'nllexpdcoeff')) then
          kpart=knllexpd
@@ -213,6 +214,12 @@ c------ normal case
       endif
       if (index(part,'coeff') > 0) then
         coeffonly=.true.
+      endif
+      if ( (kpart == kll)       .or. (kpart == knll)  .or.
+     &     (kpart == knllexpd)  .or. (kpart == knnll) .or.
+     &     (kpart == knnllexpd) .or. (kpart == klumi) .or.
+     &     (kpart == klumi0)    .or. (kpart == klumi1) ) then
+        jetvheto=.true.
       endif
       if (kpart == 0) then
         write(6,*) 'Invalid value of part = ',part
@@ -687,29 +694,20 @@ c---  create logical:: variable dynamicscale for use in other routines
       endif
 
 !     setup resummation flags
-!---  jetvheto
-      if ( (kpart == kll) .or. (kpart == knll) .or.
-     &     (kpart == knllexpd) .or. (kpart == knnll) .or.
-     &     (kpart == knnllexpd) .or. (kpart == klumi) .or.
-     &     (kpart == klumi0) .or. (kpart == klumi1) ) then
-         jetvheto=.true.
-      else
-         jetvheto=.false.
-      endif
 !---  do_suda
-      if ((kpart == kll) .or. (kpart == knll) .or.
-     &     (kpart == knnll)) then
+      if ( (kpart==kll) .or. (kpart==knll) .or.
+     &     (kpart==knnll) ) then
          do_suda=.true.
       else
          do_suda=.false.
       end if
 !---  do_lumi
-      if ((kpart == knll) .or. (kpart == knnll) .or.
-     &     (kpart == klumi) .or. (kpart == klumi0) .or.
-     &     (kpart == klumi1)) then
-         do_lumi = .true.
+      if ( (kpart==knll)  .or. (kpart==knnll)  .or.
+     &     (kpart==klumi) .or. (kpart==klumi0) .or.
+     &     (kpart==klumi1) ) then
+         do_lumi=.true.
       else
-         do_lumi = .false.
+         do_lumi=.false.
       endif
 
 c--- print warning messages if some parton fluxes are not included      
@@ -729,10 +727,6 @@ c--- print warning messages if some parton fluxes are not included
         write(6,*) 'WARNING: no gluon-gluon contribution included'
       write(6,*)
       endif
-c$$$      if (omitqq) then
-c$$$         write(6,*) 'WARNING: no quark-quark contribution included'
-c$$$         write(6,*)
-c$$$      endif
 
 c--- assign squared masses for b- and c-quarks
       if (abs(mb) > 1.e-8_dp) then
@@ -775,18 +769,35 @@ c--- this is an allowed combination
      &          ((kcase==kWgamma) .or. (kcase==kZgamma)
      &      .or. (kcase==kgamgam) .or. (kcase==kgg2gam)
      &      .or. (kcase==kdirgam) .or. (kcase==kdm_gam)
-     &      .or. (kcase==kgmgmjt) .or .(kcase==ktrigam)
+     &      .or. (kcase==kgmgmjt) .or. (kcase==ktrigam)
      &      .or. (kcase==kfourga)
      &      .or. (kcase==kZ_2gam) .or. (kcase==kZgajet)
      &      .or. (kcase==kW_2gam)) ) then
 c--- this is an allowed combination
-        elseif ((kpart==knnlo) .or. (kpart==ksnlo)) then 
+        elseif ((kpart==knnlo) .or. (kpart==ksnlo)) then
 c--- this is an allowed combination
-        elseif ((kpart==kll) .or. (kpart==knll) .or.
-     &          (kpart==knnll) .or. (kpart==knllexpd) .or.
-     &          (kpart==knnllexpd) .or. (kpart==klumi) .or.
-     &          (kpart==klumi0) .or. (kpart==klumi1)) then
-c--- temporarily allow all resummation processes
+        elseif ( (jetvheto) .and.
+     &          ((kcase==kW_only) .or. (kcase==kZ_only)
+     &      .or. (kcase==kWWqqbr) .or. (kcase==kWWnpol)
+     &      .or. (kcase==kWZbbar) .or. (kcase==kZZlept)
+     &      .or. (kcase==kWHbbar) .or. (kcase==kWHgaga)
+     &      .or. (kcase==kWH__WW) .or. (kcase==kWH__ZZ)
+     &      .or. (kcase==kZHbbar) .or. (kcase==kZHgaga)
+     &      .or. (kcase==kZH__WW) .or. (kcase==kZH__ZZ)
+     &      .or. (kcase==kggfus0)
+     &      .or. (kcase==kHWW_4l) .or. (kcase==kHWW_tb)
+     &      .or. (kcase==kHWWint) .or. (kcase==kHWWHpi)
+     &      .or. (kcase==kggWW4l) .or. (kcase==kggWWbx)
+     &      .or. (kcase==kHWW2lq)
+     &      .or. (kcase==kHZZ_4l) .or. (kcase==kHZZ_tb)
+     &      .or. (kcase==kHZZint) .or. (kcase==kHZZHpi)
+     &      .or. (kcase==kggZZ4l) .or. (kcase==kggZZbx)
+     &      .or. (kcase==kHZZqgI) .or. (kcase==kHi_Zga)
+     &      .or. (kcase==kHi_Zga)
+     &      .or. (kcase==kHVV_tb) .or. (kcase==kHVVint)
+     &      .or. (kcase==kHVVHpi) .or. (kcase==kggVV4l)
+     &      .or. (kcase==kggVVbx)) ) then
+c--- allowed combinations for the resummation
         else 
           write(6,*) 'part=',part,' is not a valid option'
           write(6,*) 'for this process number.'

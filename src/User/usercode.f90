@@ -86,7 +86,7 @@ end function userincludedipole
 
 subroutine userplotter(pjet, wt, wt2, nd)
   use types_mod
-  use jetvheto_interface, only: sudakov
+  use rad_tools_mod, only: init_proc
   implicit none
   include 'constants.f'
   include 'nf.f'
@@ -98,6 +98,8 @@ subroutine userplotter(pjet, wt, wt2, nd)
 
   ! needed for the resummation
   include 'kpart.f'
+  include 'nproc.f'
+  include 'kprocess.f'
   include 'born_config.f'
   include 'scale.f'
   include 'facscale.f'
@@ -107,7 +109,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   common/Rcut/Rcut
   real(dp) :: dot, M_B
   integer  :: order
-  real(dp) :: sudakovf77
+  real(dp) :: sudakov
 
   real(dp), intent(in) :: pjet(mxpart,4)
   real(dp), intent(inout) :: wt,wt2
@@ -128,6 +130,38 @@ subroutine userplotter(pjet, wt, wt2, nd)
 
   if (first) then
      tag   = tagbook
+
+     ! setup resummation parameters if applicable
+     if (jetvheto) then
+        if (      (kcase==kW_only) .or. (kcase==kZ_only)&
+             .or. (kcase==kWWqqbr) .or. (kcase==kWWnpol)&
+             .or. (kcase==kWZbbar) .or. (kcase==kZZlept)&
+             .or. (kcase==kWHbbar) .or. (kcase==kWHgaga)&
+             .or. (kcase==kWH__WW) .or. (kcase==kWH__ZZ)&
+             .or. (kcase==kZHbbar) .or. (kcase==kZHgaga)&
+             .or. (kcase==kZH__WW) .or. (kcase==kZH__ZZ) ) then
+           born_config='DY'
+        elseif (  (kcase==kggfus0)&
+             .or. (kcase==kHWW_4l) .or. (kcase==kHWW_tb)&
+             .or. (kcase==kHWWint) .or. (kcase==kHWWHpi)&
+             .or. (kcase==kggWW4l) .or. (kcase==kggWWbx)&
+             .or. (kcase==kHWW2lq)&
+             .or. (kcase==kHZZ_4l) .or. (kcase==kHZZ_tb)&
+             .or. (kcase==kHZZint) .or. (kcase==kHZZHpi)&
+             .or. (kcase==kggZZ4l) .or. (kcase==kggZZbx)&
+             .or. (kcase==kHi_Zga)&
+             .or. (kcase==kHVV_tb) .or. (kcase==kHVVint)&
+             .or. (kcase==kHVVHpi) .or. (kcase==kggVV4l)&
+             .or. (kcase==kggVVbx))  then
+           born_config='H'
+        else
+           write(6,*) 'nproc=', nproc, 'is not a valid option'
+           write(6,*) 'for this process'
+           stop
+        endif
+        call init_proc(born_config)
+     endif
+
      first = .false.
   else
      tag = tagplot
@@ -148,7 +182,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
         order = 2
      end select
 
-     wt = wt*sudakovf77(born_config, M_B, scale, facscale, as, q_scale, p_pow,&
+     wt = wt*sudakov(born_config, M_B, scale, facscale, as, q_scale, p_pow,&
           &Rcut, observable, ptj_veto, order)
      wt2 = wt**2
   end if

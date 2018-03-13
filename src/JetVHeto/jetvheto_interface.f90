@@ -4,7 +4,7 @@
 ! -------------------------------------------------------
 !========================================================
 
-real(kind(1d0)) function sudakovf77(proc, M, muR, muF, as, Q, p, jet_radius,&
+real(kind(1d0)) function sudakov(proc, M, muR, muF, as, Q, p, jet_radius,&
      &observable, ptj_veto, order)
   use types_mod
   use consts_mod
@@ -19,5 +19,5 @@ real(kind(1d0)) function sudakovf77(proc, M, muR, muF, as, Q, p, jet_radius,&
 
   call set_process_and_parameters(cs, proc, M, muR, muF, as, Q, p, jet_radius,&
        &observable)
-  sudakovf77 = resummed_sigma(ptj_veto, cs, order)
-end function sudakovf77
+  sudakov = resummed_sigma(ptj_veto, cs, order)
+end function sudakov
