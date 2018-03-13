@@ -89,13 +89,26 @@ subroutine userplotter(pjet, wt, wt2, nd)
   use jetvheto_interface, only: sudakov
   implicit none
   include 'constants.f'
-  include 'jetvheto.f'
   include 'nf.f'
   include 'mxpart.f'
   include 'jetlabel.f'
   include 'ptilde.f'
   include 'npart.f'
   include 'nplot.f'
+
+  ! needed for the resummation
+  include 'kpart.f'
+  include 'born_config.f'
+  include 'scale.f'
+  include 'facscale.f'
+  include 'jetvheto.f'
+  include 'qcdcouple.f'
+  real(dp) :: Rcut
+  common/Rcut/Rcut
+  real(dp) :: dot, M_B
+  integer  :: order
+  real(dp) :: sudakovf77
+
   real(dp), intent(in) :: pjet(mxpart,4)
   real(dp), intent(inout) :: wt,wt2
   integer,  intent(in) :: nd
@@ -123,7 +136,20 @@ subroutine userplotter(pjet, wt, wt2, nd)
 
   ! Sudakov
   if (do_suda) then
-     wt = wt*sudakov(pjet)
+
+     M_B = sqrt(two*dot(pjet,1,2))
+
+     select case(kpart)
+     case(kll)
+        order = 0
+     case(knll)
+        order = 1
+     case(knnll)
+        order = 2
+     end select
+
+     wt = wt*sudakovf77(born_config, M_B, scale, facscale, as, q_scale, p_pow,&
+          &Rcut, observable, ptj_veto, order)
      wt2 = wt**2
   end if
 
