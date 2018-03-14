@@ -31,7 +31,6 @@
 
 ***************************** Quark-Quark *****************************
       function ii_qq(x,L,vorz)
-      use qcd_mod, only: beta0
       implicit none
       include 'types.f'
       real(dp):: ii_qq
@@ -48,6 +47,7 @@
 
       include 'kpart.f'
       include 'scale.f'
+      include 'b0.f'
       include 'facscale.f'
       include 'jetvheto.f'
       include 'qcdcouple.f'
@@ -77,7 +77,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       if (vorz == 1) then
          ii_qq = (-pisq/12._dp + three/two * two*log(q_scale/facscale))
-     &    /(1-2*as*beta0*L_tilde)
+     &    /(1-2*ason2pi*b0*L_tilde)
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -95,12 +95,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       
       if (vorz == 2) then
         ii_qq = (omx - (one+x)*two*log(q_scale/facscale))
-     &        /(1-2*as*beta0*L_tilde)
+     &        /(1-2*ason2pi*b0*L_tilde)
         return
       endif
 
       ii_qq = (two/omx * two*log(q_scale/facscale))
-     &     /(1-2*as*beta0*L_tilde)
+     &     /(1-2*ason2pi*b0*L_tilde)
       return
 
 
@@ -198,7 +198,6 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
 ***************************** Quark-Gluon *****************************
       function ii_qg(x,L,vorz)
-      use qcd_mod, only: beta0
       implicit none
       include 'types.f'
       real(dp):: ii_qg
@@ -212,6 +211,7 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       include 'alfacut.f'
 
       include 'kpart.f'
+      include 'b0.f'
       include 'scale.f'
       include 'facscale.f'
       include 'jetvheto.f'
@@ -239,7 +239,7 @@ c  - [x^2+(1-x)^2]*epinv
       
       if (vorz == 2) then
          ii_qg = (two*x*omx+(one-two*x*omx)*
-     &        two*log(q_scale/facscale))/(1-2*as*beta0*L_tilde)
+     &        two*log(q_scale/facscale))/(1-2*ason2pi*b0*L_tilde)
       endif
       return
 
@@ -294,7 +294,6 @@ c  - [x^2+(1-x)^2]*epinv
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)
-      use qcd_mod, only: beta0
       implicit none
       include 'types.f'
       real(dp):: ii_gq
@@ -308,6 +307,7 @@ c  - [x^2+(1-x)^2]*epinv
       include 'alfacut.f'
 
       include 'kpart.f'
+      include 'b0.f'
       include 'scale.f'
       include 'facscale.f'
       include 'jetvheto.f'
@@ -336,7 +336,7 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       
       if (vorz == 2) then
         ii_gq = ((one+omx**2)/x * two*log(q_scale/facscale) + x)
-     &        /(1-2*as*beta0*L_tilde)
+     &        /(1-2*ason2pi*b0*L_tilde)
         return
       endif
 
@@ -396,7 +396,6 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
 
 ***************************** Gluon-Gluon *****************************
       function ii_gg(x,L,vorz)
-      use qcd_mod, only: beta0
       implicit none
       include 'types.f'
       real(dp):: ii_gg
@@ -412,11 +411,11 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       include 'alfacut.f'
 
       include 'kpart.f'
+      include 'b0.f'
       include 'scale.f'
       include 'facscale.f'
       include 'jetvheto.f'
       include 'qcdcouple.f'
-      include 'b0.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-gluon antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -445,7 +444,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
       if (vorz == 1) then
         ii_gg=(-pisq/12._dp + b0/ca * two*log(q_scale/facscale))
-     &        /(1-2*as*beta0*L_tilde)
+     &        /(1-2*ason2pi*b0*L_tilde)
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -463,12 +462,12 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       if (vorz == 2) then
         lx=log(x)
         ii_gg=two*(omx/x+x*omx-one) * two*log(q_scale/facscale)
-     &       /(1-2*as*beta0*L_tilde)
+     &       /(1-2*ason2pi*b0*L_tilde)
         return
       endif
       
       ii_gg=two/omx* two*log(q_scale/facscale)
-     &     /(1-2*as*beta0*L_tilde)
+     &     /(1-2*ason2pi*b0*L_tilde)
       
       return   
 
