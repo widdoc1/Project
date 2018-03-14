@@ -7,11 +7,11 @@ ALLPROGSRC =
 
 ALLPROGOBJS =	
 
-SRCS =	consts_mod.f90 qcd_mod.f90 emsn_tools_mod.f90 rad_tools_mod.f90 resummation_mod.f90 jetvheto_interface.f90
+SRCS =	consts.f90 qcd.f90 emsn_tools.f90 rad_tools.f90 resummation.f90 jetvheto_interface.f90
 
 POSTSRCS =	
 
-OBJS =	consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o resummation_mod.o jetvheto_interface.o
+OBJS =	consts.o qcd.o emsn_tools.o rad_tools.o resummation.o jetvheto_interface.o
 
 POSTOBJS =
 POSTLIB =
@@ -51,10 +51,10 @@ realclean:
 
 # a couple of lines to help with the combination of automatic
 # generation of banner.f90 and the multi-directory build.
-types_mod.o:
-consts_mod.o: types_mod.o
-qcd_mod.o: types_mod.o consts_mod.o 
-rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
-emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
-resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o
-jetvheto_interface.o: types_mod.o consts_mod.o resummation_mod.o
+types.o:
+consts.o: types.o
+qcd.o: types.o consts.o 
+rad_tools.o: types.o consts.o qcd.o
+emsn_tools.o: types.o consts.o qcd.o rad_tools.o
+resummation.o: types.o consts.o qcd.o emsn_tools.o rad_tools.o
+jetvheto_interface.o: types.o consts.o resummation.o

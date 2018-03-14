@@ -3,9 +3,9 @@
 ! Includes a module for the non-inclusive correction
 ! -------------------------------------------------------
 !========================================================
-module emsn_tools_mod
-  use types_mod; use consts_mod
-  use rad_tools_mod; use qcd_mod
+module emsn_tools
+  use types; use consts
+  use rad_tools; use qcd
   implicit none
   private
 
@@ -56,4 +56,4 @@ contains
     end select
   end function non_incl
 
-end module emsn_tools_mod
+end module emsn_tools

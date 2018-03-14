@@ -3,9 +3,9 @@
 ! Includes a module providing the resummation ingredients
 ! -------------------------------------------------------
 !========================================================
-module rad_tools_mod
-  use types_mod; use consts_mod
-  use qcd_mod
+module rad_tools
+  use types; use consts
+  use qcd
   implicit none
 
   private
@@ -292,4 +292,4 @@ contains
 
   !========================================================
 
-end module rad_tools_mod
+end module rad_tools

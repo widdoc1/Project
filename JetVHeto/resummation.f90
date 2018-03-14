@@ -1,7 +1,7 @@
-module resummation_mod
-  use types_mod; use consts_mod
-  use rad_tools_mod
-  use emsn_tools_mod
+module resummation
+  use types; use consts
+  use rad_tools
+  use emsn_tools
   implicit none
 
   private
@@ -30,4 +30,4 @@ contains
 
   end function resummed_sigma
 
-end module resummation_mod
+end module resummation

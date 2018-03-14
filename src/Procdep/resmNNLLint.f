@@ -1,8 +1,7 @@
       function resmNNLLint(r,wgt)
-      use types_mod
-      use rad_tools_mod, only: Ltilde
-      use virtfin_mod
+      use rad_tools, only: Ltilde
       implicit none
+      include 'types.f'
       real(dp):: resmNNLLint
       
       include 'constants.f'

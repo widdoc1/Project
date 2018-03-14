@@ -6,10 +6,10 @@
 
 real(kind(1d0)) function sudakov(proc, M, muR, muF, as, Q, p, jet_radius,&
      &observable, ptj_veto, order)
-  use types_mod
-  use consts_mod
-  use rad_tools_mod
-  use resummation_mod
+  use types
+  use consts
+  use rad_tools
+  use resummation
   implicit none
   character(len=*),            intent(in)  :: proc, observable
   integer,                     intent(in)  :: order

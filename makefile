@@ -46,10 +46,7 @@ RECURDIR	= $(TENSORREDDIR)/recur
 OVDIR		= $(TENSORREDDIR)/ov
 HELASDIR        = .
 OLODIR          = .
-JetVHetoDIR = $(MCFMHOME)/JetVHeto
-
-# JetVHeto
-INCPATHJVH = $(SOURCEDIR)/JetVHeto/Inc
+JETVHETODIR = $(MCFMHOME)/JetVHeto
 
 # Set this to YES to link against OneLOop library to
 # allow alternative calculation of scalar integrals
@@ -87,11 +84,11 @@ endif
 
 
 # Flags for compilation
-FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(INCPATHJVH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(JetVHetoDIR) -I$(OBJNAME) 
+FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(JETVHETODIR) -I$(OBJNAME) 
 # note: -static may be required if read/write libraries not found
 #FFLAGS += -static
 # -fimplicit-none
-F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(INCPATHJVH) -I$(JetVHetoDIR) -I$(OBJNAME) -J$(OBJNAME)
+F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(JETVHETODIR) -I$(OBJNAME) -J$(OBJNAME)
 
 # If using FROOT package for ROOT ntuples, first specify C++ compiler:
 CXXFLAGS=$(CXXFLAGS0) -Wall $(DROOT) 
@@ -154,14 +151,11 @@ DIRS	=	$(MCFMHOME):\
 		$(SOURCEDIR)/UTools:$(SOURCEDIR)/WBFZZ\
                 $(SOURCEDIR)/WBFWW:$(SOURCEDIR)/WBFWpWp:$(SOURCEDIR)/WBFWZ\
                 $(SOURCEDIR)/WH1jet:$(SOURCEDIR)/ZH1jet:$(SOURCEDIR)/QT:$(SOURCEDIR)/Mad\
-                $(SOURCEDIR)/QLFF:$(SOURCEDIR)/JetVHeto:$(SOURCEDIR)/JetVHeto/Inc
+                $(SOURCEDIR)/QLFF
 
 
 # -----------------------------------------------------------------------------
 # Specify the object files. 
-
-JetVHeto = \
-virtfin_mod.o
 
 WH1JETFILES = \
 WHqqbgg.o \
@@ -1190,6 +1184,7 @@ lowint.o \
 realint.o \
 virtint.o \
 scetint.o \
+virtfin.o \
 resmNLLint.o \
 resmNNLLint.o
 
@@ -2182,7 +2177,7 @@ USERFILES += gridwrap.o
 # endif
 
 LIBDIR=.
-LIBFLAGS=-I$(JetVHetoDIR) -ljetvheto -lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(LIBEXT) -lsmallY$(LIBEXT) -lsmallP$(LIBEXT) -lsmallF$(LIBEXT)
+LIBFLAGS=-I$(JETVHETODIR) -ljetvheto -lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(LIBEXT) -lsmallY$(LIBEXT) -lsmallP$(LIBEXT) -lsmallF$(LIBEXT)
 
 # the files that do not go into the library                                                      
 NONLIB= \
@@ -2296,7 +2291,7 @@ endif
 
 OMPTEST = $(PARTONFILES) testff.o
 
-OURCODE = $(JetVHeto) $(LIBFILES) $(NEEDFILES)  $(PROCDEPFILES) $(SPINORFILES) \
+OURCODE = $(LIBFILES) $(NEEDFILES)  $(PROCDEPFILES) $(SPINORFILES) \
           $(PHASEFILES) $(SINGLETOPFILES) \
           $(TOPHFILES) $(TOPZFILES) $(TOPWFILES) $(TOPDKFILES) \
           $(USERFILES) $(VOLFILES) $(WFILES) $(W2JETFILES) \
@@ -2340,7 +2335,7 @@ endif
 # CERNLIB libraries for PDFLIB: -lpdflib804 -lmathlib -lpacklib 
 
 mcfm$(LIBEXT): $(ALLMCFM)
-	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JetVHetoDIR) -o $@ \
+	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JETVHETODIR) -o $@ \
 	$(patsubst %,$(OBJNAME)/%,$(ALLMCFM)) $(LIBFLAGS) 
 	mv mcfm$(LIBEXT) Bin/
 	@echo $(PDFMSG)
@@ -2355,14 +2350,14 @@ test: $(OMPTEST)
 	@echo $(NTUPMSG)
 
 mcfmalt: mcfmlib $(NONLIB)
-	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JetVHetoDIR) -o $@ \
+	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JETVHETODIR) -o $@ \
 	$(patsubst %,$(OBJNAME)/%,$(NONLIB)) -lmcfm $(LIBFLAGS) 
 	mv mcfmalt Bin/mcfm
 	@echo $(PDFMSG)
 	@echo $(NTUPMSG)
 
 mcfmcc: mcfmlib $(MAIN) cxxusercode.o
-	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JetVHetoDIR) -o $@ \
+	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JETVHETODIR) -o $@ \
 	$(patsubst %,$(OBJNAME)/%,$(MAIN)) $(OBJNAME)/cxxusercode.o -lmcfm $(LIBFLAGS) \
 	`fastjet-config` --libs -lstdc++
 	mv mcfmcc Bin/
@@ -2394,7 +2389,7 @@ FORCHKPATH = /home/ellis/bin/
 
 # Specify the dependencies of the .o files and the rules to make them.
 
-FOROPTS = -include=$(INCPATH) -I$(INCPATHJVH) -nonovice -nopretty -quiet
+FOROPTS = -include=$(INCPATH) -nonovice -nopretty -quiet
 
 .SUFFIXES: .prj
 
@@ -2416,7 +2411,7 @@ check:      $(PRJS)
 PRJSF =      $(OURCODE:.o=.f) 
 
 checkf:      
-		$(FORCHKPATH)/forchk -allc -I $(INCPATH) -I$(INCPATHJVH) $(PRJSF)
+		$(FORCHKPATH)/forchk -allc -I $(INCPATH) $(PRJSF)
 
 clean:
 	- rm -f *.o obj/*.o obj/*.mod obj_omp/*.o obj_omp/*.mod Bin/mcfm QCDLoop/*/*.o *.s *.prj *~ core

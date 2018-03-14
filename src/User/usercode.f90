@@ -85,7 +85,7 @@ end function userincludedipole
 !          (if applicable), otherwise equal to zero
 
 subroutine userplotter(pjet, wt, wt2, nd)
-  use rad_tools_mod
+  use rad_tools
   implicit none
   include 'types.f'
   include 'constants.f'

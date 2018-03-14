@@ -1,4 +1,4 @@
-module types_mod
+module types
   use, intrinsic :: iso_fortran_env
   implicit none
 
@@ -10,4 +10,4 @@ module types_mod
   integer, parameter :: si = INT32
   integer, parameter :: di = INT64
 
-end module types_mod
+end module types

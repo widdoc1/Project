@@ -1,5 +1,5 @@
-module consts_mod
-  use types_mod
+module consts
+  use types
   implicit none
   private
 
@@ -21,4 +21,4 @@ module consts_mod
   real(dp), public, parameter :: zero = 0.0_dp, one = 1.0_dp
   real(dp), public, parameter :: three = 3.0_dp, four = 4.0_dp
 
-end module consts_mod
+end module consts
