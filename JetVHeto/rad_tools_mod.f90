@@ -36,7 +36,6 @@ module rad_tools_mod
   public :: process_and_parameters, set_process_and_parameters, get_lambda
   public  :: init_proc, Ltilde, Rad, Rad_p, Rad_pNNLL, Rad_s, g1, g2, g3
   real(dp), public :: A(3), B(2)
-  real(dp), public :: A_coeff(3), B_coeff(2)
   real(dp), public :: CC, BB ! colour factor & our B
   real(dp), public :: as_pow
 

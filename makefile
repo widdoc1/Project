@@ -46,6 +46,7 @@ RECURDIR	= $(TENSORREDDIR)/recur
 OVDIR		= $(TENSORREDDIR)/ov
 HELASDIR        = .
 OLODIR          = .
+JetVHetoDIR = $(MCFMHOME)/JetVHeto
 
 # JetVHeto
 INCPATHJVH = $(SOURCEDIR)/JetVHeto/Inc
@@ -86,11 +87,11 @@ endif
 
 
 # Flags for compilation
-FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(INCPATHJVH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(OBJNAME)
+FFLAGS 	= -fno-f2c -ffixed-line-length-none $(OMPFLAG) -O2 -I$(INCPATH) -I$(INCPATHJVH) -I$(MPIDUMMY) -I$(TENSORREDDIR)/Include -I$(JetVHetoDIR) -I$(OBJNAME) 
 # note: -static may be required if read/write libraries not found
 #FFLAGS += -static
 # -fimplicit-none
-F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(INCPATHJVH) -I$(OBJNAME) -J$(OBJNAME)
+F90FLAGS = -fno-f2c $(OMPFLAG) -I$(INCPATH) -I$(INCPATHJVH) -I$(JetVHetoDIR) -I$(OBJNAME) -J$(OBJNAME)
 
 # If using FROOT package for ROOT ntuples, first specify C++ compiler:
 CXXFLAGS=$(CXXFLAGS0) -Wall $(DROOT) 
@@ -160,14 +161,7 @@ DIRS	=	$(MCFMHOME):\
 # Specify the object files. 
 
 JetVHeto = \
-types_mod.o \
-consts_mod.o \
-emsn_tools_mod.o \
-qcd_mod.o \
-rad_tools_mod.o \
-resummation_mod.o \
-virtfin_mod.o \
-jetvheto_interface.o
+virtfin_mod.o
 
 WH1JETFILES = \
 WHqqbgg.o \
@@ -1084,7 +1078,6 @@ writeout.o \
 writereference.o \
 dips_mass.o \
 zeromsq.o \
-resmset.o
 
 PARTONFILES = \
 checkpath.o \
@@ -2189,7 +2182,7 @@ USERFILES += gridwrap.o
 # endif
 
 LIBDIR=.
-LIBFLAGS=-lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(LIBEXT) -lsmallY$(LIBEXT) -lsmallP$(LIBEXT) -lsmallF$(LIBEXT)
+LIBFLAGS=-I$(JetVHetoDIR) -ljetvheto -lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(LIBEXT) -lsmallY$(LIBEXT) -lsmallP$(LIBEXT) -lsmallF$(LIBEXT)
 
 # the files that do not go into the library                                                      
 NONLIB= \
@@ -2347,7 +2340,7 @@ endif
 # CERNLIB libraries for PDFLIB: -lpdflib804 -lmathlib -lpacklib 
 
 mcfm$(LIBEXT): $(ALLMCFM)
-	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -o $@ \
+	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JetVHetoDIR) -o $@ \
 	$(patsubst %,$(OBJNAME)/%,$(ALLMCFM)) $(LIBFLAGS) 
 	mv mcfm$(LIBEXT) Bin/
 	@echo $(PDFMSG)
@@ -2362,14 +2355,14 @@ test: $(OMPTEST)
 	@echo $(NTUPMSG)
 
 mcfmalt: mcfmlib $(NONLIB)
-	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -o $@ \
+	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JetVHetoDIR) -o $@ \
 	$(patsubst %,$(OBJNAME)/%,$(NONLIB)) -lmcfm $(LIBFLAGS) 
 	mv mcfmalt Bin/mcfm
 	@echo $(PDFMSG)
 	@echo $(NTUPMSG)
 
 mcfmcc: mcfmlib $(MAIN) cxxusercode.o
-	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -o $@ \
+	$(FC) $(FFLAGS) -L$(LIBDIR) -L$(QLDIR) -L$(FFDIR) -L$(PVDIR) -L$(RECURDIR) -L$(OVDIR) -L$(JetVHetoDIR) -o $@ \
 	$(patsubst %,$(OBJNAME)/%,$(MAIN)) $(OBJNAME)/cxxusercode.o -lmcfm $(LIBFLAGS) \
 	`fastjet-config` --libs -lstdc++
 	mv mcfmcc Bin/
@@ -2442,13 +2435,3 @@ qqqqampl.o: consts_dp.o spinfns.o recurrence.o
 qqqqgampl.o: consts_dp.o spinfns.o recurrence.o
 qqb_wpwp_qqb.o: qqqqampl.o consts_dp.o
 qqb_wpwp_qqb_g.o: qqqqgampl.o consts_dp.o
-
-# f95 modules for resummation
-types_mod.o:
-consts_mod.o: types_mod.o
-qcd_mod.o: types_mod.o consts_mod.o 
-rad_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o
-emsn_tools_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
-resummation_mod.o: types_mod.o consts_mod.o qcd_mod.o emsn_tools_mod.o rad_tools_mod.o
-virtfin_mod.o: types_mod.o consts_mod.o qcd_mod.o rad_tools_mod.o
-jetvheto_interface.o: types_mod.o consts_mod.o resummation_mod.o

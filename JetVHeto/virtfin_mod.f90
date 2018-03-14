@@ -5,6 +5,7 @@
 ! -------------------------------------------------------
 !========================================================
 module virtfin_mod
+  use types_mod; use consts_mod
   implicit none
   private
 
@@ -14,7 +15,6 @@ contains
 
   subroutine virtfin(p, msq, msqv)
     implicit none
-    include 'types.f'
     include 'constants.f'
     include 'b0.f'
     include 'nf.f'

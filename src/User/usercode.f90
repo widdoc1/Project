@@ -17,8 +17,8 @@
 !
 ! (this could be worked around - but is it wise to?)
 function userincludedipole(nd, ppart, mcfm_result)
-  use types_mod
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'npart.f'
   include 'mxpart.f'
@@ -85,9 +85,9 @@ end function userincludedipole
 !          (if applicable), otherwise equal to zero
 
 subroutine userplotter(pjet, wt, wt2, nd)
-  use types_mod
-  use rad_tools_mod, only: init_proc
+  use rad_tools_mod
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'nf.f'
   include 'mxpart.f'
@@ -369,8 +369,8 @@ end subroutine userplotter
 !----------------------------------------------------------------------
 ! user code to write info
 subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
-  use types_mod
   implicit none
+  include 'types.f'
   integer,          intent(in) :: unitno
   character*2,      intent(in) :: comment_string
   real(dp),         intent(in) :: xsec, xsec_err
@@ -385,8 +385,8 @@ subroutine userhistofin(xsec,xsec_err,itno,itmx)
 !	This function allows for extra user-defined operations
 !	at the end of each iteration (itno>0) and at the end of
 !	the run of the program (itno=0).
-  use types_mod
   implicit none
+  include 'types.f'
   integer,  intent(in) :: itno,itmx
   real(dp), intent(in) :: xsec,xsec_err
 end subroutine userhistofin
@@ -398,8 +398,8 @@ end subroutine userhistofin
 function dr(p,q)
   ! copy of r(p,i,j) function but works for two given
   ! 4-momenta: p and q
-  use types_mod
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'nf.f'
   real(dp), intent(in) :: p(4),q(4)
@@ -427,8 +427,8 @@ function dr(p,q)
 end function
 
 function ATLAS_hww2017(ppart) result(res)
-  use types_mod
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'npart.f'
   include 'mxpart.f'

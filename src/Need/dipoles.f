@@ -31,10 +31,9 @@
 
 ***************************** Quark-Quark *****************************
       function ii_qq(x,L,vorz)
-      use types_mod
       use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_qq
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
@@ -199,12 +198,10 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
 ***************************** Quark-Gluon *****************************
       function ii_qg(x,L,vorz)
-      use types_mod
       use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_qg
-      
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
       include 'constants.f'
@@ -297,12 +294,10 @@ c  - [x^2+(1-x)^2]*epinv
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)
-      use types_mod
       use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_gq
-      
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
       include 'constants.f'
@@ -401,12 +396,10 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
 
 ***************************** Gluon-Gluon *****************************
       function ii_gg(x,L,vorz)
-      use types_mod
       use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_gg
-      
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
       include 'constants.f'
