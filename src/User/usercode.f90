@@ -207,7 +207,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
 
   write(*,*) "ptj_veto=", ptj_veto
   write(*,*) "M_B=", sqrt(two*dot(pjet,1,2))
-  write(*,*) "L_tilde=", Ltilde(ptj_veto/q_scale, p_pow)
+  write(*,*) "L_tilde=", Ltilde((/ptj_veto/q_scale/), p_pow)
   write(*,*) "muR=", scale
   write(*,*) "muF=", facscale
   write(*,*) "Q=", q_scale
