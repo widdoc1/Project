@@ -3,7 +3,7 @@
 # Replace this with the location of Cernlib on your system (if desired)
 CERNLIB     = 
 # Replace this with the location of LHAPDF on your system (if desired)
-LHAPDFLIB   = /usr/local/lib
+LHAPDFLIB   =
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
 USEOMP = YES

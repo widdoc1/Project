@@ -36,6 +36,7 @@
 Bin/mcfm
 Bin/mcfm_omp
 Bin/mcfm_mpi
+Bin/PDFsets
 QCDLoop/test
 
 # Input Cards
