@@ -100,7 +100,6 @@ subroutine userplotter(pjet, wt, wt2, nd)
   include 'kpart.f'
   include 'nproc.f'
   include 'kprocess.f'
-  include 'born_config.f'
   include 'scale.f'
   include 'facscale.f'
   include 'jetvheto.f'
@@ -109,8 +108,23 @@ subroutine userplotter(pjet, wt, wt2, nd)
   common/Rcut/Rcut
   real(dp) :: dot, M_B
   integer  :: order
-  real(dp) :: sudakov
-
+  real(dp) :: sudakov_arr(1)
+  interface
+     function sudakov(proc, M, muR, muF, as, Q, p, jet_radius,&
+          &observable, ptj_veto, order) result(res)
+       use types
+       use consts
+       use rad_tools
+       use resummation
+       implicit none
+       character(len=*),            intent(in)  :: proc, observable
+       integer,                     intent(in)  :: order
+       real(dp),                    intent(in)  :: M, muR, muF, Q, p, as,&
+            &jet_radius, ptj_veto(:)
+       type(process_and_parameters)             :: cs
+       real(dp) :: res(size(ptj_veto))
+     end function sudakov
+  end interface
   real(dp), intent(in) :: pjet(mxpart,4)
   real(dp), intent(inout) :: wt,wt2
   integer,  intent(in) :: nd
@@ -127,7 +141,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   real(dp) :: ptrel
   logical, save :: first = .true.
   integer :: tag
-
+  
   if (first) then
      tag   = tagbook
 
@@ -182,8 +196,9 @@ subroutine userplotter(pjet, wt, wt2, nd)
         order = 2
      end select
 
-     wt = wt*sudakov(born_config, M_B, scale, facscale, as, q_scale, p_pow,&
-          &Rcut, observable, ptj_veto, order)
+     sudakov_arr=sudakov(born_config, M_B, scale, facscale, as, q_scale, p_pow,&
+          &Rcut, observable, (/ptj_veto/), order) 
+     wt = wt*sudakov_arr(1)
      wt2 = wt**2
   end if
 

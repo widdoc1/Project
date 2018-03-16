@@ -31,8 +31,7 @@
       real(dp),parameter::rt2=1.41421356237309504880168872420969798_dp
       real(dp),parameter::twort2=two*rt2
       real(dp),parameter::fourrt2=four*rt2
-!     real(dp),parameter::rt2onpi=0.797884560802865371431347722487877591_dp
-      real(dp),parameter::rt2onpi=0.797884560802865371431347722487878_dp
+      real(dp),parameter::rt2onpi=0.797884560802865371431347722487877591
 ! sqrt(two/pi)
 !-----------------------------------------------------
 !-----------------------------------------------------

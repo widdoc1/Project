@@ -5,7 +5,6 @@
       include 'b0.f'
       include 'nf.f'
       include 'mxpart.f'
-      include 'born_config.f'
       include 'scale.f'
       include 'facscale.f'
       include 'jetvheto.f'
