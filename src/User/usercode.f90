@@ -202,6 +202,19 @@ subroutine userplotter(pjet, wt, wt2, nd)
      wt2 = wt**2
   end if
 
+  do i=1,size(pjet(:,0))
+     write(*,*) "pjet(",i,")= ", pjet(i,:)
+  enddo
+
+  write(*,*) "ptj_veto=", ptj_veto
+  write(*,*) "M_B=", sqrt(two*dot(pjet,1,2))
+  write(*,*) "L_tilde=", Ltilde(ptj_veto/q_scale, p_pow)
+  write(*,*) "muR=", scale
+  write(*,*) "muF=", facscale
+  write(*,*) "Q=", q_scale
+  write(*,*) "as=", as
+  write(*,*) "suda=", sudakov_arr
+
   !define quantities to plot
   pt3=pt(3,pjet)
   pt4=pt(4,pjet) 
