@@ -1,3 +1,61 @@
+2018-03-16  Luke  <luke@Rus>
+
+	* src/ZZ/gg_hzz_tb.f (gg_hZZ_tb): added in kappa's to gg -> H -> ZZ for the exact top and bottom loops
+
+	* src/ZZ/gg_ZZ_int.f (gg_ZZ_int): added in kappa's to interference between the gg -> H -> ZZ signal process and gg -> ZZ continuum background
+
+	* src/ZZ/gg_ZZ_all.f (gg_ZZ_all): added in kappa's to gg -> ZZ for the complete amplitude squared
+
+	* src/ZZ/gg_ZZ_Hpi.f (gg_ZZ_Hpi): added in kappa's to gg -> H -> ZZ for the signal process and the interference with the gg -> ZZ NNLO contribution to the continuum background
+
+	* src/ZZ/getggHZZamps.f (getggHZZamps): added in kappa's to gg -> H -> ZZ amplitude
+
+	* src/HWW/gg_WW_int.f (gg_ww_int): added in kappa's to gg -> WW for the complete amplitude squared
+
+	* src/HWW/qqb_hww_tb.f (qqb_hww_tb): added in kappa's to gg -> H -> WW for the exact top and bottom loops
+
+	* src/User/usercode.f90: added interfaces for JetVHeto, ATLAS cuts for HWW, new histograms for observables of interest
+
+	* src/User/bookplot.f (bookplot): added in support for the new parts to the histogramming routines
+
+	* src/Procdep/virtfin.f (virtfin): added function to extract the finite part of the virtual corrections and add the logs needed for resummation
+
+	* src/Procdep/resmNNLLint.f (resmNNLLint): added in special function for the calculation of nnll resummation and the related expansions of the resummation, anything requiring convolutions with dipoles added in here.
+
+	* src/Procdep/resmNLLint.f (resmNLLint): added in special function for the calculation of nll resummation
+
+	* src/Phase/phi3m0.f (phi3m0): added in checks to catch NaNs in phase space generation
+
+	* src/Phase/phi1_2.f (phi1_2): added in checks to catch NaNs in phase space generation
+
+	* src/Need/writeinput.f (writeinput): mirrors changes to reader_input
+
+	* src/Need/setrunname.f (setrunname): modified run name to include the resummation scale for resummation processes
+
+	* src/Need/scaleset.f (scaleset): added in running of resummation scale Q
+
+	* src/Need/reader_input.f (reader_input): added inputs for resummation and kappa's
+
+	* src/Need/kpartstring.f (kpartstring): added in part strings for the new parts
+
+	* src/Need/dipoles.f: added in additional dipoles for performing the resummation
+
+	* src/Integrate/mcfm_vegasnr.f (mcfm_vegas): added integration of new parts: ll, nll, etc
+
+	* src/Inc/kprocess.f (main): updated to be compatible with f90
+
+	* src/Inc/kpart.f (main): added in new modes for the resummation
+
+	* src/Inc/kappa.f (main): kappa parameters for study
+
+	* src/Inc/jetvheto.f (main): JetVHeto parameters and variables needed by MCFM
+
+	* src/Inc/constants.f (main): updated to be compatible with f90
+
+	* src/Inc/born_config.f (main): Born configuration for jetVHeto initialisation
+
+	* src/Inc/b0.f (main): updated to be compatible with f90
+
 2018-03-15  cslp018871  <ab625@cslp018871.localdomain>
 
 	* JetVHeto/resummation.f90: Sudakov form factor + NNLL

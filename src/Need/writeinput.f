@@ -549,9 +549,6 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'omitgg') .or. (writeall)) then
       write(unitno,fmt=f98) omitgg,'omitgg'
       endif
-!      if ((tag == 'omitqq') .or. (writeall)) then
-!      write(unitno,fmt=f98) omitqq,'omitqq'
-!      endif
       if ((tag == 'vanillafiles') .or. (writeall)) then
       write(unitno,fmt=f98) vanillafiles,'vanillafiles'
       endif

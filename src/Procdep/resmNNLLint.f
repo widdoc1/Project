@@ -61,7 +61,6 @@
       include 'hbbparams.f'
       include 'mpicommon.f'
       include 'jetvheto.f'
-      include 'ptjveto.f'
 c--- APPLgrid - grid includes
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -154,7 +153,6 @@ c--- bother calculating the matrix elements for it, instead bail out
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
       L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
-! hack for the moment to solve PDF scales
       if (do_lumi) then
          facscaleLtilde = facscale * exp(-L_tilde)
       else
