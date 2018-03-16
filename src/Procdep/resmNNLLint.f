@@ -113,6 +113,8 @@ c      data p/56*0._dp/
       data nshot/1/
       save nshot
       external gg_ZZ,qqb_w1jet_vbis
+      real(dp) :: L_tilde_arr(1)
+
 !$omp threadprivate(/rvcolourchoice/)
 !$omp threadprivate(nshot)
 
@@ -152,7 +154,8 @@ c--- bother calculating the matrix elements for it, instead bail out
       
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
-      L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
+      L_tilde_arr = Ltilde((/ptj_veto/q_scale/), p_pow)
+      L_tilde = L_tilde_arr(1)
       if (do_lumi) then
          facscaleLtilde = facscale * exp(-L_tilde)
       else

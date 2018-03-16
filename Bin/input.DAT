@@ -14,7 +14,7 @@
 
 [General options to specify the process and execution]
 61	 	[nproc]
-'lord'           [part 'lo','nlo','nnlo','nlocoeff','nnlocoeff']
+'nnll'           [part 'lo','nlo','nnlo','nlocoeff','nnlocoeff']
 '13TeV'		['runstring']
 13000d0		[sqrts in GeV]
 +1		[ih1 =1 for proton and -1 for antiproton]
@@ -136,7 +136,7 @@
 .false.		[noglue]
 .false.		[ggonly]
 .false.		[gqonly]
-.false.		[omitgg]
+.true.		[omitgg]
 .false.		[vanillafiles]
 .true.		[clustering]
 .false.		[realwt]

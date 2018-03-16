@@ -112,8 +112,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   interface
      function sudakov(proc, M, muR, muF, as, Q, p, jet_radius,&
           &observable, ptj_veto, order) result(res)
-       use types
-       use consts
+       use types; use consts_dp
        use rad_tools
        use resummation
        implicit none

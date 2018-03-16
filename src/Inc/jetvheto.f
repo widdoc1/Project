@@ -9,7 +9,7 @@
       logical  :: do_suda ! do sudakov reweight
 
 !--- the follow are parameters that should not generally be changed
-      character(len=*), parameter :: observable = 'pt_jet' ! maybe add experimental LL_R resummation later?
+      character(len=*), parameter :: observable = 'ptj' ! maybe add experimental LL_R resummation later?
       real(dp), parameter :: p_pow = 5._dp ! exponent for power supression of resummed terms
 
 !--- the following is set by MCFM and used when computing JetVHeto
