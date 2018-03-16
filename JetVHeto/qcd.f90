@@ -1,6 +1,5 @@
-! AB where does it come from?
 module qcd
-  use types; use consts
+  use types; use consts_dp
 
   integer,  parameter :: nf_def = 5
   real(dp), parameter :: ca_def = 3, cf_def = four/three, tr_def = half

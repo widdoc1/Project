@@ -7,11 +7,11 @@ ALLPROGSRC =
 
 ALLPROGOBJS =	
 
-SRCS =	consts.f90 qcd.f90 emsn_tools.f90 rad_tools.f90 resummation.f90 jetvheto_interface.f90
+SRCS =	qcd.f90 emsn_tools.f90 rad_tools.f90 resummation.f90 jetvheto_interface.f90 types.f90 warnings_and_errors.f90
 
 POSTSRCS =	
 
-OBJS =	consts.o qcd.o emsn_tools.o rad_tools.o resummation.o jetvheto_interface.o
+OBJS =	qcd.o emsn_tools.o rad_tools.o resummation.o jetvheto_interface.o types.o warnings_and_errors.o
 
 POSTOBJS =
 POSTLIB =
@@ -52,9 +52,9 @@ realclean:
 # a couple of lines to help with the combination of automatic
 # generation of banner.f90 and the multi-directory build.
 types.o:
-consts.o: types.o
-qcd.o: types.o consts.o 
-rad_tools.o: types.o consts.o qcd.o
-emsn_tools.o: types.o consts.o qcd.o rad_tools.o
-resummation.o: types.o consts.o qcd.o emsn_tools.o rad_tools.o
-jetvheto_interface.o: types.o consts.o resummation.o
+qcd.o: types.o  
+rad_tools.o: types.o qcd.o warnings_and_errors.o
+emsn_tools.o: types.o  qcd.o rad_tools.o
+resummation.o: types.o  qcd.o emsn_tools.o rad_tools.o warnings_and_errors.o 
+jetvheto_interface.o: types.o resummation.o
+warnings_and_errors.o:

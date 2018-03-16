@@ -73,6 +73,8 @@ c--- To use VEGAS random number sequence :
       external qq_tchan_ztq,qq_tchan_ztq_mad
       external qq_tchan_htq,qq_tchan_htq_mad,qq_tchan_htq_amp
       external qqb_gamgam_g,qqb_gmgmjt_gvec
+      real(dp) :: L_tilde_arr(1)
+
 !$omp threadprivate(/bqscale/)
 
 !$omp atomic
@@ -108,7 +110,8 @@ c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
-      L_tilde = Ltilde(ptj_veto/q_scale, p_pow)
+      L_tilde_arr = Ltilde((/ptj_veto/q_scale/), p_pow)
+      L_tilde = L_tilde_arr(1)
       if (do_lumi) then
          facscaleLtilde = facscale * exp(-L_tilde)
       else
