@@ -1,0 +1,19 @@
+2018-03-15  cslp018871  <ab625@cslp018871.localdomain>
+
+	* JetVHeto/resummation.f90: Sudakov form factor + NNLL
+	corrections, stripped of luminosities
+
+	* JetVHeto/rad_tools.f90: from JetVHeto, use elemental functions
+	instead of functions of arrays of numbers?
+
+	* JetVHeto/emsn_tools.f90: from JetVHeto, no small-R corrections
+
+	* JetVHeto/qcd.f90: from hoppet
+
+	* JetVHeto/types.f90: from hoppet, adapted to 64-bit arithmetics?
+
+	* JetVHeto/consts.f90 (consts): from hoppet
+
+	* JetVHeto/jetvheto_interface.f90: This is an f77
+	interface to access the Sudakov form factor ontained from JetVHeto
+

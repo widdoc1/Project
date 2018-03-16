@@ -3,7 +3,7 @@
 # Replace this with the location of Cernlib on your system (if desired)
 CERNLIB     = 
 # Replace this with the location of LHAPDF on your system (if desired)
-LHAPDFLIB   = "/home/luke/libs/lhapdf-6.2.0/lib"
+LHAPDFLIB   = /usr/local/lib
 
 # Flag for compiling with OpenMP (YES) or not (anything else)
 USEOMP = YES
@@ -2177,7 +2177,7 @@ USERFILES += gridwrap.o
 # endif
 
 LIBDIR=.
-LIBFLAGS=-I$(JETVHETODIR) -ljetvheto -lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(LIBEXT) -lsmallY$(LIBEXT) -lsmallP$(LIBEXT) -lsmallF$(LIBEXT)
+LIBFLAGS=-ljetvheto -lqcdloop$(LIBEXT) -lff$(LIBEXT) -lov$(LIBEXT) -lpv$(LIBEXT) -lsmallG$(LIBEXT) -lsmallY$(LIBEXT) -lsmallP$(LIBEXT) -lsmallF$(LIBEXT)
 
 # the files that do not go into the library                                                      
 NONLIB= \

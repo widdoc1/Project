@@ -1,3 +1,4 @@
+! AB maybe change name here to make clear that we have the Sudakov only?
 module resummation
   use types; use consts
   use rad_tools

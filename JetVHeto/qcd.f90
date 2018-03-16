@@ -1,4 +1,4 @@
-! $Id: qcd.f90,v 1.13 2004/09/18 14:39:29 salam Exp $
+! AB where does it come from?
 module qcd
   use types; use consts
 

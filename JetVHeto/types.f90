@@ -1,3 +1,4 @@
+! AB what about 32-bit machines?
 module types
   use, intrinsic :: iso_fortran_env
   implicit none

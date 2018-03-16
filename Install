@@ -3,16 +3,16 @@
 # first configure the makefile
 
 # Insert the location of Cernlib on your system (if desired)
-set CERNLIB     = 
+CERNLIB=
 # Insert the location of LHAPDF on your system (if desired)
-set LHAPDFLIB   = 
+LHAPDFLIB=/usr/local/lib
 
-if [$CERNLIB == '']; then
-  echo 'Warning: no directory specified for CERNLIB'
+if [[ $CERNLIB = '' ]]; then
+    echo 'Warning: no directory specified for CERNLIB'
 else
-  echo 'CERNLIB directory: '$CERNLIB
+    echo 'CERNLIB directory: '$CERNLIB
 fi
-if [$LHAPDFLIB == '']; then
+if [[ $LHAPDFLIB = '' ]]; then
   echo 'Warning: no directory specified for LHAPDF'
 else
   echo 'LHAPDFLIB directory: '$LHAPDFLIB
@@ -71,6 +71,16 @@ if [ ! -e TensorReduction/pv/libpv_omp.a ]; then
   make -f makefile_omp
   cd ..
 fi
+
+# Compile JetVHeto library if necessary
+if [ ! -e JetVHeto/libjetvheto.a ]; then
+  ls
+  echo 'Compiling JetVHeto library'
+  cd JetVHeto
+  make 
+  cd ..
+fi
+
 
 echo ''
 echo 'Installation complete. You may now compile OMP MCFM by'

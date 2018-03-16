@@ -1,3 +1,4 @@
+! AB: this does not include small-R corrections, why? 
 !========================================================
 !--------------------------------------------------------
 ! Includes a module for the non-inclusive correction

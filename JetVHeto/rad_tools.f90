@@ -131,7 +131,7 @@ contains
 
   !=========================================================
   ! Computes the modified logarithm
-  function Ltilde(v,p) result(res)
+  elemental function Ltilde(v,p) result(res)
     real(dp), intent(in) :: v, p
     real(dp) :: Z
     real(dp) :: res
@@ -148,7 +148,7 @@ contains
   end function Ltilde
 
   !======================================================================
-  function get_lambda(L, cs) result(res)
+  elemental function get_lambda(L, cs) result(res)
     real(dp),                  intent(in) :: L
     type(process_and_parameters), intent(in) :: cs
     !-----------------------------------------
