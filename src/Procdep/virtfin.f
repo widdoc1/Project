@@ -11,9 +11,9 @@
       include 'epinv.f'
       include 'epinv2.f'
       include 'qcdcouple.f'
-      integer :: j,k
-      real(dp), intent(in) :: p(mxpart, 4)
-      real(dp), intent(inout) :: msq(-nf:nf,-nf:nf), msqv(-nf:nf,-nf:nf)
+      integer  :: j,k
+      real(dp) :: p(mxpart, 4)
+      real(dp) :: msq(-nf:nf,-nf:nf), msqv(-nf:nf,-nf:nf)
       real(dp) :: dot, virt, xl12, T2, ga, I
 
       xl12=log(two*dot(p,1,2)/musq)
@@ -41,12 +41,10 @@
             else
 !              subtract divergences with insertion operator
                msqv(j,k) = msqv(j,k) + ason2pi*msq(j,k)*I
-
 !              additional C*pi**2/6 due to coupling mismatch
-               msqv(j,k) = msqv(j,k) + ason2pi*msq(j,k)*T2*pisqo6
-
+     &              + ason2pi*msq(j,k)*T2*pisqo6
 !              change into form for jet veto resummation
-               msqv(j,k) = msqv(j,k) - ason2pi*msq(j,k)*(-two*ga
+     &              - ason2pi*msq(j,k)*(-two*ga
      &              + T2*log(two*dot(p,1,2)/q_scale**2))
      &              * log(two*dot(p,1,2)/q_scale**2)
             endif
