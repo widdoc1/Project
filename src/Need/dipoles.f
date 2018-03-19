@@ -443,7 +443,7 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
-        ii_gg=(-pisq/12._dp + b0/ca * two*log(q_scale/facscale))
+        ii_gg=(-pisq/12._dp+b0/xn*two*log(q_scale/facscale))
      &        /(1-2*ason2pi*b0*L_tilde)
         if (scheme == 'tH-V') then
           return
@@ -461,12 +461,12 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       
       if (vorz == 2) then
         lx=log(x)
-        ii_gg=two*(omx/x+x*omx-one) * two*log(q_scale/facscale)
+        ii_gg=two*(omx/x+x*omx-one)*two*log(q_scale/facscale)
      &       /(1-2*ason2pi*b0*L_tilde)
         return
       endif
       
-      ii_gg=two/omx* two*log(q_scale/facscale)
+      ii_gg=two/omx*two*log(q_scale/facscale)
      &     /(1-2*ason2pi*b0*L_tilde)
       
       return   
@@ -474,10 +474,10 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnllexpd)
 
       if (vorz == 1) then
-        ii_gg=-pisq/12._dp + b0/ca * two*log(q_scale/facscale)
-     &        -two*b0/ca*L_tilde
+        ii_gg=-pisq/12._dp + b0/xn * two*log(q_scale/facscale)
+     &        -two*b0/xn*L_tilde
      &        -two*L_tilde**2
-     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/ca)*L_tilde ! expansion of the radiator
+     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/xn)*L_tilde ! expansion of the radiator
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -506,9 +506,9 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knllexpd)
 
       if (vorz == 1) then
-         ii_gg=-two*b0/ca*L_tilde
+         ii_gg=-two*b0/xn*L_tilde
      &        -two*L_tilde**2
-     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/ca)*L_tilde ! expansion of the radiator
+     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/xn)*L_tilde ! expansion of the radiator
         return
       endif
       
