@@ -238,8 +238,8 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qg=two*x*omx+(one-two*x*omx)*
-     &        (resm_opts%ln_Q2_muF2)/(1-2*as*beta0*L_tilde)
+         ii_qg=(two*x*omx+(one-two*x*omx)*
+     &        (resm_opts%ln_Q2_muF2))/(1-2*as*beta0*L_tilde)
       endif
       return
 
