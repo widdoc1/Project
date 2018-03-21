@@ -110,16 +110,17 @@ subroutine userplotter(pjet, wt, wt2, nd)
   integer  :: order
   real(dp) :: sudakov_arr(1)
   interface
-     function sudakov(proc, M, muR, muF, as, Q, p, jet_radius,&
-          &observable, ptj_veto, order) result(res)
+     function sudakov(proc, M, muR, muF, Q, as, p, jet_radius,&
+          &observable, small_r, small_r_R0, ptj_veto, order) result(res)
        use types; use consts_dp
        use rad_tools
        use resummation
        implicit none
        character(len=*),            intent(in)  :: proc, observable
        integer,                     intent(in)  :: order
-       real(dp),                    intent(in)  :: M, muR, muF, Q, p, as,&
-            &jet_radius, ptj_veto(:)
+       real(dp),                    intent(in)  :: M, muR, muF, Q, as, p,&
+            &small_r_R0, jet_radius, ptj_veto(:)
+       logical :: small_r
        type(process_and_parameters)             :: cs
        real(dp) :: res(size(ptj_veto))
      end function sudakov
@@ -195,8 +196,8 @@ subroutine userplotter(pjet, wt, wt2, nd)
         order = 2
      end select
 
-     sudakov_arr=sudakov(born_config, M_B, scale, facscale, as, q_scale, p_pow,&
-          &Rcut, observable, (/ptj_veto/), order) 
+     sudakov_arr=sudakov(born_config, M_B, scale, facscale, q_scale, as, p_pow,&
+          &Rcut, observable, small_r, r_scale, (/ptj_veto/), order) 
      wt = wt*sudakov_arr(1)
      wt2 = wt**2
   end if

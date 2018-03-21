@@ -281,8 +281,15 @@ c--- catch special scale choices for stop+b process
          write(unitno,*) 
      &        lstring//' [JetVHeto resummation options] )'
       endif
+
+      if ((tag == 'observable') .or. (writeall)) then
+      write(unitno,fmt=f96) obs_string,'observable'
+      endif
       if ((tag == 'q_scale') .or. (writeall)) then
-      write(unitno,fmt=f99) q_scalestart,'q_scale'  ! check if this should be Q_scale or Q_scalestart, possibly same for frag_scale?
+      write(unitno,fmt=f99) q_scalestart,'q_scale'
+      endif
+      if ((tag == 'r_scale') .or. (writeall)) then
+      write(unitno,fmt=f99) r_scale,'r_scale'
       endif
       if ((tag == 'ptj_veto') .or. (writeall)) then
       write(unitno,fmt=f99) ptj_veto,'ptj_veto'
