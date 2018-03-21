@@ -25,5 +25,6 @@
       common/jetvhetoinputs/q_scalestart,r_scale,ptj_veto
       common/jetvhetoinputs/jetvheto,do_lumi,do_suda,small_r
       common/jetvhetoinputs/observable,born_config
+      common/jetvhetointerim/obs_string
       common/jetvhetovars/q_scale,L_tilde
 !$omp threadprivate(/jetvhetovars/)
