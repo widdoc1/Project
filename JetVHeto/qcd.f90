@@ -1,6 +1,5 @@
-! $Id: qcd.f90,v 1.13 2004/09/18 14:39:29 salam Exp $
-module qcd_mod
-  use types_mod; use consts_mod
+module qcd
+  use types; use consts_dp
 
   integer,  parameter :: nf_def = 5
   real(dp), parameter :: ca_def = 3, cf_def = four/three, tr_def = half
@@ -37,4 +36,4 @@ module qcd_mod
   real(dp), public :: mvv_A3  = 16*cf_def*cmw_K2_def
   real(dp), public :: mvv_A3G = 16*ca_def*cmw_K2_def
   
-end module qcd_mod
+end module qcd

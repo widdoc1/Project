@@ -11,7 +11,8 @@
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
+# Compiled libraries
+*.a
 *.so
 *.dylib
 *.dll
@@ -35,6 +36,7 @@
 Bin/mcfm
 Bin/mcfm_omp
 Bin/mcfm_mpi
+Bin/PDFsets
 QCDLoop/test
 
 # Input Cards
@@ -59,3 +61,4 @@ QCDLoop/test
 
 # latex output
 *.pdf
+

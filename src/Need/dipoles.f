@@ -31,10 +31,8 @@
 
 ***************************** Quark-Quark *****************************
       function ii_qq(x,L,vorz)
-      use types_mod
-      use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_qq
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
@@ -48,10 +46,10 @@
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
       include 'scale.f'
+      include 'b0.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-gluon antenna, either
@@ -78,12 +76,12 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
-         ii_qq=(-pisq/12._dp + three/two*resm_opts%ln_Q2_muF2)
-     &    /(1-2*as*beta0*L_tilde)
+         ii_qq = (-pisq/12._dp + three/two * two*log(q_scale/facscale))
+     &    /(1-2*ason2pi*b0*L_tilde)
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
-          ii_qq=ii_qq-half
+          ii_qq = ii_qq-half
           return
         else
           write(6,*) 'Value of scheme not implemented properly ',scheme
@@ -96,24 +94,29 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-        ii_qq=(omx-(one+x)*resm_opts%ln_Q2_muF2)
-     &        /(1-2*as*beta0*L_tilde)
+        ii_qq = (omx - (one+x)*two*log(q_scale/facscale))
+     &        /(1-2*ason2pi*b0*L_tilde)
         return
       endif
 
-      ii_qq=two/omx * resm_opts%ln_Q2_muF2
-     &     /(1-2*as*beta0*L_tilde)
+      ii_qq = (two/omx * two*log(q_scale/facscale))
+     &     /(1-2*ason2pi*b0*L_tilde)
       return
 
 
       case(knnllexpd)
+!---  expansion at order alpha_s
+!---  ason2pi * cf * (h12*L**2 + h11*L + h10)
+!---
+!---  h12 = -2 * delta(qq)
+!---  h11 = -2*P_qq + (-2 * log(M**2/Q**2) + 3) * delta(qq)
+!---  h10 = -pi**2/12 * delta(qq)
 
       if (vorz == 1) then
-         ii_qq=-pisq/12._dp + three/two * resm_opts%ln_Q2_muF2    ! resummed coefficient
-     &        -two*three/two*L_tilde       ! coefficient of P_qq
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+         ii_qq = -pisq/12._dp + three/two * two*log(q_scale/facscale) ! resummed coefficient
+     &        -two*three/two*L_tilde ! coefficient of P_qq
+     &        -two*L_tilde**2
+     &        +(-two * (L + two*log(scale/q_scale)) + three)*L_tilde ! expansion of the radiator
          if (scheme == 'tH-V') then
             return
          elseif (scheme == 'dred') then
@@ -130,22 +133,22 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qq=omx-(one+x)*resm_opts%ln_Q2_muF2       ! resummed coefficient
+         ii_qq=omx-(one+x)* two*log(q_scale/facscale) ! resummed coefficient
      &        +two*(one+x)*L_tilde          ! coefficient of P_qq
          return
       endif
 
-      ii_qq=two/omx*resm_opts%ln_Q2_muF2 ! resummed coefficient
+      ii_qq=two/omx* two*log(q_scale/facscale) ! resummed coefficient
      &     -two*two/omx*L_tilde    ! coefficient of P_qq
       return
 
       case(knllexpd)
 
       if (vorz == 1) then
-        ii_qq=-two*three/two*L_tilde       ! coefficient of P_qq
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+        ii_qq = -two*three/two*L_tilde       ! coefficient of P_qq
+     &        -two*L_tilde**2
+     &        +(-two* (L + two*log(scale/q_scale))
+     &        +three)*L_tilde ! expansion of the radiator
         return
       endif
       
@@ -195,12 +198,9 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
 
 ***************************** Quark-Gluon *****************************
       function ii_qg(x,L,vorz)
-      use types_mod
-      use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_qg
-      
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
       include 'constants.f'
@@ -211,10 +211,10 @@ c  * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
+      include 'b0.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-quark antenna, either
@@ -230,7 +230,7 @@ c  - [x^2+(1-x)^2]*epinv
       select case(kpart)
       case(knnll, klumi, klumi1)
 
-      ii_qg=0._dp
+      ii_qg = 0._dp
       if ((vorz == 1) .or. (vorz == 3)) return
       
       omx=one-x
@@ -238,8 +238,8 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-         ii_qg=(two*x*omx+(one-two*x*omx)*
-     &        (resm_opts%ln_Q2_muF2))/(1-2*as*beta0*L_tilde)
+         ii_qg = (two*x*omx+(one-two*x*omx)*
+     &        two*log(q_scale/facscale))/(1-2*ason2pi*b0*L_tilde)
       endif
       return
 
@@ -254,8 +254,8 @@ c  - [x^2+(1-x)^2]*epinv
       lx=log(x)
          
       if (vorz == 2) then
-        ii_qg=two*x*omx+(one-two*x*omx)*
-     &        (resm_opts%ln_Q2_muF2) ! resummation coefficient
+        ii_qg = two*x*omx+(one-two*x*omx)*
+     &        two*log(q_scale/facscale) ! resummation coefficient
      &        -two*(one-two*x*omx)*L_tilde ! P_qg coefficient
       endif
       return
@@ -294,12 +294,9 @@ c  - [x^2+(1-x)^2]*epinv
       
 ***************************** Gluon-Quark *****************************
       function ii_gq(x,L,vorz)
-      use types_mod
-      use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_gq
-      
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
       include 'constants.f'
@@ -310,10 +307,10 @@ c  - [x^2+(1-x)^2]*epinv
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
+      include 'b0.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial quark-quark (--> gluon) antenna, either
@@ -338,8 +335,8 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
-     &        /(1-2*as*beta0*L_tilde)
+        ii_gq = ((one+omx**2)/x * two*log(q_scale/facscale) + x)
+     &        /(1-2*ason2pi*b0*L_tilde)
         return
       endif
 
@@ -355,7 +352,7 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       lx=log(x)
       
       if (vorz == 2) then
-        ii_gq=((one+omx**2)/x*resm_opts%ln_Q2_muF2+x)
+        ii_gq = ((one+omx**2)/x * two*log(q_scale/facscale) +x)
      &        -two*(one+omx**2)/x*L_tilde
         return
       endif
@@ -399,12 +396,9 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
 
 ***************************** Gluon-Gluon *****************************
       function ii_gg(x,L,vorz)
-      use types_mod
-      use qcd_mod, only: beta0
-      use rad_tools_mod
       implicit none
+      include 'types.f'
       real(dp):: ii_gg
-      
       integer:: vorz
       real(dp):: x,L,omx,lx,lomx
       include 'constants.f'
@@ -417,12 +411,11 @@ c  [ln(1-x)] - [(1+(1-x)^2)/x]*epinv
       include 'alfacut.f'
 
       include 'kpart.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
+      include 'b0.f'
       include 'scale.f'
       include 'facscale.f'
+      include 'jetvheto.f'
       include 'qcdcouple.f'
-      include 'b0.f'
 c--- returns the integral of the subtraction term for an
 c--- initial-initial gluon-gluon antenna, either
 c--- divergent for _v (vorz=1) or finite for _z (vorz=2,3 for reg,plus)     
@@ -450,8 +443,8 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       case(knnll, klumi, klumi1)
 
       if (vorz == 1) then
-        ii_gg=(-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2)
-     &        /(1-2*as*beta0*L_tilde)
+        ii_gg=(-pisq/12._dp+b0/xn*two*log(q_scale/facscale))
+     &        /(1-2*ason2pi*b0*L_tilde)
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -468,25 +461,23 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       
       if (vorz == 2) then
         lx=log(x)
-        ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
-     &       /(1-2*as*beta0*L_tilde)
+        ii_gg=two*(omx/x+x*omx-one)*two*log(q_scale/facscale)
+     &       /(1-2*ason2pi*b0*L_tilde)
         return
       endif
       
-      ii_gg=two/omx*resm_opts%ln_Q2_muF2
-     &     /(1-2*as*beta0*L_tilde)
+      ii_gg=two/omx*two*log(q_scale/facscale)
+     &     /(1-2*ason2pi*b0*L_tilde)
       
       return   
 
       case(knnllexpd)
 
       if (vorz == 1) then
-        ii_gg=-pisq/12._dp + b0/ca*resm_opts%ln_Q2_muF2
-     &        -two*b0/ca*L_tilde
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
-
+        ii_gg=-pisq/12._dp + b0/xn * two*log(q_scale/facscale)
+     &        -two*b0/xn*L_tilde
+     &        -two*L_tilde**2
+     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/xn)*L_tilde ! expansion of the radiator
         if (scheme == 'tH-V') then
           return
         elseif (scheme == 'dred') then
@@ -503,22 +494,21 @@ c    * ( 2*L + 4*[ln(1-x)] - 2*epinv )
       
       if (vorz == 2) then
          lx=log(x)
-         ii_gg=two*(omx/x+x*omx-one)*resm_opts%ln_Q2_muF2
+         ii_gg=two*(omx/x+x*omx-one)* two*log(q_scale/facscale)
      &         -two*(two*(omx/x+x*omx-one))*L_tilde
          return
       endif
       
-      ii_gg=two/omx*resm_opts%ln_Q2_muF2
+      ii_gg=two/omx* two*log(q_scale/facscale)
      &      -two*(two/omx)*L_tilde
       return
 
       case(knllexpd)
 
       if (vorz == 1) then
-         ii_gg=-two*b0/ca*L_tilde
-     &        +(-coeff_Rad_A(1)*L_tilde**2
-     &        +(-coeff_Rad_A(1)*(-resm_opts%ln_Q2_M2)
-     &        -coeff_Rad_B(1))*L_tilde) ! expansion of the radiator
+         ii_gg=-two*b0/xn*L_tilde
+     &        -two*L_tilde**2
+     &        +(-two * (L + two*log(scale/q_scale)) + two*b0/xn)*L_tilde ! expansion of the radiator
         return
       endif
       

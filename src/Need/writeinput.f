@@ -52,8 +52,7 @@ c--- by the strings 'lstring' and 'rstring'
       include 'taucut.f'
       include 'iterat.f'
       include 'mpicommon.f'
-      include 'JetVHeto.f'
-      include 'ptjveto.f'
+      include 'jetvheto.f'
       include 'kappa.f'
 c--- APPLgrid - flag using grid
 c      include 'ptilde.f'
@@ -282,27 +281,19 @@ c--- catch special scale choices for stop+b process
          write(unitno,*) 
      &        lstring//' [JetVHeto resummation options] )'
       endif
-      if ((tag == 'Q_scale') .or. (writeall)) then
-         write(unitno,fmt=f99) Q_scalestart,'Q_scale'  ! check if this should be Q_scale or Q_scalestart, possibly same for frag_scale?
-      endif
-      if ((tag == 'R_scale') .or. (writeall)) then
-         write(unitno,fmt=f99) R_scale,'R_scale'
-      endif
+
       if ((tag == 'observable') .or. (writeall)) then
-         write(unitno,fmt=f96) kobs,'observable'
+      write(unitno,fmt=f96) obs_string,'observable'
       endif
-      if ((tag == 'Born configuration') .or. (writeall)) then
-         write(unitno,fmt=f96) Bconf,'Born configuration'
+      if ((tag == 'q_scale') .or. (writeall)) then
+      write(unitno,fmt=f99) q_scalestart,'q_scale'
       endif
-      if ((tag == 'ptjveto') .or. (writeall)) then
-         write(unitno,fmt=f99) ptjveto,'ptjveto'
+      if ((tag == 'r_scale') .or. (writeall)) then
+      write(unitno,fmt=f99) r_scale,'r_scale'
       endif
-      if ((tag == 'matching scheme') .or. (writeall)) then
-         write(unitno,fmt=f96) mscheme,'matching scheme'
+      if ((tag == 'ptj_veto') .or. (writeall)) then
+      write(unitno,fmt=f99) ptj_veto,'ptj_veto'
       endif
-      ! if ((tag == 'pure_lumi') .or. (writeall)) then
-      !    write(unitno,fmt=f98) pure_lumi,'pure luminosity'
-      ! endif
 
       if (writeall) then
       write(unitno,*)
@@ -565,9 +556,6 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'omitgg') .or. (writeall)) then
       write(unitno,fmt=f98) omitgg,'omitgg'
       endif
-!      if ((tag == 'omitqq') .or. (writeall)) then
-!      write(unitno,fmt=f98) omitqq,'omitqq'
-!      endif
       if ((tag == 'vanillafiles') .or. (writeall)) then
       write(unitno,fmt=f98) vanillafiles,'vanillafiles'
       endif

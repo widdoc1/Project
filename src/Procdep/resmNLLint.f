@@ -1,7 +1,7 @@
       function resmNLLint(r,wgt)
-      use types_mod
-      use rad_tools_mod
+      use rad_tools, only: Ltilde
       implicit none
+      include 'types.f'
       real(dp):: resmNLLint
       
       include 'constants.f'
@@ -45,9 +45,7 @@ c --- DSW.
       include 'bypart.f'
       integer:: pflav,pbarflav
 !     resummation
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
-      include 'ptjveto.f'
+      include 'jetvheto.f'
 c--- To use VEGAS random number sequence :
       real(dp):: ran2
       integer:: ih1,ih2,j,k,nvec,sgnj,sgnk,ii,i1,i2,i3,i4
@@ -64,6 +62,7 @@ c--- To use VEGAS random number sequence :
       real(dp):: xmsq_bypart(-1:1,-1:1)
       logical:: bin,includedipole,checkpiDpjk
       real(dp):: b1scale,q2scale,q1scale,b2scale
+      real(dp) :: facscaleLtilde
       external qg_tbq,BSYqqb_QQbdk_gvec,qqb_QQbdk,qg_tbqdk,qg_tbqdk_gvec,
      & qqb_Waa,qqb_Waa_mad
      & qqb_Zbbmas,qqb_Zbbmas,qqb_totttZ,qqb_totttZ_mad
@@ -74,6 +73,8 @@ c--- To use VEGAS random number sequence :
       external qq_tchan_ztq,qq_tchan_ztq_mad
       external qq_tchan_htq,qq_tchan_htq_mad,qq_tchan_htq_amp
       external qqb_gamgam_g,qqb_gmgmjt_gvec
+      real(dp) :: L_tilde_arr(1)
+
 !$omp threadprivate(/bqscale/)
 
 !$omp atomic
@@ -86,8 +87,6 @@ c--- ensure isolation code does not think this is fragmentation piece
       p(:,:)=0._dp
 
       call gen_lops(r,p,pswt,*999)
-
-      resum=.true.
 
       nvec=npart+2
       call dotem(nvec,p,s)
@@ -111,8 +110,24 @@ c      call writeout(p)
 c      stop
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
 
-      call resmset(p)
-      
+      L_tilde_arr = Ltilde((/ptj_veto/q_scale/), p_pow)
+      L_tilde = L_tilde_arr(1)
+      if (do_lumi) then
+         facscaleLtilde = facscale * exp(-L_tilde)
+      else
+         facscaleLtilde = facscale
+      end if
+
+c$$$      write(*,*) "jetvheto =", jetvheto
+c$$$      write(*,*) "q_scalestart= ", q_scalestart
+c$$$      write(*,*) "q_scale= ", q_scale
+c$$$      write(*,*) "ptj_veto= ", ptj_veto
+c$$$      write(*,*) "p_pow= ", p_pow
+c$$$      write(*,*) "L_tilde=", L_tilde
+c$$$
+c$$$      write(*,*) "scale= ", scale
+c$$$      write(*,*) "facscale= ", facscale
+
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
 
@@ -826,13 +841,11 @@ c--- DEFAULT
 
       if (currentPDF == 0) then
         resmNLLint=flux*pswt*xmsq/BrnRat
-     &        *sudakov
       endif
             
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*pswt*xmsq/BrnRat*wgt/itmx
-     &        *sudakov
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -841,24 +854,19 @@ c--- loop over all PDF error sets, if necessary
       endif    
 
         wt_gg=xmsq_bypart(0,0)*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &     *sudakov
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
 
       call getptildejet(0,pjet)
       
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*pswt/BrnRat
-     &     *sudakov
       do j=-1,1
          do k=-1,1
 !$omp atomic            

@@ -47,23 +47,42 @@ c      qbq=fac*s(2,4)**2
       qqb=za(2,3)*zb(4,1)
       qbq=za(1,3)*zb(4,2)
 
+c$$$      do j=-nf,nf
+c$$$      k=-j
+c$$$          if ((j == 0) .and. (k == 0)) then
+c$$$            msq(j,k)=0._dp
+c$$$          elseif ((j > 0) .and. (k < 0)) then
+c$$$            msq(j,k)=+abs((Q(j)*q1+L(j)*l1*prop)*qqb)**2
+c$$$     &               +abs((Q(j)*q1+R(j)*r1*prop)*qqb)**2
+c$$$     &               +abs((Q(j)*q1+L(j)*r1*prop)*qbq)**2
+c$$$     &               +abs((Q(j)*q1+R(j)*l1*prop)*qbq)**2
+c$$$          elseif ((j < 0) .and. (k > 0)) then
+c$$$            msq(j,k)=+abs((Q(k)*q1+L(k)*l1*prop)*qbq)**2
+c$$$     &               +abs((Q(k)*q1+R(k)*r1*prop)*qbq)**2
+c$$$     &               +abs((Q(k)*q1+L(k)*r1*prop)*qqb)**2
+c$$$     &               +abs((Q(k)*q1+R(k)*l1*prop)*qqb)**2
+c$$$          endif
+c$$$          msq(j,k)=msq(j,k)*fac
+c$$$      enddo
+
       do j=-nf,nf
-      k=-j
-          if ((j == 0) .and. (k == 0)) then
+         k=-j
+         if ((j == 0) .and. (k == 0)) then
             msq(j,k)=0._dp
-          elseif ((j > 0) .and. (k < 0)) then
-            msq(j,k)=+abs((Q(j)*q1+L(j)*l1*prop)*qqb)**2
-     &               +abs((Q(j)*q1+R(j)*r1*prop)*qqb)**2
-     &               +abs((Q(j)*q1+L(j)*r1*prop)*qbq)**2
-     &               +abs((Q(j)*q1+R(j)*l1*prop)*qbq)**2
-          elseif ((j < 0) .and. (k > 0)) then
-            msq(j,k)=+abs((Q(k)*q1+L(k)*l1*prop)*qbq)**2
-     &               +abs((Q(k)*q1+R(k)*r1*prop)*qbq)**2
-     &               +abs((Q(k)*q1+L(k)*r1*prop)*qqb)**2
-     &               +abs((Q(k)*q1+R(k)*l1*prop)*qqb)**2
-          endif
-          msq(j,k)=msq(j,k)*fac
+         elseif ((j > 0) .and. (k < 0)) then
+            msq(j,k)=+abs((L(j)*l1*prop)*qqb)**2
+     &               +abs((R(j)*r1*prop)*qqb)**2
+     &               +abs((L(j)*r1*prop)*qbq)**2
+     &               +abs((R(j)*l1*prop)*qbq)**2
+         elseif ((j < 0) .and. (k > 0)) then
+            msq(j,k)=+abs((L(k)*l1*prop)*qbq)**2
+     &               +abs((R(k)*r1*prop)*qbq)**2
+     &               +abs((L(k)*r1*prop)*qqb)**2
+     &               +abs((R(k)*l1*prop)*qqb)**2
+         endif
+         msq(j,k)=msq(j,k)*fac
       enddo
+
 
       return
       end

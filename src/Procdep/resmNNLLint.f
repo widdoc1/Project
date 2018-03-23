@@ -1,8 +1,7 @@
       function resmNNLLint(r,wgt)
-      use types_mod
-      use rad_tools_mod
-      use virtfin_mod
+      use rad_tools, only: Ltilde
       implicit none
+      include 'types.f'
       real(dp):: resmNNLLint
       
       include 'constants.f'
@@ -61,9 +60,7 @@
       include 'kpart.f'
       include 'hbbparams.f'
       include 'mpicommon.f'
-      include 'JetVHeto.f'
-      include 'JetVHeto_opts.f'
-      include 'ptjveto.f'
+      include 'jetvheto.f'
 c--- APPLgrid - grid includes
 c      include 'ptilde.f'
 c      include 'APPLinclude.f'
@@ -102,7 +99,7 @@ c---- SSend
       logical:: bin,includedipole,checkpiDpjk
       real(dp):: QandGint
       integer mykpart
-      real(dp) :: dot, xl12
+      real(dp) :: facscaleLtilde
 
       integer:: t
 
@@ -116,6 +113,8 @@ c      data p/56*0._dp/
       data nshot/1/
       save nshot
       external gg_ZZ,qqb_w1jet_vbis
+      real(dp) :: L_tilde_arr(1)
+
 !$omp threadprivate(/rvcolourchoice/)
 !$omp threadprivate(nshot)
 
@@ -136,8 +135,6 @@ c--- ensure isolation code does not think this is fragmentation piece
 
       call gen_lops(r,p,pswt,*999)
       
-      resum=.true.
-
       nvec=npart+2
       call dotem(nvec,p,s)
 
@@ -156,8 +153,14 @@ c--- bother calculating the matrix elements for it, instead bail out
       endif
       
       if (dynamicscale) call scaleset(initscale,initfacscale,p)
-     
-      call resmset(p)
+
+      L_tilde_arr = Ltilde((/ptj_veto/q_scale/), p_pow)
+      L_tilde = L_tilde_arr(1)
+      if (do_lumi) then
+         facscaleLtilde = facscale * exp(-L_tilde)
+      else
+         facscaleLtilde = facscale
+      end if
 
       xx(1)=-2._dp*p(1,4)/sqrts
       xx(2)=-2._dp*p(2,4)/sqrts
@@ -896,7 +899,7 @@ c--- massive subtraction term only
       
 !     extract the finite part of the virtual and modify for resummation
 !     must come before subtraction to get coefficient correct in checks
-      call virtfin(p, msq, msqv, resm_opts)
+      call virtfin(p, msq, msqv)
 
 c$$$c--- explicitly remove factor of LO if we are only interested in coefficient
 c$$$      if (coeffonly) then
@@ -910,11 +913,11 @@ c$$$      if (kpart == knllexpd) then
 c$$$        msqv(:,:) = 0._dp
 c$$$      endif
 
-      if ( (coeffonly) .and. (kpart==knllexpd) ) then
+      if (coeffonly .and. (kpart==knllexpd)) then
         msqv(:,:) = -msq(:,:)
-      elseif ( (coeffonly) .or. (kpart==klumi1) ) then  ! is there a cleaner way to do this? put klumi1 as coeff?
+      else if (coeffonly .or. (kpart==klumi1)) then  ! is there a cleaner way to do this? put klumi1 as coeff?
         msqv(:,:) = msqv(:,:) - msq(:,:)
-      elseif (kpart==knllexpd) then
+      else if (kpart==knllexpd) then
         msqv(:,:) = 0._dp
       endif
 
@@ -1924,13 +1927,11 @@ c---  SSend
 
       if (currentPDF == 0) then
         resmNNLLint=flux*xjac*pswt*xmsq/BrnRat
-     &        *sudakov
       endif
             
 c--- loop over all PDF error sets, if necessary
       if (PDFerrors) then
         PDFwgt(currentPDF)=flux*xjac*pswt*xmsq/BrnRat*wgt/itmx
-     &        *sudakov
 !$omp atomic
         PDFxsec(currentPDF)=PDFxsec(currentPDF)
      &     +PDFwgt(currentPDF)
@@ -1978,17 +1979,13 @@ c          pause
       
 c      if (creatent) then
         wt_gg=xmsq_bypart(0,0)*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &     *sudakov
         wt_gq=(xmsq_bypart(+1,0)+xmsq_bypart(-1,0)
      &        +xmsq_bypart(0,+1)+xmsq_bypart(0,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qq=(xmsq_bypart(+1,+1)+xmsq_bypart(-1,-1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
         wt_qqb=(xmsq_bypart(+1,-1)+xmsq_bypart(-1,+1)
      &        )*wgt*flux*xjac*pswt/BrnRat/real(itmx,dp)
-     &       *sudakov
 c      endif
 
       call getptildejet(0,pjet)
@@ -1996,7 +1993,6 @@ c      endif
       call dotem(nvec,pjet,s)
 
       val=wgt*flux*xjac*pswt/BrnRat
-     &     *sudakov
       do j=-1,1
       do k=-1,1
 !$omp atomic

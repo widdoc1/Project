@@ -17,13 +17,14 @@
 !
 ! (this could be worked around - but is it wise to?)
 function userincludedipole(nd, ppart, mcfm_result)
-  use types_mod
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'npart.f'
   include 'mxpart.f'
   include 'jetlabel.f'
   include 'nproc.f'
+  include 'jetvheto.f'
   integer,  intent(in) :: nd
   real(dp), intent(in) :: ppart(mxpart,4)
   logical,  intent(in) :: mcfm_result
@@ -33,7 +34,6 @@ function userincludedipole(nd, ppart, mcfm_result)
   common/bin/bin
   common/makecuts/makecuts
 
-  include 'ptjveto.f'
   real(dp) :: ptj
 
   ! take the MCFM result as the default choice
@@ -56,7 +56,7 @@ function userincludedipole(nd, ppart, mcfm_result)
      ! DY validation
      if (nproc==31) then
         ptj = sqrt(ppart(5,1)**2+ppart(5,2)**2)
-        if (ptj > ptjveto) then
+        if (ptj > ptj_veto) then
            userincludedipole = .false.
            return
         endif
@@ -85,8 +85,9 @@ end function userincludedipole
 !          (if applicable), otherwise equal to zero
 
 subroutine userplotter(pjet, wt, wt2, nd)
-  use types_mod
+  use rad_tools
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'nf.f'
   include 'mxpart.f'
@@ -94,6 +95,36 @@ subroutine userplotter(pjet, wt, wt2, nd)
   include 'ptilde.f'
   include 'npart.f'
   include 'nplot.f'
+
+  ! needed for the resummation
+  include 'kpart.f'
+  include 'nproc.f'
+  include 'kprocess.f'
+  include 'scale.f'
+  include 'facscale.f'
+  include 'jetvheto.f'
+  include 'qcdcouple.f'
+  real(dp) :: Rcut
+  common/Rcut/Rcut
+  real(dp) :: dot, M_B
+  integer  :: order
+  real(dp) :: sudakov_arr(1)
+  interface
+     function sudakov(proc, M, muR, muF, Q, as, p, jet_radius,&
+          &observable, small_r, small_r_R0, ptj_veto, order) result(res)
+       use types; use consts_dp
+       use rad_tools
+       use resummation
+       implicit none
+       character(len=*),            intent(in)  :: proc, observable
+       integer,                     intent(in)  :: order
+       real(dp),                    intent(in)  :: M, muR, muF, Q, as, p,&
+            &small_r_R0, jet_radius, ptj_veto(:)
+       logical :: small_r
+       type(process_and_parameters)             :: cs
+       real(dp) :: res(size(ptj_veto))
+     end function sudakov
+  end interface
   real(dp), intent(in) :: pjet(mxpart,4)
   real(dp), intent(inout) :: wt,wt2
   integer,  intent(in) :: nd
@@ -106,18 +137,70 @@ subroutine userplotter(pjet, wt, wt2, nd)
   real(dp) :: MT1, MT2, MT3
   real(dp) :: ptll, pt45(4), ptmiss, pt36(4), MTll, MTmiss
   real(dp) :: r2, delphi
-  real(dp) :: dr, min_dr, cur_dr, dphi
+  real(dp) :: dphi
   real(dp) :: ptrel
   logical, save :: first = .true.
   integer :: tag
-
+  
   if (first) then
      tag   = tagbook
+
+     ! setup resummation parameters if applicable
+     if (jetvheto) then
+        if (      (kcase==kW_only) .or. (kcase==kZ_only)&
+             .or. (kcase==kWWqqbr) .or. (kcase==kWWnpol)&
+             .or. (kcase==kWZbbar) .or. (kcase==kZZlept)&
+             .or. (kcase==kWHbbar) .or. (kcase==kWHgaga)&
+             .or. (kcase==kWH__WW) .or. (kcase==kWH__ZZ)&
+             .or. (kcase==kZHbbar) .or. (kcase==kZHgaga)&
+             .or. (kcase==kZH__WW) .or. (kcase==kZH__ZZ) ) then
+           born_config='DY'
+        elseif (  (kcase==kggfus0)&
+             .or. (kcase==kHWW_4l) .or. (kcase==kHWW_tb)&
+             .or. (kcase==kHWWint) .or. (kcase==kHWWHpi)&
+             .or. (kcase==kggWW4l) .or. (kcase==kggWWbx)&
+             .or. (kcase==kHWW2lq)&
+             .or. (kcase==kHZZ_4l) .or. (kcase==kHZZ_tb)&
+             .or. (kcase==kHZZint) .or. (kcase==kHZZHpi)&
+             .or. (kcase==kggZZ4l) .or. (kcase==kggZZbx)&
+             .or. (kcase==kHi_Zga)&
+             .or. (kcase==kHVV_tb) .or. (kcase==kHVVint)&
+             .or. (kcase==kHVVHpi) .or. (kcase==kggVV4l)&
+             .or. (kcase==kggVVbx))  then
+           born_config='H'
+        else
+           write(6,*) 'nproc=', nproc, 'is not a valid option'
+           write(6,*) 'for this process'
+           stop
+        endif
+        call init_proc(born_config)
+     endif
+
      first = .false.
   else
      tag = tagplot
   endif
   iplot = nextnplot
+
+  ! Sudakov
+  if (do_suda) then
+
+     M_B = sqrt(two*dot(pjet,1,2))
+
+     select case(kpart)
+     case(kll)
+        order = 0
+     case(knll)
+        order = 1
+     case(knnll)
+        order = 2
+     end select
+
+     sudakov_arr=sudakov(born_config, M_B, scale, facscale, q_scale, as, p_pow,&
+          &Rcut, observable, small_r, r_scale, (/ptj_veto/), order) 
+     wt = wt*sudakov_arr(1)
+     wt2 = wt**2
+  end if
 
   !define quantities to plot
   pt3=pt(3,pjet)
@@ -301,8 +384,8 @@ end subroutine userplotter
 !----------------------------------------------------------------------
 ! user code to write info
 subroutine userwriteinfo(unitno, comment_string, xsec, xsec_err, itno)
-  use types_mod
   implicit none
+  include 'types.f'
   integer,          intent(in) :: unitno
   character*2,      intent(in) :: comment_string
   real(dp),         intent(in) :: xsec, xsec_err
@@ -317,8 +400,8 @@ subroutine userhistofin(xsec,xsec_err,itno,itmx)
 !	This function allows for extra user-defined operations
 !	at the end of each iteration (itno>0) and at the end of
 !	the run of the program (itno=0).
-  use types_mod
   implicit none
+  include 'types.f'
   integer,  intent(in) :: itno,itmx
   real(dp), intent(in) :: xsec,xsec_err
 end subroutine userhistofin
@@ -327,46 +410,15 @@ end subroutine userhistofin
 !   double precision, intent(out) :: muR, muF
 ! end subroutine userscale
 
-function dr(p,q)
-  ! copy of r(p,i,j) function but works for two given
-  ! 4-momenta: p and q
-  use types_mod
-  implicit none
-  include 'constants.f'
-  include 'nf.f'
-  real(dp), intent(in) :: p(4),q(4)
-  real(dp) :: dr
-  real(dp) :: pt2,qt2,ep,eq,r1,r2,dely,delphi
-
-  pt2 = p(1)**2 + p(2)**2
-  qt2 = q(1)**2 + q(2)**2
-
-  ep = sqrt(pt2 + p(3)**2)
-  eq = sqrt(qt2 + q(3)**2)
-
-  r1 = (ep + p(3)) * (eq - q(3)) / &
-       ((eq + q(3)) * (ep - p(3)))
-  dely = log(r1)/two
-
-  r2 = (p(1)*q(1) + p(2)*q(2))/sqrt(pt2+qt2)
-  if (r2 > +0.9999999_dp) r2 = +1._dp
-  if (r2 < -0.9999999_dp) r2 = -1._dp
-  delphi = acos(r2)
-
-  dr = sqrt(dely**2+delphi**2)
-
-  return
-end function
-
 function ATLAS_hww2017(ppart) result(res)
-  use types_mod
   implicit none
+  include 'types.f'
   include 'constants.f'
   include 'npart.f'
   include 'mxpart.f'
   include 'jetlabel.f'
   include 'energy.f'
-  include 'ptjveto.f'
+  include 'jetvheto.f'
 
   real(dp), intent(in) :: ppart(mxpart,4)
   logical :: res
@@ -380,7 +432,7 @@ function ATLAS_hww2017(ppart) result(res)
   integer, parameter :: VVcut=3 ! set cuts for e mu
   logical :: passcuts, passveto
   real(dp) :: etaj,ptj,ptmiss,rjl1,rjl2,r,eta4,eta5,ptll
-  real(dp) :: dr,min_dr,cur_dr,dphi,ptrel,pt36(4)
+  real(dp) :: dphi,ptrel,pt36(4)
   real(dp) :: etajveto
 
   !f(p1) + f(p2) --> W^-(-->nu(p3) + e^+(p4)) + W^+(-->e^-(p5) + nu~(p6))
@@ -495,7 +547,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (pt(5,ppart) < 25._dp) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
 
@@ -511,14 +563,14 @@ function ATLAS_hww2017(ppart) result(res)
         if (pt(5,ppart) < 25._dp) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
 
      elseif (VVcut == 5) then
         ! only jet veto cuts
         if (jets > 0) then
-           if (ptj > ptjveto) passcuts = .false.
+           if (ptj > ptj_veto) passcuts = .false.
         endif
 
      else
@@ -543,7 +595,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
         if (ptrel < 45._dp) passcuts = .false.
@@ -564,7 +616,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp .and. rjl2 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 45._dp) passcuts = .false.
@@ -582,7 +634,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 15._dp) passcuts = .false.
@@ -600,7 +652,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto .and. &
                 rjl2 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 15._dp) passcuts = .false.
@@ -608,7 +660,7 @@ function ATLAS_hww2017(ppart) result(res)
      elseif (VVcut == 5) then
         ! only jet veto cuts
         if (jets > 0) then
-           if (ptj > ptjveto) passcuts = .false.
+           if (ptj > ptj_veto) passcuts = .false.
         endif
 
      else
@@ -632,7 +684,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto) &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto) &
                 passveto = .false.
         endif
         if (ptrel < 45._dp) passcuts = .false.
@@ -653,7 +705,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp .and. rjl2 > 0.3_dp ) &
                 passveto = .false.
         endif
@@ -672,7 +724,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts = .false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto .and. &
                 rjl1 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 25._dp) passcuts = .false.
@@ -690,7 +742,7 @@ function ATLAS_hww2017(ppart) result(res)
         if (min(pt(4,ppart), pt(5,ppart)) < 20._dp) passcuts=.false.
 
         if (jets > 0) then
-           if (ptj > ptjveto .or. abs(etaj) > etajveto .and. &
+           if (ptj > ptj_veto .or. abs(etaj) > etajveto .and. &
                 rjl2 > 0.3_dp) passveto = .false.
         endif
         if (ptrel < 25._dp) passcuts = .false.
@@ -698,7 +750,7 @@ function ATLAS_hww2017(ppart) result(res)
      elseif (VVcut == 5) then
         ! only jet veto cuts
         if (jets > 0) then
-           if (ptj > ptjveto) passcuts = .false.
+           if (ptj > ptj_veto) passcuts = .false.
         endif
 
      else
