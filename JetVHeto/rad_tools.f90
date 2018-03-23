@@ -115,7 +115,7 @@ contains
 
   !======================================================================
   ! 
-  subroutine set_process_and_parameters(cs, proc, M, muR, muF, as, Q, p, &
+  subroutine set_process_and_parameters(cs, proc, M, muR, muF, Q, as, p, &
        &jet_radius,observable)
     type(process_and_parameters), intent(out) :: cs
     character(len=*),          intent(in)  :: proc, observable

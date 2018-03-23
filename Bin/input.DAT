@@ -48,8 +48,10 @@
 0           	[LHAPDF set]
 
 [JetVHeto resummation options]
-0.5d0     	[Qscale]
-30d0          	[ptjveto]
+'ptj+small-r'    [observable]
+0.5d0    [Qscale]
+0.5d0    [Rscale]
+30d0     [ptjveto]
 
 [Jet definition and event cuts]
 0d0		[m34min]

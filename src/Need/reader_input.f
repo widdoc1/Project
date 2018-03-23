@@ -76,6 +76,7 @@ c--- APPLgrid - end
       logical:: technicalincluded
       real(dp):: ran2,ran2nr,randummy
       real(dp):: alphas
+      integer :: tmp
       
       common/writerefs/writerefs
       common/spira/spira
@@ -342,8 +343,12 @@ c---  write-out comment line
       read(20,99) line
       if (verbose) write(6,*) '* ',line
 c---  jetvheto resummation options
+      read(20,*) obs_string
+      if (verbose) call writeinput(6,' * ',' ','observable')
       read(20,*) q_scale
       q_scalestart=q_scale
+      if (verbose) call writeinput(6,' * ',' ','q_scale')
+      read(20,*) r_scale
       if (verbose) call writeinput(6,' * ',' ','q_scale')
       read(20,*) ptj_veto
       if (verbose) call writeinput(6,' * ',' ','ptj_veto')
@@ -694,6 +699,20 @@ c---  create logical:: variable dynamicscale for use in other routines
       endif
 
 !     setup resummation flags
+!---  observable
+      if (index(obs_string,'ptj') > 0) then
+         observable = 'ptj'
+         if (      (index(obs_string,'small-r') > 0)
+     &        .or. (index(obs_string,'small_r') > 0) ) then
+            small_r = .true.
+         else
+            small_r = .false.
+         endif
+      else
+         write(6,*) 'obs_string=', obs_string, 'does not contain a'
+         write(6,*) 'valid observable for the resummation'
+      endif
+
 !---  do_suda
       if ( (kpart==kll) .or. (kpart==knll) .or.
      &     (kpart==knnll) ) then
