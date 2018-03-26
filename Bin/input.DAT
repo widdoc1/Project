@@ -102,6 +102,7 @@
 1d0       [kappa_t]
 1d0       [kappa_b]
 0d0       [kappa_g]
+.true.    [interference only]
 
 [Anomalous couplings of the W and Z]
 0.0d0		[Delta_g1(Z)]
