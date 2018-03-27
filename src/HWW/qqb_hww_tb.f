@@ -101,19 +101,15 @@ c---  fill amplitude with full contributions of Higgs
       msqgg=0._dp
       do h1=1,2
       do h2=1,2
-      if     (.not. intonly) then
-c--- This accumulates the total contributions
-        msqgg=msqgg+abs(Ahiggs(h1,h2))**2
-      elseif (intonly) then
-c--- This accumulates the interference
-        msqgg=msqgg+abs(Ahiggs(h1,h2))**2
-     &             -abs(Ahiggs_t(h1,h2))**2
+      msqgg=msqgg+abs(Ahiggs(h1,h2))**2
+
+      if (intonly) then
+c---  accumulate just the interference terms
+        msqgg=msqgg-abs(Ahiggs_t(h1,h2))**2
      &             -abs(Ahiggs_b(h1,h2))**2
      &             -abs(Ahiggs_g(h1,h2))**2
-      else
-        write(6,*) ''
-        stop
       endif
+
       enddo
       enddo
 

@@ -20,7 +20,7 @@ c--- The exact result for massive bottom and top quark loops is included
       complex(dp):: ggH_bquark(2,2,2,2),ggH_tquark(2,2,2,2),
      & ggH_6(2,2,2,2),Ahiggs,
      & ggH_bquark_swap(2,2,2,2),ggH_tquark_swap(2,2,2,2),
-     & ggH_6_swap(2,2,2,2),Ahiggs_swap
+     & ggH_6_swap(2,2,2,2),Ahiggs_swap,Mamp,Samp
 
       if (qlfirst) then
         qlfirst=.false. 
@@ -51,18 +51,25 @@ c--- for interference, compute amplitudes after 4<->6 swap
       
 c--- compute total Higgs amplitude
       AHiggs=
-     &  +k_b*ggH_bquark(h1,h2,h34,h56)
      &  +k_t*ggH_tquark(h1,h2,h34,h56)
+     &  +k_b*ggH_bquark(h1,h2,h34,h56)
      &  +k_g*ggH_6(h1,h2,h34,h56)
      
       if (interference .eqv. .false.) then
 c--- normal case
         msqgg=msqgg+abs(AHiggs)**2
+
+        if (intonly) then
+           msqgg=msqgg-k_t**2*abs(ggH_tquark(h1,h2,h34,h56))**2
+     &                -k_b**2*abs(ggH_bquark(h1,h2,h34,h56))**2
+     &                -k_g**2*abs(ggH_6(h1,h2,h34,h56))**2
+        endif
+
       else
 c--- with interference
         AHiggs_swap=
-     &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
      &  +k_t*ggH_tquark_swap(h1,h2,h34,h56)
+     &  +k_b*ggH_bquark_swap(h1,h2,h34,h56)
      &  +k_g*ggH_6_swap(h1,h2,h34,h56)
         if (h34 == h56) then
           oprat=1._dp-two*real(conjg(AHiggs)*AHiggs_swap)
@@ -75,6 +82,52 @@ c--- with interference
         else
           msqgg=msqgg+two*abs(AHiggs_swap)**2*oprat
         endif
+
+        if (intonly) then
+!--------- subtract |ggH_tquark|^2
+           Mamp=ggH_tquark(h1,h2,h34,h56)
+           Samp=ggH_tquark_swap(h1,h2,h34,h56)
+           if (h34 == h56) then
+              oprat=1._dp-two*real(conjg(Mamp)*Samp)
+     &             /(abs(Mamp)**2+abs(Samp)**2)
+           else
+              oprat=1._dp
+           endif
+           if (bw34_56) then
+              msqgg=msqgg-two*k_t**2*abs(Mamp)**2*oprat
+           else
+              msqgg=msqgg-two*k_t**2*abs(Samp)**2*oprat
+           endif
+!--------- subtract |ggH_bquark|^2
+           Mamp=ggH_bquark(h1,h2,h34,h56)
+           Samp=ggH_bquark_swap(h1,h2,h34,h56)
+           if (h34 == h56) then
+              oprat=1._dp-two*real(conjg(Mamp)*Samp)
+     &             /(abs(Mamp)**2+abs(Samp)**2)
+           else
+              oprat=1._dp
+           endif
+           if (bw34_56) then
+              msqgg=msqgg-two*k_b**2*abs(Mamp)**2*oprat
+           else
+              msqgg=msqgg-two*k_b**2*abs(Samp)**2*oprat
+           endif
+!--------- subtract |ggH_6|^2
+           Mamp=ggH_6(h1,h2,h34,h56)
+           Samp=ggH_6_swap(h1,h2,h34,h56)
+           if (h34 == h56) then
+              oprat=1._dp-two*real(conjg(Mamp)*Samp)
+     &             /(abs(Mamp)**2+abs(Samp)**2)
+           else
+              oprat=1._dp
+           endif
+           if (bw34_56) then
+              msqgg=msqgg-two*k_g**2*abs(Mamp)**2*oprat
+           else
+              msqgg=msqgg-two*k_g**2*abs(Samp)**2*oprat
+           endif
+        endif
+
       endif
       enddo
       enddo
