@@ -34,7 +34,7 @@ c--- set this to true to include generations 1 and 2 of (light) quarks
 c--- set this to true to include massive bottom quark
       includebottom=.true.
 c--- set this to true to include massive top quark
-      includetop=.false.
+      includetop=.true.
 
       if (qlfirst) then
         qlfirst=.false. 
