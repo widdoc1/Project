@@ -48,7 +48,7 @@ c     q(-p1)+qbar(-p2)-->q'(p5)+bar{q'}(p6)+n(p3)+ebar(p4)
       real(dp):: pttwo,ptWsafetycut
 
 c---  omit loops for pt(W) < "ptWsafetycut" (for num. stability)
-      ptWsafetycut=2._dp
+      ptWsafetycut=0.1_dp
 
       scheme='dred'
       FAC=gw**8*xn*aveqq

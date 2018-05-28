@@ -43,11 +43,15 @@ c----No statistical factor of 1/2 included.
       integer:: j,k,polq,pol1,pol2,ii,nmax
       integer,parameter::i4(2)=(/4,5/),i5(2)=(/5,4/),
      & jkswitch(-nf:nf)=(/-1,-2,-1,-2,-1,0,1,2,1,2,1/)
+      real(dp):: pttwo,ptZsafetycut
 
       complex(dp):: aqqb_SAVE(-nf:nf,-nf:nf,2,2,2)
       complex(dp):: bqqb_SAVE(-nf:nf,-nf:nf,2,2,2)
       complex(dp):: aqbq_SAVE(-nf:nf,-nf:nf,2,2,2)
       complex(dp):: bqbq_SAVE(-nf:nf,-nf:nf,2,2,2)
+
+c---  omit loops for pt(W) < "ptWsafetycut" (for num. stability)
+      ptZsafetycut=0.1_dp
 
       scheme='dred'
       
@@ -362,6 +366,11 @@ c---    2nd pass --> fill msq
 
       msqv(j,k)=msqv(j,k)+virt
 
+c---  ensure numerical stability: set loops to zero
+c---  for pt(W) < "ptWsafetycut" GeV
+      if (pttwo(3,4,p) < ptZsafetycut) then
+         msqv(j,k)=czip
+      endif
 
 
  20   continue
