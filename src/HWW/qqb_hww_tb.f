@@ -19,6 +19,7 @@ c--- including both top and bottom quark loops
       integer:: h1,h2,j,k
       real(dp):: p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac
       real(dp):: mfsq,tau,tauinv,rt,rescale
+      complex(dp):: Ahiggs_t(2,2), Ahiggs_b(2,2), Ahiggs_g(2,2)
       complex(dp):: Ahiggs(2,2),fachiggs,amphiggs,f,e3De4
 !      complex(dp):: num_c
 
@@ -50,10 +51,10 @@ c--- fill amplitudes with contributions of Higgs: top loop
       endif
       e3De4=2._dp*za(3,5)*zb(6,4)/(s(3,4)*s(5,6))
       amphiggs=k_t*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
-      Ahiggs(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
-      Ahiggs(1,2)=czip
-      Ahiggs(2,1)=czip
-      Ahiggs(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
+      Ahiggs_t(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs_t(1,2)=czip
+      Ahiggs_t(2,1)=czip
+      Ahiggs_t(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
 
 c--- fill amplitudes with contributions of Higgs: bottom loop
       mfsq=mb**2
@@ -70,25 +71,45 @@ c--- fill amplitudes with contributions of Higgs: bottom loop
       endif
       amphiggs=k_b*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
 
-      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
-      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
+      Ahiggs_b(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs_b(1,2)=czip
+      Ahiggs_b(2,1)=czip
+      Ahiggs_b(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
 
-c---  fill amplitudes with contributions of Higgs: bottom loop
+c---  fill amplitudes with contributions of Higgs: contact interaction
       amphiggs=k_g*(s(1,2)/6._dp)*im*e3De4
 
-      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
-      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
+      Ahiggs_g(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs_g(1,2)=czip
+      Ahiggs_g(2,1)=czip
+      Ahiggs_g(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
 
 c--- Rescale for width study
       if((keep_smhiggs_norm).and.(anom_higgs)) then 
          rescale=chi_higgs**2 
-         Ahiggs(:,:)=Ahiggs(:,:)*rescale
+         Ahiggs_t(:,:)=Ahiggs_t(:,:)*rescale
+         Ahiggs_b(:,:)=Ahiggs_b(:,:)*rescale
+         Ahiggs_g(:,:)=Ahiggs_g(:,:)*rescale
       endif
+
+c---  fill amplitude with full contributions of Higgs
+      Ahiggs(1,1)=Ahiggs_t(1,1)+Ahiggs_b(1,1)+Ahiggs_g(1,1)
+      Ahiggs(1,2)=Ahiggs_t(1,2)+Ahiggs_b(1,2)+Ahiggs_g(1,2)
+      Ahiggs(2,1)=Ahiggs_t(2,1)+Ahiggs_b(2,1)+Ahiggs_g(2,1)
+      Ahiggs(2,2)=Ahiggs_t(2,2)+Ahiggs_b(2,2)+Ahiggs_g(2,2)
 
       msqgg=0._dp
       do h1=1,2
       do h2=1,2
       msqgg=msqgg+abs(Ahiggs(h1,h2))**2
+
+      if (intonly) then
+c---  accumulate just the interference terms
+        msqgg=msqgg-abs(Ahiggs_t(h1,h2))**2
+     &             -abs(Ahiggs_b(h1,h2))**2
+     &             -abs(Ahiggs_g(h1,h2))**2
+      endif
+
       enddo
       enddo
 

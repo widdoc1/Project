@@ -444,6 +444,9 @@ c--- catch special scale choices for stop+b process
       if ((tag == 'k_g') .or. (writeall)) then
          write(unitno,fmt=f99) k_g,'kappa_g'
       endif
+      if ((tag == 'intonly') .or. (writeall)) then
+         write(unitno,fmt=f98) intonly,'intonly'
+      endif
 
       if (writeall) then
       write(unitno,*)

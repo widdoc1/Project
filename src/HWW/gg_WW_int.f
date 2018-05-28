@@ -28,6 +28,7 @@ c--- Triangle (axial) pieces cancel for massless isodoublets
       integer:: h1,h2,nu,i,j,k,om,del1,del2,k12h,k34h,k56h11,k34h11,e
       real(dp):: p(mxpart,4),msq(fn:nf,fn:nf),msqgg,fac
       real(dp):: mfsq,tau,tauinv,rt,pttwo,rescale
+      complex(dp):: Ahiggs_t(2,2), Ahiggs_b(2,2), Ahiggs_g(2,2)
       complex(dp):: Avec(2,2),Ahiggs(2,2),Agen3(2,2),Atot(2,2),
      & faccont,fachiggs,amphiggs,f,e3De4,sum(2,2,-2:0)
 
@@ -323,10 +324,10 @@ c      fachiggs=real(fachiggs)
       endif
       e3De4=2._dp*za(3,5)*zb(6,4)/(s(3,4)*s(5,6))
       amphiggs=k_t*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
-      Ahiggs(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
-      Ahiggs(1,2)=czip
-      Ahiggs(2,1)=czip
-      Ahiggs(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
+      Ahiggs_t(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs_t(1,2)=czip
+      Ahiggs_t(2,1)=czip
+      Ahiggs_t(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
 
 c--- fill amplitudes with contributions of Higgs: bottom loop
       mfsq=mb**2
@@ -343,30 +344,33 @@ c--- fill amplitudes with contributions of Higgs: bottom loop
       endif
       amphiggs=k_b*mfsq*(cone+(cone-cplx1(tauinv))*f)*im*e3De4
 
-      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
-      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
+      Ahiggs_b(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs_b(1,2)=czip
+      Ahiggs_b(2,1)=czip
+      Ahiggs_b(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
 
+c---  fill amplitudes with contributions of Higgs: contact interaction
+      amphiggs=k_g*(s(1,2)/6._dp)*im*e3De4
+
+      Ahiggs_g(1,1)=fachiggs*amphiggs*za(1,2)/zb(2,1)
+      Ahiggs_g(1,2)=czip
+      Ahiggs_g(2,1)=czip
+      Ahiggs_g(2,2)=fachiggs*amphiggs*zb(1,2)/za(2,1)
+
+!     this is wrong now change for checks?
       if (docheck) then
 c--- numerical check includes top loops only
-        Ahiggs(1,1)=Ahiggs(1,1)-fachiggs*amphiggs*za(1,2)/zb(2,1)
-        Ahiggs(2,2)=Ahiggs(2,2)-fachiggs*amphiggs*zb(1,2)/za(2,1)
-       do h1=1,2
+        do h1=1,2
         do h2=1,2
         write(6,*) 'h1,h2, massless',h1,h2,faccont*Avec(h1,h2)
         write(6,*) 'h1,h2, massive ',h1,h2,Agen3(h1,h2)
-        write(6,*) 'h1,h2, Higgs   ',h1,h2,Ahiggs(h1,h2)
+        write(6,*) 'h1,h2, Higgs   ',h1,h2,Ahiggs_t(h1,h2)
         write(6,*) 'h1,h2, ---- SUM',h1,h2,
-     &               faccont*Avec(h1,h2)+Agen3(h1,h2)+Ahiggs(h1,h2)
+     &               faccont*Avec(h1,h2)+Agen3(h1,h2)+Ahiggs_t(h1,h2)
         enddo
         enddo
 c        pause
       endif
-      
-c---  fill amplitudes with contributions of Higgs: bottom loop
-      amphiggs=k_g*(s(1,2)/6._dp)*im*e3De4
-
-      Ahiggs(1,1)=Ahiggs(1,1)+fachiggs*amphiggs*za(1,2)/zb(2,1)
-      Ahiggs(2,2)=Ahiggs(2,2)+fachiggs*amphiggs*zb(1,2)/za(2,1)
 
 c--- ensure numerical stability: set massive loops to zero
 c--- for pt(W) < "ptWsafetycut_massive" GeV
@@ -391,8 +395,16 @@ c--- for pt(W) < "ptWsafetycut_massless" GeV
 c--- Rescale for width study
       if((keep_smhiggs_norm).and.(anom_higgs)) then 
          rescale=chi_higgs**2 
-         Ahiggs(:,:)=Ahiggs(:,:)*rescale
+         Ahiggs_t(:,:)=Ahiggs_t(:,:)*rescale
+         Ahiggs_b(:,:)=Ahiggs_b(:,:)*rescale
+         Ahiggs_g(:,:)=Ahiggs_g(:,:)*rescale
       endif
+
+c---  fill amplitude with full contributions of Higgs
+      Ahiggs(1,1)=Ahiggs_t(1,1)+Ahiggs_b(1,1)+Ahiggs_g(1,1)
+      Ahiggs(1,2)=Ahiggs_t(1,2)+Ahiggs_b(1,2)+Ahiggs_g(1,2)
+      Ahiggs(2,1)=Ahiggs_t(2,1)+Ahiggs_b(2,1)+Ahiggs_g(2,1)
+      Ahiggs(2,2)=Ahiggs_t(2,2)+Ahiggs_b(2,2)+Ahiggs_g(2,2)
 
       msqgg=0._dp
       do h1=1,2

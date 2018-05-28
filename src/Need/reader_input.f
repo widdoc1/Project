@@ -469,6 +469,8 @@ c---  kappa's
       if (verbose) call writeinput(6,' * ',' ','k_b')
       read(20,*) k_g
       if (verbose) call writeinput(6,' * ',' ','k_g')
+      read(20,*) intonly
+      if (verbose) call writeinput(6,' * ',' ','intonly')
 
       if (verbose) write(6,*)
       read(20,99) line
