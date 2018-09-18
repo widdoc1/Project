@@ -100,6 +100,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
   include 'kpart.f'
   include 'nproc.f'
   include 'kprocess.f'
+  include 'noglue.f'
   include 'scale.f'
   include 'facscale.f'
   include 'jetvheto.f'
@@ -148,8 +149,7 @@ subroutine userplotter(pjet, wt, wt2, nd)
      ! setup resummation parameters if applicable
      if (jetvheto) then
         if (      (kcase==kW_only) .or. (kcase==kZ_only)&
-             .or. (kcase==kWWqqbr) .or. (kcase==kWWnpol)&
-             .or. (kcase==kWZbbar) .or. (kcase==kZZlept)&
+             .or. (kcase==kWWnpol) .or. (kcase==kWZbbar)&
              .or. (kcase==kWHbbar) .or. (kcase==kWHgaga)&
              .or. (kcase==kWH__WW) .or. (kcase==kWH__ZZ)&
              .or. (kcase==kZHbbar) .or. (kcase==kZHgaga)&
@@ -168,9 +168,23 @@ subroutine userplotter(pjet, wt, wt2, nd)
              .or. (kcase==kHVVHpi) .or. (kcase==kggVV4l)&
              .or. (kcase==kggVVbx))  then
            born_config='H'
+        elseif (  (kcase==kWWqqbr) .or. (kcase==kZZlept)) then
+           if     (omitgg .eqv. .true.) then
+              born_config='DY'
+           elseif (ggonly .eqv. .true.) then
+              born_config='H'
+           else
+              write(6,*) 'process=', nproc, 'contains contributions from qqb and' 
+              write(6,*) 'gg initial states. To perform jet veto resummation'
+              write(6,*) 'set omitgg=.true. in the input card to resum the qqb'
+              write(6,*) 'contribution or ggonly=.true. to resum the gg contribution.'
+              write(6,*)
+              stop
+           endif
         else
-           write(6,*) 'nproc=', nproc, 'is not a valid option'
-           write(6,*) 'for this process'
+           write(6,*) 'process=', nproc, 'is not valid'
+           write(6,*) 'for jet veto resummation'
+           write(6,*)
            stop
         endif
         call init_proc(born_config)
