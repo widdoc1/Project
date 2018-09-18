@@ -302,53 +302,77 @@ subroutine userplotter(pjet, wt, wt2, nd)
   enddo
   MT3 = sqrt(MT3)
 
+  !!!! total cross section with the veto
+  call bookplot(iplot,tag,'xsec',0.5_dp,wt,wt2,zip,one,one,'lin')
+  iplot = iplot + 1
+
+  !!!! plots for the paper
+
+  ! m(3456) dists
+  call bookplot(iplot,tag,'Mvv-1',m3456,wt,wt2,zip,2000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'Mvv-2',m3456,wt,wt2,2000._dp,4000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'Mvv-rest',m3456,wt,wt2,4000._dp,14000._dp,200._dp,'log')
+  iplot = iplot + 1
+
+  ! MT1
+  call bookplot(iplot,tag,'MT1-1',MT1,wt,wt2,zip,2000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'MT1-2',MT1,wt,wt2,2000._dp,4000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'MT1-rest',MT1,wt,wt2,4000._dp,14000._dp,200._dp,'log')
+  iplot = iplot + 1
+
+  ! MT2
+  call bookplot(iplot,tag,'MT2-1',MT2,wt,wt2,zip,2000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'MT2-2',MT2,wt,wt2,2000._dp,4000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'MT2-rest',MT2,wt,wt2,4000._dp,14000._dp,200._dp,'log')
+  iplot = iplot + 1
+
+  ! MT3
+  call bookplot(iplot,tag,'MT3-1',MT3,wt,wt2,zip,2000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'MT3-2',MT3,wt,wt2,2000._dp,4000._dp,20._dp,'log')
+  iplot = iplot + 1
+  call bookplot(iplot,tag,'MT3-rest',MT3,wt,wt2,4000._dp,14000._dp,200._dp,'log')
+  iplot = iplot + 1
+
+  !!!! misc plots mostly for validation
+
+    !!! transverse components of visible and invisible particle pairs
+
   ! m(45), m_ll
   call bookplot(iplot,tag,'mll',m45,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-  call bookplot(iplot,tag,'mll_full',m45,wt,wt2,zip,8000._dp,80._dp,'log')
+  call bookplot(iplot,tag,'mll_full',m45,wt,wt2,zip,14000._dp,200._dp,'log')
   iplot = iplot + 1
 
   ! pt(45), pt_ll
   call bookplot(iplot,tag,'ptll',ptll,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-  call bookplot(iplot,tag,'ptll_full',ptll,wt,wt2,zip,8000._dp,80._dp,'log')
+  call bookplot(iplot,tag,'ptll_full',ptll,wt,wt2,zip,14000._dp,200._dp,'log')
   iplot = iplot + 1
 
   ! m(36), m_nunu
   call bookplot(iplot,tag,'m_nunu',m36,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-  call bookplot(iplot,tag,'m_nunu_full',m36,wt,wt2,zip,8000._dp,80._dp,'log')
+  call bookplot(iplot,tag,'m_nunu_full',m36,wt,wt2,zip,14000._dp,200._dp,'log')
   iplot = iplot + 1
 
   ! pt(36), pt_miss
   call bookplot(iplot,tag,'ptmiss',ptmiss,wt,wt2,zip,1000._dp,20._dp,'log')
   iplot = iplot + 1
-  call bookplot(iplot,tag,'ptmiss_full',ptmiss,wt,wt2,zip,8000._dp,80._dp,'log')
+  call bookplot(iplot,tag,'ptmiss_full',ptmiss,wt,wt2,zip,14000._dp,200._dp,'log')
   iplot = iplot + 1
 
-  ! m(3456) dists
-  call bookplot(iplot,tag,'m_WW',m3456,wt,wt2,zip,1000._dp,20._dp,'log')
-  iplot = iplot + 1
-  call bookplot(iplot,tag,'m_WW_full',m3456,wt,wt2,zip,8000._dp,80._dp,'log')
+  ! dphi(l+,l-)
+  call bookplot(iplot,tag,'delphi',delphi,wt,wt2,zip,3.14_dp,0.1_dp,'lin')
   iplot = iplot + 1
 
-  ! MT1
-  call bookplot(iplot,tag,'MT1',MT1,wt,wt2,zip,1000._dp,20._dp,'log')
-  iplot = iplot + 1
-  call bookplot(iplot,tag,'MT1_full',MT1,wt,wt2,zip,8000._dp,80._dp,'log')
-  iplot = iplot + 1
-
-  ! MT2
-  call bookplot(iplot,tag,'MT2',MT2,wt,wt2,zip,1000._dp,20._dp,'log')
-  iplot = iplot + 1
-  call bookplot(iplot,tag,'MT2_full',MT2,wt,wt2,zip,8000._dp,80._dp,'log')
-  iplot = iplot + 1
-
-  ! MT3
-  call bookplot(iplot,tag,'MT3',MT3,wt,wt2,zip,1000._dp,20._dp,'log')
-  iplot = iplot + 1
-  call bookplot(iplot,tag,'MT3_full',MT3,wt,wt2,zip,8000._dp,80._dp,'log')
-  iplot = iplot + 1
+    !!! pt of leading and sub-leading particles
 
   ! pt leading lepton
   call bookplot(iplot,tag,'pt(leading lept)',max(pt4,pt5),wt,wt2,zip,500._dp,5._dp,'log')
@@ -356,14 +380,6 @@ subroutine userplotter(pjet, wt, wt2, nd)
 
   ! pt subleading lepton
   call bookplot(iplot,tag,'pt(sub leading lept)',min(pt4,pt5),wt,wt2,zip,500._dp,5._dp,'log')
-  iplot = iplot + 1
-
-  ! pt lepton pair
-  call bookplot(iplot,tag,'pt(l+ l-)',ptll,wt,wt2,zip,500._dp,5._dp,'log')
-  iplot = iplot + 1
-
-  ! dphi(l+,l-)
-  call bookplot(iplot,tag,'delphi',delphi,wt,wt2,zip,3.14_dp,0.1_dp,'lin')
   iplot = iplot + 1
 
   ! pt leading neutrino
@@ -381,6 +397,8 @@ subroutine userplotter(pjet, wt, wt2, nd)
   ! ptmissrel
   call bookplot(iplot,tag,'ptmissrel',ptrel,wt,wt2,zip,500._dp,5._dp,'log')
   iplot = iplot + 1
+
+    !!! special plots in the case of an additional jet from the real
 
   ! Njets
   call bookplot(iplot,tag,'N(jets)',real(jets,dp),wt,wt2,zip,5._dp,1._dp,'log')
