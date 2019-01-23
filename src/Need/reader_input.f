@@ -349,7 +349,7 @@ c---  jetvheto resummation options
       q_scalestart=q_scale
       if (verbose) call writeinput(6,' * ',' ','q_scale')
       read(20,*) r_scale
-      if (verbose) call writeinput(6,' * ',' ','q_scale')
+      if (verbose) call writeinput(6,' * ',' ','r_scale')
       read(20,*) ptj_veto
       if (verbose) call writeinput(6,' * ',' ','ptj_veto')
 
