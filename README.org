@@ -1,0 +1,58 @@
+#+TITLE: MCFM-RE
+#+AUTHOR: Luke Arpino 
+
+MCFM-RE: NNLL resummation for jet-veto cross sections in colour singlet
+processes.
+
+* General Information
+
+MCFM-RE implements the jet-veto resummation of [[https://jetvheto.hepforge.org/][JetVHeto]] using [[https://mcfm.fnal.gov/][MCFM]] as an event
+generator. The exact details of the implementation are discussed in
+[[https://arxiv.org/abs/1905.06646][arXiv:1905.06646.]]
+
+* Download
+
+You can obtain MCFM-RE releases directly from the github repository:
+
+https://github.com/lcarpino/MCFM-RE/releases
+
+For the latest development version you can clone the master:
+#+BEGIN_SRC sh
+git clone https://github.com/lcarpino/MCFM-RE.git
+#+END_SRC
+
+For the latest tag:
+#+BEGIN_SRC sh
+git tag -l
+git checkout tags/tag_name
+#+END_SRC
+
+* Install
+
+MCFM-RE is completely self contained, all of the dependencies are bundled in the
+repository. As a result compilation is simple, execute the following commands
+#+BEGIN_SRC sh
+./Install 
+make
+#+END_SRC
+This will compile MCFM-RE in its default mode of operation: using the native
+MCFM PDFs, with support for OpenMP.
+
+* Usage
+
+To run MCFM-RE
+#+BEGIN_SRC sh
+cd Bin
+./mcfm_omp
+#+END_SRC
+
+All the information on the process, cuts, collider, SM parameters, etc is read
+in from the [[file:Bin/input.DAT][input card]] located at
+#+BEGIN_SRC sh
+Bin/input.DAT
+#+END_SRC
+
+Alternatively one can specify a path and input card name as follows
+#+BEGIN_SRC sh
+./mcfm_omp path_to_directory input_card.DAT
+#+END_SRC
