@@ -8,7 +8,7 @@ processes.
 
 MCFM-RE implements the jet-veto resummation of [[https://jetvheto.hepforge.org/][JetVHeto]] using [[https://mcfm.fnal.gov/][MCFM]] as an event
 generator. The exact details of the implementation are discussed in
-[[https://arxiv.org/abs/1905.06646][arXiv:1905.06646.]]
+[[https://arxiv.org/abs/1905.06646][arXiv:1905.06646]].
 
 * Download
 
