@@ -7,12 +7,12 @@ CERNLIB=
 # Insert the location of LHAPDF on your system (if desired)
 LHAPDFLIB=
 
-if [[ $CERNLIB = '' ]]; then
-    echo 'Warning: no directory specified for CERNLIB'
+if [[ $CERNLIB == '' ]]; then
+  echo 'Warning: no directory specified for CERNLIB'
 else
-    echo 'CERNLIB directory: '$CERNLIB
+  echo 'CERNLIB directory: '$CERNLIB
 fi
-if [[ $LHAPDFLIB = '' ]]; then
+if [[ $LHAPDFLIB == '' ]]; then
   echo 'Warning: no directory specified for LHAPDF'
 else
   echo 'LHAPDFLIB directory: '$LHAPDFLIB
