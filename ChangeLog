@@ -1,0 +1,86 @@
+2018-03-16  Luke  <luke@Rus>
+
+	* src/Inc/kappa.f (main): anomalous Yukawa couplings parameters
+	for BSM di-boson studies
+
+	* src/ZZ/gg_hzz_tb.f (gg_hZZ_tb):
+	* src/ZZ/gg_ZZ_int.f (gg_ZZ_int):
+	* src/ZZ/gg_ZZ_all.f (gg_ZZ_all):
+	* src/ZZ/gg_ZZ_Hpi.f (gg_ZZ_Hpi):
+	* src/ZZ/getggHZZamps.f (getggHZZamps):
+	* src/HWW/gg_WW_int.f (gg_ww_int):
+	* src/HWW/qqb_hww_tb.f (qqb_hww_tb):
+	added in anomalous Yukawa couplings for top and bottom
+	loops, as well as a contact ggH interaction
+
+
+	* src/User/usercode.f90: added interfaces for JetVHeto library,
+	ATLAS cuts for HWW, new histograms for observables of interest
+
+	* src/Inc/jetvheto.f (main): JetVHeto global parameters and
+	variables needed by MCFM
+
+	* src/Procdep/resmNNLLint.f (resmNNLLint):
+	* src/Procdep/resmNLLint.f (resmNLLint):
+	added in dedicated functions for the calculation of resummation
+	and the related expansions. Anything requiring convolutions
+	between modified integrated dipoles and pdfs can be found in here.
+
+	* src/Need/dipoles.f: added in additional dipoles to provide the
+	luminosities needed to perform the resummation
+
+	* src/Procdep/virtfin.f (virtfin): added function that extracts
+	the finite part of the virtual corrections and adds the logs
+	needed for resummation and matching
+
+
+	* src/Inc/kpart.f (main): added in new modes for the resummation
+
+	* src/Need/reader_input.f (reader_input):
+	* src/Need/writeinput.f (writeinput):
+	added I/O for resummation and anomalous Yukawa couplings.
+
+	* src/Need/setrunname.f (setrunname): modified run name to include
+	the resummation scale for resummation processes
+
+	* src/Need/scaleset.f (scaleset): added setting of resummation
+	scale Q for each event
+
+	* src/Need/kpartstring.f (kpartstring): added in part strings for
+	the new parts (ll, nll, nnll, etc.)
+
+	* src/Integrate/mcfm_vegasnr.f (mcfm_vegas): added integration of
+	new parts (ll, nll, nnll, etc.)
+
+	* src/User/bookplot.f (bookplot): added in support for the new
+	parts (ll,nll,nnll,etc.) to the histogramming routines
+
+	* src/Inc/constants.f (main):
+	* src/Inc/kprocess.f (main):
+	avoided line continuation so that it can be safely included in f90
+	files
+
+
+	* src/Phase/phi3m0.f (phi3m0):
+	* src/Phase/phi1_2.f (phi1_2):
+	added in checks to catch NaNs in phase space generation
+
+2018-03-15  cslp018871  <ab625@cslp018871.localdomain>
+
+	* JetVHeto/resummation.f90: Sudakov form factor + NNLL
+	corrections, stripped of luminosities
+
+	* JetVHeto/rad_tools.f90: from JetVHeto, use elemental functions
+	instead of functions of arrays of numbers?
+
+	* JetVHeto/emsn_tools.f90: from JetVHeto, no small-R corrections
+
+	* JetVHeto/qcd.f90: from hoppet
+
+	* JetVHeto/types.f90: from hoppet, adapted to 64-bit arithmetics?
+
+	* JetVHeto/consts.f90 (consts): from hoppet
+
+	* JetVHeto/jetvheto_interface.f90: This is an f77
+	interface to access the Sudakov form factor ontained from JetVHeto
+

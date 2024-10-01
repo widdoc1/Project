@@ -1,0 +1,64 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled libraries
+*.a
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Specific executables
+Bin/mcfm
+Bin/mcfm_omp
+Bin/mcfm_mpi
+Bin/PDFsets
+QCDLoop/test
+
+# Input Cards
+*.DAT
+
+# Output Data
+*.top
+*.dat
+*.gnu
+
+# plots
+*.ps
+
+# vegas grid
+*.grid
+
+# latex docs
+*.aux
+*.dvi
+*.log
+*.toc
+
+# latex output
+*.pdf
+
